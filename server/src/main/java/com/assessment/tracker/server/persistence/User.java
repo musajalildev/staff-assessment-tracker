@@ -1,6 +1,7 @@
 package com.assessment.tracker.server.persistence;
 
 import jakarta.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -11,12 +12,13 @@ public class User {
     //first section for generating columns
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long userID; //primary key
+    public Long userID; //primary key
+
+
 
     private String username;
     private String email;//format verification?
     private String password; //required encryption
-    private Role role;
 
     //constructors
     public User(String username, String Password ) {
@@ -47,16 +49,18 @@ public class User {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-    public void setRole(Role role) {
-        this.role = role;
-    }
     public String getUsername() {
         return username;
     }
     public void setUsername(String username) {
         this.username = username;
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_account", //name of join table
+            joinColumns = @JoinColumn( name = "user_id"), //FK 1 (source Fk)
+            inverseJoinColumns = @JoinColumn(name = "role_id") //FK 2 (target fk)
+    )
+    Set<Account_Role> assignedRoles; //defining relationship
 }
