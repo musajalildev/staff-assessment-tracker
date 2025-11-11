@@ -5,7 +5,7 @@ This is where all the Data DTOs and API interfaces will go i.e:
 ```text
 api/
 └── user/
-    ├── UserService.java
+    ├── UserController.java
     └── UserDTO.java
 ```
 
