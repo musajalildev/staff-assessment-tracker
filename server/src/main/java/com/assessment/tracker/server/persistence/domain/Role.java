@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.persistence;
+package com.assessment.tracker.server.persistence.domain;
 
 public enum Role {
     TEACHING_SUPPORT,

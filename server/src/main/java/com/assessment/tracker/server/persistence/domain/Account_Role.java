@@ -1,7 +1,6 @@
-package com.assessment.tracker.server.persistence;
+package com.assessment.tracker.server.persistence.domain;
 
 import jakarta.persistence.*;
-import java.util.*;
 
 //entity that grants every possible role an ID
 @Entity
@@ -10,10 +9,7 @@ public class Account_Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long acc_roleID;
-
-    @ManyToMany(mappedBy = "assignedRoles") //referencing it's mirror collection in user class
-    Set<User> assignedUsers;//defining relationship
+    public Long acc_roleID;
 
     private Role role;
 
