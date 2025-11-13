@@ -9,7 +9,7 @@ public class Account_Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long acc_roleID;
+    public int acc_roleID;
 
     private Role role;
 

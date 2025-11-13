@@ -31,46 +31,77 @@ public class UserController {
 
 
     //implement CRUD operations
-
+    // -------------------- CREATE --------------------
     @PostMapping({"", "/"})
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
+    //-------------------- READ --------------------
     //implement get users w/o query params
-    @GetMapping({"/"})
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     //implement get user and get all users w query params
-    @GetMapping({"/un/{username}"}) // separate routing for username to avoid ambiguity
+    @GetMapping("/un/{username}") // separate routing for username to avoid ambiguity
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        return new ResponseEntity<>(userService.getUserByUsername(username), HttpStatus.OK);
+        User user = userService.getUserByUsername(username);
+        return (user != null) ? ResponseEntity.ok(user)
+                : ResponseEntity.notFound().build();
     }
 
-    @GetMapping({"/email/{email}"})
+    @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+        User user = userService.getUserByEmail(email);
+        return (user != null) ? ResponseEntity.ok(user)
+                : ResponseEntity.notFound().build();
+
     }
 
     //separate routing to avoid ambiguity
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         User user = userService.getUser(id);
-        if (user == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return (user != null) ? ResponseEntity.ok(user)
+                : ResponseEntity.notFound().build();
     }
 
-    //implement update user
-    @PostMapping("/id/{id}")
+    //Implement update user (implement change to update using DTOs)
+    //-------------------- UPDATE --------------------
+    @PutMapping("/{id}/password")
+    public ResponseEntity<User> updateUserPassword(@PathVariable int id, @RequestBody User updatedUser) {
+        User existing = userService.getUser(id);
+        if (existing == null) return ResponseEntity.notFound().build();
+
+        User updated = userService.updateUserPassword(updatedUser.getPassword(), id);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{id}/email")
+    public ResponseEntity<User> updateUserEmail(@PathVariable int id, @RequestBody User updatedUser) {
+        User existing = userService.getUser(id);
+        if (existing == null) return ResponseEntity.notFound().build();
+
+        User updated = userService.updateUserEmail(updatedUser.getEmail(), id);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{id}/username")
+    public ResponseEntity<User> updateUsername(@PathVariable int id, @RequestBody User updatedUser) {
+        User existing = userService.getUser(id);
+        if (existing == null) return ResponseEntity.notFound().build();
+
+        User updated = userService.updateUsername(updatedUser.getUsername(), id);
+        return ResponseEntity.ok(updated);
+    }
 
 
+    //-------------------- DELETE --------------------
     @DeleteMapping({"/{id}"})
-    public void deleteUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable int id) {
         userService.deleteUser(id);
     }
 

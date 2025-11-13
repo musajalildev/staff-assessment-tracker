@@ -28,12 +28,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUser(long id) {
+    public User getUser(int id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND));
     }
 
-    public void deleteUser(long id) {
+    public void deleteUser(int id) {
         if(!userRepository.existsById(id))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
         userRepository.deleteById(id);
@@ -53,21 +53,22 @@ public class UserService {
 
     //IMPLEMENT update user information
 
-    public User updateUsername(User newUser, Long id) {
+    public User updateUsername(String newUser, int id) {
         User currentUser = getUser(id);
-        currentUser.setUsername(newUser.getUsername());
+        currentUser.setUsername(newUser);
         return userRepository.save(currentUser);
 
     }
 
-    public User updateUserPassword(String newPassword, Long id) {
+    //implement encryption
+    public User updateUserPassword(String newPassword, int id) {
         User currentUser= userRepository.findById(id).orElse(null);
         assert currentUser != null;
         currentUser.setPassword( newPassword );
         return userRepository.save(currentUser);
     }
 
-    public User updateUserEmail(String newEmail, Long id) {
+    public User updateUserEmail(String newEmail, int id) {
         User currentUser= userRepository.findById(id).orElse(null);
         assert currentUser != null;
         currentUser.setEmail( newEmail );
