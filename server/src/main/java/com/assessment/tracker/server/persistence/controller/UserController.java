@@ -42,7 +42,9 @@ public class UserController {
     //implement get users w/o query params
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+       List<User> users = userService.getAllUsers();
+        return(users != null)? ResponseEntity.ok(users)
+                : ResponseEntity.notFound().build();
     }
 
     //implement get user and get all users w query params
@@ -100,10 +102,16 @@ public class UserController {
 
 
     //-------------------- DELETE --------------------
-    @DeleteMapping({"/{id}"})
-    public void deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        boolean deleted = (userService.deleteUser(id));
+        if (!deleted) {
+            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>("User deleted successfully.", HttpStatus.OK);
     }
+
 
 
 

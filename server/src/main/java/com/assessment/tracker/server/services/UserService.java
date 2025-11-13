@@ -33,10 +33,11 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND));
     }
 
-    public void deleteUser(int id) {
+    public boolean deleteUser(int id) {
         if(!userRepository.existsById(id))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
         userRepository.deleteById(id);
+        return true;
 
     }
 

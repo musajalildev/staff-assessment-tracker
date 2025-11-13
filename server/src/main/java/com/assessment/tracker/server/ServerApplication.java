@@ -21,6 +21,7 @@ public class ServerApplication {
             userService.createUser(new User("user1","boo","a"));
             userService.createUser(new User("user2","faa",null));
             userService.createUser(new User("user3","foo","b"));
+            userService.createUser(new User("test","test123","i@gmail.com"));
 
 
         };
