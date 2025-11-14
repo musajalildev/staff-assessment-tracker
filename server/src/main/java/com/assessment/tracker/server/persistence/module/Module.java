@@ -10,9 +10,6 @@ public class Module {
     private Integer moduleLeaderID;
     private String moduleCode;
 
-    public void setID(Integer newID) {
-        this.ID = newID;
-    }
     public void setModuleLeaderID(Integer newModuleLeaderID) {
         this.moduleLeaderID = newModuleLeaderID;
     }
