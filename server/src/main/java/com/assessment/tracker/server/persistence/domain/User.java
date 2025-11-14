@@ -14,13 +14,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int userID; //primary key
 
-    @ManyToMany
-    @JoinTable(
-            name = "userRoles",
-            joinColumns = @JoinColumn(name = "userID"),
-            inverseJoinColumns = @JoinColumn(name = "roleID")
-    )
-    Set<AccountRole> assignedRoles;
+    @OneToMany
+    private Set<AssignedUser> assignedUsers = new HashSet<>();
+
 
     @Column(nullable = false, unique = true)
     private String username;
