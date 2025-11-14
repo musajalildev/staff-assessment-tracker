@@ -55,7 +55,7 @@ public class UserController {
                 : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/email/{email}")
+    @GetMapping("/email/{email}") // separate routing for email to avoid ambiguity
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
         User user = userService.getUserByEmail(email);
         return (user != null) ? ResponseEntity.ok(user)

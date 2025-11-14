@@ -14,6 +14,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int userID; //primary key
 
+    @ManyToMany
+    @JoinTable(
+            name = "userRoles",
+            joinColumns = @JoinColumn(name = "userID"),
+            inverseJoinColumns = @JoinColumn(name = "roleID")
+    )
+    Set<AccountRole> assignedRoles;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -62,12 +69,6 @@ public class User {
         this.username = username;
     }
 
-//    @ManyToMany
-//    @JoinTable(
-//
-//            name = "user_account", //name of join table
-//            joinColumns = @JoinColumn( name = "userID"), //FK 1 (source Fk)
-//            inverseJoinColumns = @JoinColumn(name = "acc_roleID") //FK 2 (target fk)
-//    )
-//    Set<Account_Role> assignedRoles; //defining relationship
+
+
 }
