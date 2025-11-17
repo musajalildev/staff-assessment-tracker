@@ -32,7 +32,7 @@ public class UserController {
 
     //implement CRUD operations
     // -------------------- CREATE --------------------
-    @PostMapping({"", "/"})
+    @PostMapping( "/")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
@@ -102,6 +102,7 @@ public class UserController {
 
 
     //-------------------- DELETE --------------------
+    //implement delete user by id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         boolean deleted = (userService.deleteUser(id));
@@ -110,6 +111,18 @@ public class UserController {
         }
 
         return new ResponseEntity<>("User deleted successfully.", HttpStatus.OK);
+    }
+
+    //implement delete all users :)
+    @DeleteMapping("/wipe")
+    public ResponseEntity<String> deleteAllUsers(@RequestParam String confirm){
+        boolean deleted= userService.deleteAllUsers();
+        if (!"YUTA_BUM".equals(confirm)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid confirmation value. Action not performed.");
+        }
+        userService.deleteAllUsers();
+        return new ResponseEntity<>("All Users Erased", HttpStatus.OK);
     }
 
 

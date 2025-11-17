@@ -17,7 +17,6 @@ public class User {
     @OneToMany
     private Set<AssignedUser> assignedUsers = new HashSet<>();
 
-
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -28,7 +27,7 @@ public class User {
     private String password; //required encryption
 
     //constructors
-    public User(String username, String Password, String email ) {
+    public User(String username, String email, String Password ) {
         this.username = username;
         this.password = Password;
         this.email = email;

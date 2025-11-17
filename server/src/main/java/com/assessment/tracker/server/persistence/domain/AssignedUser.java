@@ -1,4 +1,5 @@
 package com.assessment.tracker.server.persistence.domain;
+import com.assessment.tracker.server.services.*;
 
 import jakarta.persistence.*;
 
@@ -17,12 +18,14 @@ public class AssignedUser {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public AssignedUser() {}
+
+    public AssignedUser() {
+    }
+
     public AssignedUser(User user, Role role) {
         this.user = user;
         this.role = role;
     }
-
     public void setRole(Role role) {
         this.role = role;
     }
@@ -45,9 +48,7 @@ public class AssignedUser {
     public void setAssignmentID(int assignmentID) {
         this.assignmentID = assignmentID;
     }
-
-
-
-
-
 }
+
+
+

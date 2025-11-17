@@ -41,6 +41,11 @@ public class UserService {
 
     }
 
+    public boolean deleteAllUsers(){
+        userRepository.deleteAll();
+        return true;
+    }
+
 
     //IMPLEMENT get user by email,change password,
 
