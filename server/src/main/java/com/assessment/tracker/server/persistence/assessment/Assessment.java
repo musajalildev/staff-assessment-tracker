@@ -2,6 +2,7 @@ package com.assessment.tracker.server.persistence.assessment;
 
 import jakarta.persistence.*;
 
+@Entity
 public class Assessment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
