@@ -34,6 +34,7 @@ public class UserService {
     }
 
     public boolean deleteUser(int id) {
+        //check if user is an exam officer (deletion not allowed)
         if(!userRepository.existsById(id))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
         userRepository.deleteById(id);

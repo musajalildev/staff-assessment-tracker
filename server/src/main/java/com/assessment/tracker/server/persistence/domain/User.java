@@ -13,6 +13,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int userID; //primary key
+    //UUID
 
     @OneToMany
     private Set<AssignedUser> assignedUsers = new HashSet<>();
@@ -20,7 +21,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;//format verification?
 
     @Column(nullable = false, unique = true)
