@@ -1,10 +1,9 @@
-package com.assessment.tracker.server.services;
+package com.assessment.tracker.server.persistence.assignedusers;
 
-import com.assessment.tracker.server.persistence.domain.AssignedUser;
-import com.assessment.tracker.server.persistence.controller.AssignedUserController;
-import com.assessment.tracker.server.persistence.domain.Role;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.persistence.repository.AssignedUserRepository;
+import com.assessment.tracker.server.services.AssignedUserController;
+import com.assessment.tracker.server.utils.Role;
+import com.assessment.tracker.server.persistence.user.User;
+import com.assessment.tracker.server.persistence.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

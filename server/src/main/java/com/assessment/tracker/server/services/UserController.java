@@ -1,6 +1,6 @@
-package com.assessment.tracker.server.persistence.controller;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.services.UserService;
+package com.assessment.tracker.server.services;
+import com.assessment.tracker.server.persistence.user.User;
+import com.assessment.tracker.server.persistence.user.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

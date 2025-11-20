@@ -1,11 +1,10 @@
 package com.assessment.tracker.server;
 
-import com.assessment.tracker.server.persistence.domain.AssignedUser;
-import com.assessment.tracker.server.persistence.domain.Role;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.persistence.repository.AssignedUserRepository;
-import com.assessment.tracker.server.persistence.repository.UserRepository;
-import com.assessment.tracker.server.services.UserService;
+import com.assessment.tracker.server.persistence.assignedusers.AssignedUser;
+import com.assessment.tracker.server.utils.Role;
+import com.assessment.tracker.server.persistence.user.User;
+import com.assessment.tracker.server.persistence.assignedusers.AssignedUserRepository;
+import com.assessment.tracker.server.persistence.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -63,6 +62,8 @@ public class ServerApplication {
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8)
                 );
+
+                System.out.println("Assignments seeded.");
             }
 
 

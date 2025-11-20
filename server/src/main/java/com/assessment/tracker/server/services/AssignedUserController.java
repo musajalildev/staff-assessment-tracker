@@ -1,11 +1,10 @@
-package com.assessment.tracker.server.persistence.controller;
+package com.assessment.tracker.server.services;
 
-import com.assessment.tracker.server.persistence.domain.AssignedUser;
-import com.assessment.tracker.server.persistence.domain.Role;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.persistence.repository.AssignedUserRepository;
-import com.assessment.tracker.server.services.AssignedUserService;
-import com.assessment.tracker.server.services.UserService;
+import com.assessment.tracker.server.persistence.assignedusers.AssignedUser;
+import com.assessment.tracker.server.utils.Role;
+import com.assessment.tracker.server.persistence.user.User;
+import com.assessment.tracker.server.persistence.assignedusers.AssignedUserService;
+import com.assessment.tracker.server.persistence.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;

@@ -1,5 +1,6 @@
-package com.assessment.tracker.server.persistence.domain;
+package com.assessment.tracker.server.persistence.user;
 
+import com.assessment.tracker.server.persistence.assignedusers.AssignedUser;
 import jakarta.persistence.*;
 import java.util.*;
 

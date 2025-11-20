@@ -1,7 +1,5 @@
-package com.assessment.tracker.server.services;
+package com.assessment.tracker.server.persistence.user;
 
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.persistence.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,6 @@
-package com.assessment.tracker.server.persistence.repository;
-import com.assessment.tracker.server.persistence.domain.AssignedUser;
-import com.assessment.tracker.server.persistence.domain.Role;
-import com.assessment.tracker.server.persistence.domain.User;
+package com.assessment.tracker.server.persistence.assignedusers;
+import com.assessment.tracker.server.utils.Role;
+import com.assessment.tracker.server.persistence.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
