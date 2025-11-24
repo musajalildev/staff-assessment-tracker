@@ -1,14 +1,15 @@
 package com.assessment.tracker.server;
 
 import com.assessment.tracker.server.persistence.assignedusers.AssignedUser;
+import com.assessment.tracker.server.persistence.user.*;
 import com.assessment.tracker.server.utils.Role;
-import com.assessment.tracker.server.persistence.user.User;
 import com.assessment.tracker.server.persistence.assignedusers.AssignedUserRepository;
 import com.assessment.tracker.server.persistence.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -21,18 +22,20 @@ public class ServerApplication {
 
     @Bean
     CommandLineRunner seedDatabase(UserRepository userRepository,
-                                   AssignedUserRepository assignedUserRepository) {
+                                   AssignedUserRepository assignedUserRepository,
+                                   PasswordEncoder pcoder) {
+
+
         return args -> {
 
             // Seed Users only if empty
             if (userRepository.count() == 0) {
-                User u1 = new User("john", "john@example.com", "john123");
-                User u2 = new User("mary", "mary@example.com", "mary123");
-                User u3 = new User("kofi", "kofi@example.com", "kofi123");
-                User u4 = new User("sakura", "sakura@example.com", "sakura123");
-                User u5 = new User("musa", "musa@example.com", "musa123");
+                List<User> users = getUsers();
+                for (User user : users) {
+                    user.setPassword(pcoder.encode(user.getPassword()));
+                }
 
-                userRepository.saveAll(List.of(u1, u2, u3, u4, u5));
+                userRepository.saveAll(users);
 
                 System.out.println("Users seeded.");
             }
@@ -46,18 +49,18 @@ public class ServerApplication {
                 User sakura = userRepository.findByUsername("sakura");
                 User musa = userRepository.findByUsername("musa");
 
-                AssignedUser a1 = new AssignedUser(john, Role.ACADEMIC);
-                AssignedUser a2 = new AssignedUser(john, Role.EXAMS_OFFICER);
+                AssignedUser a1 = new AssignedUser(john, Role.CHECKER);
+                AssignedUser a2 = new AssignedUser(john, Role.SETTER);
 
-                AssignedUser a3 = new AssignedUser(mary, Role.TEACHING_SUPPORT);
+                AssignedUser a3 = new AssignedUser(mary, Role.MODULE_STAFF);
 
-                AssignedUser a4 = new AssignedUser(kofi, Role.EXTERNAL_EXAMINER);
-                AssignedUser a5 = new AssignedUser(kofi, Role.ACADEMIC);
+                AssignedUser a4 = new AssignedUser(kofi, Role.MODULE_LEAD);
+                AssignedUser a5 = new AssignedUser(kofi, Role.EXAM_OFFICER);
 
-                AssignedUser a6 = new AssignedUser(sakura, Role.TEACHING_SUPPORT);
+                AssignedUser a6 = new AssignedUser(sakura, Role.MODULE_STAFF);
 
-                AssignedUser a7 = new AssignedUser(musa, Role.EXAMS_OFFICER);
-                AssignedUser a8 = new AssignedUser(musa, Role.ACADEMIC);
+                AssignedUser a7 = new AssignedUser(musa, Role.SETTER);
+                AssignedUser a8 = new AssignedUser(musa, Role.MODULE_MODERATOR);
 
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8)
@@ -68,5 +71,17 @@ public class ServerApplication {
 
 
         };
-    }}
+    }
+
+    private static List<User> getUsers() {
+        User u1 = new User("john", "john@example.com", "john123", User.userType.EXAMS_OFFICER);
+        User u2 = new User("mary", "mary@example.com", "mary123", User.userType.TEACHING_SUPPORT);
+        User u3 = new User("kofi", "kofi@example.com", "kofi123", User.userType.EXTERNAL_EXAMINER);
+        User u4 = new User("sakura", "sakura@example.com", "sakura123", User.userType.ACADEMIC);
+        User u5 = new User("musa", "musa@example.com", "musa123", User.userType.ACADEMIC);
+
+        //password encoding for test data
+        return List.of(u1, u2, u3, u4, u5);
+    }
+}
 

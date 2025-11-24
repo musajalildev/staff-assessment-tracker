@@ -27,7 +27,7 @@ public class AssignedUserService {
 
     //implement CRUD operations
     // -------------------- CREATE --------------------
-    public AssignedUser createAssignment(int userID, Role role) {
+    public AssignedUser createAssignment(UUID userID, Role role) {
         User currentUser= userService.getUser(userID);
         if (currentUser == null) {
             throw new IllegalArgumentException("User not found for ID: " + userID);
@@ -100,7 +100,7 @@ public class AssignedUserService {
     }
 
     //implement deleting all user-role assignments for a user
-    public boolean deleteAllUserAssignments(int userid) {
+    public boolean deleteAllUserAssignments(UUID userid) {
         User currentUser=userService.getUser(userid);
         List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(currentUser);
         if(currentAssignments.isEmpty()){

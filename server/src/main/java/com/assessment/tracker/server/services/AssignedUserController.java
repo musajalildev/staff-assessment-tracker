@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import java.util.UUID;
 
 /** @noinspection DuplicatedCode*/
 @RestController
@@ -31,7 +32,7 @@ public class AssignedUserController {
     // -------------------- CREATE --------------------
     //implement get assigned users w/o query params
     @PostMapping({"", "/"})
-    public ResponseEntity<AssignedUser> createAssignment(@RequestBody int userID, @RequestBody Role role) {
+    public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody Role role) {
         AssignedUser createdUser = assignedUserService.createAssignment(userID, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
@@ -75,7 +76,7 @@ public class AssignedUserController {
     //GET ALL USER ROLES (notice mapping pattern)
     //get all user roles by ID
     @GetMapping("/role/userid/{id}")
-    public ResponseEntity<List<Role>> getAllUserRolesById(@PathVariable int id){
+    public ResponseEntity<List<Role>> getAllUserRolesById(@PathVariable UUID id){
         User user = userService.getUser(id);
         List<Role> userRoles = assignedUserService.getUserAssignment(user);
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
@@ -143,7 +144,7 @@ public class AssignedUserController {
 
     //delete all assignments for a user
     @DeleteMapping("/user/{userid}")
-    public ResponseEntity<String> deleteUserAssignments(@PathVariable int userid){
+    public ResponseEntity<String> deleteUserAssignments(@PathVariable UUID userid){
         String username= userService.getUser(userid).getUsername();
         boolean deleted= assignedUserService.deleteAllUserAssignments(userid);
         return (deleted) ?  new ResponseEntity<>(
