@@ -2,6 +2,7 @@ package com.assessment.tracker.server;
 
 import com.assessment.tracker.server.persistence.assignedusers.AssignedUser;
 import com.assessment.tracker.server.persistence.user.*;
+import com.assessment.tracker.server.persistence.user.User.userType;
 import com.assessment.tracker.server.utils.Role;
 import com.assessment.tracker.server.persistence.assignedusers.AssignedUserRepository;
 import com.assessment.tracker.server.persistence.user.UserRepository;
@@ -74,11 +75,11 @@ public class ServerApplication {
     }
 
     private static List<User> getUsers() {
-        User u1 = new User("john", "john@example.com", "john123", User.userType.EXAMS_OFFICER);
-        User u2 = new User("mary", "mary@example.com", "mary123", User.userType.TEACHING_SUPPORT);
-        User u3 = new User("kofi", "kofi@example.com", "kofi123", User.userType.EXTERNAL_EXAMINER);
-        User u4 = new User("sakura", "sakura@example.com", "sakura123", User.userType.ACADEMIC);
-        User u5 = new User("musa", "musa@example.com", "musa123", User.userType.ACADEMIC);
+        User u1 = new User("john", "john@example.com", "john123", userType.EXAMS_OFFICER);
+        User u2 = new User("mary", "mary@example.com", "mary123", userType.TEACHING_SUPPORT);
+        User u3 = new User("kofi", "kofi@example.com", "kofi123", userType.EXTERNAL_EXAMINER);
+        User u4 = new User("sakura", "sakura@example.com", "sakura123", userType.ACADEMIC);
+        User u5 = new User("musa", "musa@example.com", "musa123", userType.ACADEMIC);
 
         //password encoding for test data
         return List.of(u1, u2, u3, u4, u5);

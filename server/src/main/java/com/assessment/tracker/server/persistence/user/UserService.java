@@ -102,6 +102,13 @@ public class UserService {
         return userRepository.save(currentUser);
     }
 
+    public User updateUserPermission(userType newPermission, UUID id) {
+        User currentUser= getUser(id);
+        currentUser.setUserType(newPermission);
+        return userRepository.save(currentUser);
+    }
+
+    //to be used in login service
     public boolean validatePassword(String raw, String encoded) {
         return passwordEncoder.matches(raw, encoded);
     }

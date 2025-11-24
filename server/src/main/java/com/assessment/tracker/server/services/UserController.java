@@ -87,9 +87,25 @@ public class UserController {
     //Implement update user (implement change to update using DTOs)
     //-------------------- UPDATE --------------------
     @PutMapping("/{id}/password")
-    public ResponseEntity<User> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
+                                                   @RequestParam String currentPassword) {
         User existing = userService.getUser(id);
-        if (existing == null) return ResponseEntity.notFound().build();
+        //check if current password is correct(frontend would require this)
+        if (!(userService.validatePassword(currentPassword, existing.getPassword()))) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.BAD_REQUEST);
+        }
+        return changeUserPassword(id, updatedUser, existing);
+    }
+
+    private ResponseEntity<User> changeUserPassword(UUID id, User updatedUser, User existing) {
+        if (existing == null)
+            return ResponseEntity.notFound().build();
+        String current_Password = existing.getPassword();
+
+        if (current_Password.equals(updatedUser.getPassword()))
+        {   System.out.println("Old password is same as new password, unable to update");
+            return new ResponseEntity<>(updatedUser, HttpStatus.BAD_REQUEST);
+        }
 
         User updated = userService.updateUserPassword(updatedUser.getPassword(), id);
         return ResponseEntity.ok(updated);
@@ -111,6 +127,18 @@ public class UserController {
 
         User updated = userService.updateUsername(updatedUser.getUsername(), id);
         return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{id}/permission")
+    public ResponseEntity<User> updateUserPermission(@PathVariable UUID id, @RequestBody User updatedUser) {
+        User existing = userService.getUser(id);
+        if(existing == null) return ResponseEntity.notFound().build();
+
+        userType permission = updatedUser.getUserType();
+
+        User updated= userService.updateUserPermission(permission, id);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
+
     }
 
 
