@@ -5,18 +5,18 @@ import com.assessment.tracker.server.api.user.UserDTO;
 import com.assessment.tracker.server.utils.AssessmentType;
 
 public class AssessmentDTO {
-    private String id;
+    private Integer id;
     private ModuleDTO module;
     private AssessmentType type;
     private String title;
     private UserDTO setter;
     private UserDTO checker;
 
-    public String getId() {
+    public Integer getID() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setID(Integer id) {
         this.id = id;
     }
 

@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.persistence.assessment;
+package com.assessment.tracker.server.api.assessment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
