@@ -1,9 +1,5 @@
-package com.assessment.tracker.server.services;
+package com.assessment.tracker.server.api.assessment;
 
-import com.assessment.tracker.server.api.assessment.AssessmentController;
-import com.assessment.tracker.server.api.assessment.AssessmentDTO;
-import com.assessment.tracker.server.persistence.assessment.Assessment;
-import com.assessment.tracker.server.persistence.assessment.AssessmentService;
 import com.assessment.tracker.server.services.mappers.AssessmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
