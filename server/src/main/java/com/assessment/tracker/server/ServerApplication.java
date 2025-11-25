@@ -6,6 +6,9 @@ import com.assessment.tracker.server.persistence.domain.User;
 import com.assessment.tracker.server.persistence.repository.AssignedUserRepository;
 import com.assessment.tracker.server.persistence.repository.UserRepository;
 import com.assessment.tracker.server.services.UserService;
+import com.assessment.tracker.server.utils.AssessmentProgress;
+import com.assessment.tracker.server.utils.AssessmentType;
+import com.assessment.tracker.server.api.assessment.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +25,7 @@ public class ServerApplication {
 
     @Bean
     CommandLineRunner seedDatabase(UserRepository userRepository,
-                                   AssignedUserRepository assignedUserRepository) {
+            AssignedUserRepository assignedUserRepository, AssessmentRepo assessmentRepository) {
         return args -> {
 
             // Seed Users only if empty
@@ -61,11 +64,19 @@ public class ServerApplication {
                 AssignedUser a8 = new AssignedUser(musa, Role.ACADEMIC);
 
                 assignedUserRepository.saveAll(
-                        List.of(a1, a2, a3, a4, a5, a6, a7, a8)
-                );
+                        List.of(a1, a2, a3, a4, a5, a6, a7, a8));
+            }
+            if (assessmentRepository.count() == 0) {
+                Assessment a1 = new Assessment();
+                a1.setTitle("test");
+                a1.setProgress(AssessmentProgress.CHECKED);
+                a1.setAssessmentType(AssessmentType.TEST_AUTOGRADED);
+
+                assessmentRepository.saveAll(List.of(a1));
+
+                System.out.println("Assessments seeded.");
             }
 
-
         };
-    }}
-
+    }
+}

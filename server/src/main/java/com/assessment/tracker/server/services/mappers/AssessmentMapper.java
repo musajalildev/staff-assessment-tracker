@@ -13,6 +13,7 @@ public class AssessmentMapper implements Mapper<AssessmentDTO, Assessment> {
         DTO.setID(entity.getID());
         DTO.setType(entity.getAssessmentType());
         DTO.setTitle(entity.getTitle());
+        DTO.setProgress(entity.getProgress());
         // todo when merging user DTOs
         // DTO.setChecker(entity.getChecker());
         // DTO.setSetter(entity.getSetter());
@@ -27,6 +28,7 @@ public class AssessmentMapper implements Mapper<AssessmentDTO, Assessment> {
         entity.setID(DTO.getID());
         entity.setAssessmentType(DTO.getType());
         entity.setTitle(DTO.getTitle());
+        entity.setProgress(DTO.getProgress());
         // todo when merging user entitys
         // entity.setChecker(DTO.getChecker());
         // entity.setSetter(DTO.getSetter());

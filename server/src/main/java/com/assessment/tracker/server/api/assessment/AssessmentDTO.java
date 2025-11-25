@@ -2,6 +2,7 @@ package com.assessment.tracker.server.api.assessment;
 
 import com.assessment.tracker.server.api.module.ModuleDTO;
 import com.assessment.tracker.server.api.user.UserDTO;
+import com.assessment.tracker.server.utils.AssessmentProgress;
 import com.assessment.tracker.server.utils.AssessmentType;
 
 public class AssessmentDTO {
@@ -11,6 +12,15 @@ public class AssessmentDTO {
     private String title;
     private UserDTO setter;
     private UserDTO checker;
+    private AssessmentProgress progress;
+
+    public AssessmentProgress getProgress() {
+        return progress;
+    }
+
+    public void setProgress(AssessmentProgress progress) {
+        this.progress = progress;
+    }
 
     public Integer getID() {
         return id;
