@@ -7,14 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.beans.BeanProperty;
 import java.util.*;
+import com.assessment.tracker.server.api.assessment.*;
+import com.assessment.tracker.server.persistence.assessment.*;
 
 @Entity
 @Table(name = "users")
 
-//table for users, refer to data design doc for reference
+// table for users, refer to data design doc for reference
 public class User {
 
-    //first section for generating columns
+    // first section for generating columns
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userID; //primary key
@@ -26,11 +28,17 @@ public class User {
     private String username;
 
     @Column(nullable = false, unique = true)
-    private String email;//format verification?
+    private String email;// format verification?
 
     @JsonIgnore
     @Column(nullable = false, unique = true)
-    private String password; //required encryption
+    private String password; // required encryption
+
+    @OneToMany(mappedBy = "setter")
+    private List<Assessment> setterFor;
+
+    @OneToMany(mappedBy = "checker")
+    private List<Assessment> checkerFor;
 
 
     public enum userType{
@@ -50,6 +58,7 @@ public class User {
         this.email = email;
         this.userType = userType;
     }
+
     public User() {
     }
 
@@ -64,6 +73,7 @@ public class User {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -71,6 +81,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -78,6 +89,7 @@ public class User {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
