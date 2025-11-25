@@ -1,10 +1,9 @@
-package com.assessment.tracker.server.services;
+package com.assessment.tracker.server.persistence.assignedusers;
 
-import com.assessment.tracker.server.persistence.domain.AssignedUser;
-import com.assessment.tracker.server.persistence.controller.AssignedUserController;
-import com.assessment.tracker.server.persistence.domain.Role;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.persistence.repository.AssignedUserRepository;
+import com.assessment.tracker.server.services.AssignedUserController;
+import com.assessment.tracker.server.utils.Role;
+import com.assessment.tracker.server.persistence.user.User;
+import com.assessment.tracker.server.persistence.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class AssignedUserService {
 
     //implement CRUD operations
     // -------------------- CREATE --------------------
-    public AssignedUser createAssignment(int userID, Role role) {
+    public AssignedUser createAssignment(UUID userID, Role role) {
         User currentUser= userService.getUser(userID);
         if (currentUser == null) {
             throw new IllegalArgumentException("User not found for ID: " + userID);
@@ -101,7 +100,7 @@ public class AssignedUserService {
     }
 
     //implement deleting all user-role assignments for a user
-    public boolean deleteAllUserAssignments(int userid) {
+    public boolean deleteAllUserAssignments(UUID userid) {
         User currentUser=userService.getUser(userid);
         List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(currentUser);
         if(currentAssignments.isEmpty()){

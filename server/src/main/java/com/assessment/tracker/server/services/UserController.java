@@ -1,12 +1,15 @@
-package com.assessment.tracker.server.persistence.controller;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.services.UserService;
+package com.assessment.tracker.server.services;
+import com.assessment.tracker.server.persistence.user.User;
+import com.assessment.tracker.server.persistence.user.User.userType;
+import com.assessment.tracker.server.persistence.user.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/users") //corresponding to service
 
@@ -65,25 +68,51 @@ public class UserController {
 
     //separate routing to avoid ambiguity
     @GetMapping("/id/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id) {
+    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         User user = userService.getUser(id);
         return (user != null) ? ResponseEntity.ok(user)
                 : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/permission/{id}")
+    public ResponseEntity<String> getUserPermission(@PathVariable UUID id){
+        return ResponseEntity.ok(userService.getUserPermission(id).toString());
+    }
+
+    @GetMapping("{permit}")
+    public ResponseEntity<List<User>> getAllUsersByPermission(@PathVariable userType permit){
+        return ResponseEntity.ok(userService.getAllUsersByPermission(permit));
+    }
+
     //Implement update user (implement change to update using DTOs)
     //-------------------- UPDATE --------------------
     @PutMapping("/{id}/password")
-    public ResponseEntity<User> updateUserPassword(@PathVariable int id, @RequestBody User updatedUser) {
+    public ResponseEntity<String> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
+                                                   @RequestParam String currentPassword) {
         User existing = userService.getUser(id);
-        if (existing == null) return ResponseEntity.notFound().build();
+        //check if current password is correct(frontend would require this)
+        if (!userService.validatePassword(currentPassword, existing.getPassword())) {
+            return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
+        }
+        return changeUserPassword(id, updatedUser, existing);
+    }
+
+    private ResponseEntity<String> changeUserPassword(UUID id, User updatedUser, User existing) {
+        if (existing == null)
+            return ResponseEntity.notFound().build();
+        String current_Password = existing.getPassword();
+
+        if (current_Password.equals(updatedUser.getPassword()))
+        {   System.out.println("Old password is same as new password, unable to update");
+            return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
+        }
 
         User updated = userService.updateUserPassword(updatedUser.getPassword(), id);
-        return ResponseEntity.ok(updated);
+        return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
     }
 
     @PutMapping("/{id}/email")
-    public ResponseEntity<User> updateUserEmail(@PathVariable int id, @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUserEmail(@PathVariable UUID id, @RequestBody User updatedUser) {
         User existing = userService.getUser(id);
         if (existing == null) return ResponseEntity.notFound().build();
 
@@ -92,7 +121,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/username")
-    public ResponseEntity<User> updateUsername(@PathVariable int id, @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUsername(@PathVariable UUID id, @RequestBody User updatedUser) {
         User existing = userService.getUser(id);
         if (existing == null) return ResponseEntity.notFound().build();
 
@@ -100,11 +129,23 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
+    @PutMapping("/{id}/permission")
+    public ResponseEntity<User> updateUserPermission(@PathVariable UUID id, @RequestBody User updatedUser) {
+        User existing = userService.getUser(id);
+        if(existing == null) return ResponseEntity.notFound().build();
+
+        userType permission = updatedUser.getUserType();
+
+        User updated= userService.updateUserPermission(permission, id);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
+
+    }
+
 
     //-------------------- DELETE --------------------
     //implement delete user by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
         boolean deleted = (userService.deleteUser(id));
         if (!deleted) {
             return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
