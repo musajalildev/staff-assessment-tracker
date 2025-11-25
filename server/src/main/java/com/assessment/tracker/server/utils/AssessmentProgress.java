@@ -6,5 +6,7 @@ public enum AssessmentProgress {
     NEEDS_CHANGES,
     TEST_TAKING_PLACE,
     MARKING_STANDARDISED,
-    RESULTS_RETURNED
+    MARKED,
+    RESULTS_RETURNED,
+    COMPLETE
 }

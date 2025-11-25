@@ -90,20 +90,12 @@ public class Assessment {
         feedback.setAssessment(this);
     }
 
-    public void setModuleID(Integer moduleID) {
-        this.moduleID = moduleID;
-    }
-
     public void setAssessmentType(AssessmentType assessmentType) {
         this.assessmentType = assessmentType;
     }
 
     public Integer getID() {
         return ID;
-    }
-
-    public Integer getModuleID() {
-        return moduleID;
     }
 
     public String getTitle() {

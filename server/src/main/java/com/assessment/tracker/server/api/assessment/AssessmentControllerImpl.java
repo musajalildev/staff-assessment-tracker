@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.assessment.tracker.server.api.assessment.*;
+import com.assessment.tracker.server.services.mappers.*;
+
 @RestController
 public class AssessmentControllerImpl implements AssessmentController {
 
@@ -19,9 +22,13 @@ public class AssessmentControllerImpl implements AssessmentController {
     }
 
     @Override
-    public ResponseEntity<AssessmentDTO> getAssessments() {
-        Object username = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return null;
+    public ResponseEntity<AssessmentDTO> getAssessment(int id) {
+        // Object username =
+        // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AssessmentDTO dto = assessmentService.getAssessmentByID(id);
+        System.out.println("DTO: " + dto);
+        System.out.println("ID: " + id);
+        return ResponseEntity.ok(dto);
     }
 
     @Override
@@ -32,7 +39,9 @@ public class AssessmentControllerImpl implements AssessmentController {
     }
 
     @Override
-    public ResponseEntity<AssessmentDTO> updateAssessment(String assessmentId, AssessmentDTO assessmentDTO) {
-        return null;
+    public ResponseEntity<AssessmentDTO> updateAssessment(int id, AssessmentDTO assessmentDTO) {
+        Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
+        assessmentService.save(assessment);
+        return ResponseEntity.ok(assessmentDTO);
     }
 }
