@@ -1,13 +1,67 @@
+
 import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 
+// Mock module data (should match Modules.jsx)
+const modules = [
+  {
+    id: '1',
+    code: 'CSC101',
+    title: 'Programming 1',
+    lead: 'Jane Doe',
+    moderator: 'Anna Lee',
+    staff: ['John Smith (Setter)', 'Mary Chan (Staff)'],
+    assessments: [
+      { id: 1, title: 'Assignment 1', type: 'Coursework', stage: 'Checking', stageClass: 'warn' },
+      { id: 2, title: 'Midterm Test', type: 'Test', stage: 'Marking', stageClass: 'ok' },
+      { id: 3, title: 'Final Exam', type: 'Exam', stage: 'External Review', stageClass: '' },
+    ],
+  },
+  {
+    id: '2',
+    code: 'CSC212',
+    title: 'Data Structures',
+    lead: 'Juan Park',
+    moderator: 'Jane Doe',
+    staff: ['Anna Lee (Setter)', 'John Smith (Staff)'],
+    assessments: [
+      { id: 1, title: 'Assignment 1', type: 'Coursework', stage: 'Checking', stageClass: 'warn' },
+      { id: 2, title: 'Final Project', type: 'Project', stage: 'Marking', stageClass: 'ok' },
+    ],
+  },
+  {
+    id: '3',
+    code: 'MAT150',
+    title: 'Discrete Math',
+    lead: 'John Smith',
+    moderator: 'Anna Lee',
+    staff: ['Mary Chan (Setter)', 'Jane Doe (Staff)'],
+    assessments: [
+      { id: 1, title: 'Quiz 1', type: 'Quiz', stage: 'Checking', stageClass: 'warn' },
+      { id: 2, title: 'Final Exam', type: 'Exam', stage: 'External Review', stageClass: '' },
+    ],
+  },
+];
+
 function ModuleDetail() {
   const { id } = useParams();
+  const module = modules.find((m) => m.id === id);
+
+  if (!module) {
+    return (
+      <Layout>
+        <div className="content">
+          <h2>Module not found</h2>
+          <Link to="/modules">Back to Modules</Link>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <header className="header">
-        <div className="h-title">CSC101 • Programming 1</div>
+        <div className="h-title">{module.code} • {module.title}</div>
         <div className="actions">
           <Link className="btn" to="/modules">Back</Link>
           <Link className="btn" to={`/modules/${id}/edit`}>Edit Module</Link>
@@ -18,15 +72,14 @@ function ModuleDetail() {
       <section className="grid two">
         <div className="card">
           <div className="label">Module Lead</div>
-          <div className="mt-12">Dr. Jane Doe</div>
+          <div className="mt-12">{module.lead}</div>
           <div className="sep"></div>
           <div className="label mt-12">Moderator</div>
-          <div className="mt-12">Anna Lee</div>
+          <div className="mt-12">{module.moderator}</div>
           <div className="sep"></div>
           <div className="label mt-12">Staff</div>
           <ul className="mt-12" style={{ display: 'grid', gap: '8px', listStyle: 'none' }}>
-            <li>John Smith (Setter)</li>
-            <li>Mary Chan (Staff)</li>
+            {module.staff.map((s, i) => <li key={i}>{s}</li>)}
           </ul>
         </div>
         <div className="card">
@@ -41,24 +94,14 @@ function ModuleDetail() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Assignment 1</td>
-                <td>Coursework</td>
-                <td><span className="badge warn">Checking</span></td>
-                <td><Link to={`/modules/${id}/assessments/1`}>Open →</Link></td>
-              </tr>
-              <tr>
-                <td>Midterm Test</td>
-                <td>Test</td>
-                <td><span className="badge ok">Marking</span></td>
-                <td><Link to={`/modules/${id}/assessments/2`}>Open →</Link></td>
-              </tr>
-              <tr>
-                <td>Final Exam</td>
-                <td>Exam</td>
-                <td><span className="badge">External Review</span></td>
-                <td><Link to={`/modules/${id}/assessments/3`}>Open →</Link></td>
-              </tr>
+              {module.assessments.map((a) => (
+                <tr key={a.id}>
+                  <td>{a.title}</td>
+                  <td>{a.type}</td>
+                  <td><span className={`badge${a.stageClass ? ' ' + a.stageClass : ''}`}>{a.stage}</span></td>
+                  <td><Link to={`/modules/${id}/assessments/${a.id}`}>Open →</Link></td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
