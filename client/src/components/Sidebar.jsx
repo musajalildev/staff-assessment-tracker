@@ -23,7 +23,9 @@ function Sidebar() {
         <Link to="/users" className={isActive('/users')}>
           Users
         </Link>
-        <a href="#" className="ghost">My Profile</a>
+        <Link to="/profile" className={isActive('/profile')}>
+          My Profile
+        </Link>
         <Link to="/login">Logout</Link>
       </nav>
     </aside>

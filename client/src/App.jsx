@@ -8,6 +8,7 @@ import ModuleEdit from './pages/ModuleEdit';
 import AssessmentDetail from './pages/AssessmentDetail';
 import AssessmentNew from './pages/AssessmentNew';
 import UserManagement from './pages/UserManagement';
+import MyProfile from './pages/MyProfile';
 import './App.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/modules/:moduleId/assessments/new" element={<AssessmentNew />} />
         <Route path="/modules/:moduleId/assessments/:assessmentId" element={<AssessmentDetail />} />
         <Route path="/users" element={<UserManagement />} />
+        <Route path="/profile" element={<MyProfile />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
