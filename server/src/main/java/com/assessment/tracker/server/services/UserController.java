@@ -87,28 +87,28 @@ public class UserController {
     //Implement update user (implement change to update using DTOs)
     //-------------------- UPDATE --------------------
     @PutMapping("/{id}/password")
-    public ResponseEntity<User> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
+    public ResponseEntity<String> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
                                                    @RequestParam String currentPassword) {
         User existing = userService.getUser(id);
         //check if current password is correct(frontend would require this)
-        if (!(userService.validatePassword(currentPassword, existing.getPassword()))) {
-            return new ResponseEntity<>(updatedUser, HttpStatus.BAD_REQUEST);
+        if (!userService.validatePassword(currentPassword, existing.getPassword())) {
+            return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
         }
         return changeUserPassword(id, updatedUser, existing);
     }
 
-    private ResponseEntity<User> changeUserPassword(UUID id, User updatedUser, User existing) {
+    private ResponseEntity<String> changeUserPassword(UUID id, User updatedUser, User existing) {
         if (existing == null)
             return ResponseEntity.notFound().build();
         String current_Password = existing.getPassword();
 
         if (current_Password.equals(updatedUser.getPassword()))
         {   System.out.println("Old password is same as new password, unable to update");
-            return new ResponseEntity<>(updatedUser, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
         }
 
         User updated = userService.updateUserPassword(updatedUser.getPassword(), id);
-        return ResponseEntity.ok(updated);
+        return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
     }
 
     @PutMapping("/{id}/email")
