@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.beans.BeanProperty;
 import java.util.*;
 import com.assessment.tracker.server.api.assessment.*;
-import com.assessment.tracker.server.persistence.assessment.*;
+
 
 @Entity
 @Table(name = "users")
@@ -46,7 +46,7 @@ public class User {
         ACADEMIC,
         EXTERNAL_EXAMINER,
         EXAMS_OFFICER
-    };
+    }
 
     @Column(nullable = false, unique = false)
     private userType userType;

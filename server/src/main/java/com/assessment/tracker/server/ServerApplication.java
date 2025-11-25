@@ -1,11 +1,8 @@
 package com.assessment.tracker.server;
 
-import com.assessment.tracker.server.persistence.domain.AssignedUser;
-import com.assessment.tracker.server.persistence.domain.Role;
-import com.assessment.tracker.server.persistence.domain.User;
-import com.assessment.tracker.server.persistence.repository.AssignedUserRepository;
-import com.assessment.tracker.server.persistence.repository.UserRepository;
-import com.assessment.tracker.server.services.UserService;
+
+import com.assessment.tracker.server.persistence.*;
+import com.assessment.tracker.server.persistence.user.*;
 import com.assessment.tracker.server.utils.AssessmentProgress;
 import com.assessment.tracker.server.utils.AssessmentType;
 import com.assessment.tracker.server.api.assessment.*;
@@ -33,10 +30,11 @@ public class ServerApplication {
     @Bean
     CommandLineRunner seedDatabase(UserRepository userRepository,
                                    AssignedUserRepository assignedUserRepository,
-                                   PasswordEncoder pcoder) {
+                                   PasswordEncoder pcoder,
+                                   AssessmentRepo assessmentRepository) {
 
 
-            AssignedUserRepository assignedUserRepository, AssessmentRepo assessmentRepository) {
+
         return args -> {
 
             // Seed Users only if empty
