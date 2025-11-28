@@ -9,4 +9,4 @@ api/
     └── UserDTO.java
 ```
 
-User Service will be an **Interface** Not a class then we can separate the documentation from the implementation itself
+User Service will be an **Interface** Not a class then we can separate the documentation from the implementation itself. The implementation will be in the services folder
