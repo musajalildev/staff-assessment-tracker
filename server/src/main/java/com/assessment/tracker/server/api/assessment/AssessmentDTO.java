@@ -9,6 +9,8 @@ public class AssessmentDTO {
     private ModuleDTO module;
     private AssessmentType type;
     private String title;
+    private boolean teamMarked;
+    private boolean autoGraded;
     private UserDTO setter;
     private UserDTO checker;
 
