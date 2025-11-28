@@ -1,0 +1,20 @@
+package com.assessment.tracker.server.utils.mappers;
+
+import com.assessment.tracker.server.api.DTO.*;
+
+import com.assessment.tracker.server.persistence.entities.Module;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class ModuleMapper implements Mapper<ModuleDTO, Module> {
+    @Override
+    public ModuleDTO entityToApi(Module entity) {
+        return null;
+    }
+
+    @Override
+    public Module apiToEntity(ModuleDTO moduleDTO) {
+        return null;
+    }
+}
