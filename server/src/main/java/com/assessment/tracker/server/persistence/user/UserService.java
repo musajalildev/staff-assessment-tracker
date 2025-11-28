@@ -86,13 +86,13 @@ public class UserService {
     }
 
 
-    public User updateUserPassword(String newPassword, UUID id) {
+    public void updateUserPassword(String newPassword, UUID id) {
         User currentUser= userRepository.findByUserID(id);
 
         assert currentUser != null;
         //encryption
         currentUser.setPassword( passwordEncoder.encode(newPassword) );
-        return userRepository.save(currentUser);
+        userRepository.save(currentUser);
     }
 
     public User updateUserEmail(String newEmail, UUID id) {

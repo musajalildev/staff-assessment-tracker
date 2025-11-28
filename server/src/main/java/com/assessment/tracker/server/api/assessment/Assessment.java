@@ -5,7 +5,7 @@ import java.util.*;
 
 import com.assessment.tracker.server.api.assessmentFeedback.AssessmentFeedback;
 import com.assessment.tracker.server.utils.*;
-import com.assessment.tracker.server.persistence.domain.User;
+import com.assessment.tracker.server.persistence.user.User;
 import com.assessment.tracker.server.persistence.module.Module;
 
 @Entity

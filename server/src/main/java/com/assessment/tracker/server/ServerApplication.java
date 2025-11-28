@@ -1,7 +1,6 @@
 package com.assessment.tracker.server;
 
 
-import com.assessment.tracker.server.persistence.*;
 import com.assessment.tracker.server.persistence.user.*;
 import com.assessment.tracker.server.utils.AssessmentProgress;
 import com.assessment.tracker.server.utils.AssessmentType;
@@ -40,6 +39,9 @@ public class ServerApplication {
             // Seed Users only if empty
             if (userRepository.count() == 0) {
                 List<User> users = getUsers();
+                if(users.isEmpty()){
+                    System.out.println("No users to seed.");
+                }
                 for (User user : users) {
                     user.setPassword(pcoder.encode(user.getPassword()));
                 }

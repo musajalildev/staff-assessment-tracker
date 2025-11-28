@@ -30,7 +30,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;// format verification?
 
-    @JsonIgnore
+
     @Column(nullable = false, unique = true)
     private String password; // required encryption
 

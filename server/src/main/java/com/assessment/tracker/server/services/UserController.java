@@ -89,26 +89,32 @@ public class UserController {
     @PutMapping("/{id}/password")
     public ResponseEntity<String> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
                                                    @RequestParam String currentPassword) {
-        User existing = userService.getUser(id);
+        User target = userService.getUser(id);
         //check if current password is correct(frontend would require this)
-        if (!userService.validatePassword(currentPassword, existing.getPassword())) {
+        if (!(userService.validatePassword(currentPassword, target.getPassword()))) {
             return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
         }
-        return changeUserPassword(id, updatedUser, existing);
+        return changeUserPassword(id, updatedUser, target);
     }
 
-    private ResponseEntity<String> changeUserPassword(UUID id, User updatedUser, User existing) {
-        if (existing == null)
+    private ResponseEntity<String> changeUserPassword(UUID id, User updatedUser, User target) {
+        if (target == null)
             return ResponseEntity.notFound().build();
-        String current_Password = existing.getPassword();
+        String current_Password = target.getPassword();
 
-        if (current_Password.equals(updatedUser.getPassword()))
-        {   System.out.println("Old password is same as new password, unable to update");
-            return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
+        if(updatedUser != null){
+            if (current_Password.equals(updatedUser.getPassword()))
+            {   System.out.println("Old password is same as new password, unable to update");
+                return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
+            }
+            userService.updateUserPassword(updatedUser.getPassword(), id);
+            return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
+
+
         }
 
-        User updated = userService.updateUserPassword(updatedUser.getPassword(), id);
-        return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
+        return new ResponseEntity<>("No valid incoming data", HttpStatus.BAD_REQUEST);
+
     }
 
     @PutMapping("/{id}/email")
