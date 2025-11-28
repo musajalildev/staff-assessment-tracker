@@ -96,17 +96,11 @@ public class UserController {
     // -------------------- UPDATE --------------------
     @PutMapping("/{id}/password")
     public ResponseEntity<String> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
-<<<<<<< HEAD:server/src/main/java/com/assessment/tracker/server/services/UserController.java
                                                    @RequestParam String currentPassword) {
         User target = userService.getUser(id);
         //check if current password is correct(frontend would require this)
-        if (!(userService.validatePassword(currentPassword, target.getPassword()))) {
-=======
-            @RequestParam String currentPassword) {
-        User existing = userService.getUser(id);
-        // check if current password is correct(frontend would require this)
-        if (!userService.validatePassword(currentPassword, existing.getPassword())) {
->>>>>>> origin/main:server/src/main/java/com/assessment/tracker/server/api/controller/UserController.java
+        if (!userService.validatePassword(currentPassword, target.getPassword())) {
+
             return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
         }
         return changeUserPassword(id, updatedUser, target);
@@ -124,14 +118,6 @@ public class UserController {
             }
             userService.updateUserPassword(updatedUser.getPassword(), id);
             return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
-
-
-<<<<<<< HEAD:server/src/main/java/com/assessment/tracker/server/services/UserController.java
-=======
-        if (current_Password.equals(updatedUser.getPassword())) {
-            System.out.println("Old password is same as new password, unable to update");
-            return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
->>>>>>> origin/main:server/src/main/java/com/assessment/tracker/server/api/controller/UserController.java
         }
 
         return new ResponseEntity<>("No valid incoming data", HttpStatus.BAD_REQUEST);

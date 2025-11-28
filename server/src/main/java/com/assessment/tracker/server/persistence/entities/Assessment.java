@@ -3,12 +3,8 @@ package com.assessment.tracker.server.persistence.entities;
 import jakarta.persistence.*;
 import java.util.*;
 
-<<<<<<< HEAD:server/src/main/java/com/assessment/tracker/server/api/assessment/Assessment.java
-import com.assessment.tracker.server.api.assessmentFeedback.AssessmentFeedback;
-import com.assessment.tracker.server.utils.*;
-import com.assessment.tracker.server.persistence.user.User;
-import com.assessment.tracker.server.persistence.module.Module;
-=======
+
+
 import com.assessment.tracker.server.api.controller.*;
 import com.assessment.tracker.server.api.controllerImpl.*;
 import com.assessment.tracker.server.api.DTO.*;
@@ -19,7 +15,7 @@ import com.assessment.tracker.server.persistence.services.*;
 
 import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
->>>>>>> origin/main:server/src/main/java/com/assessment/tracker/server/persistence/entities/Assessment.java
+
 
 @Entity
 public class Assessment {
