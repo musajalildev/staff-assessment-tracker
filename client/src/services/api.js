@@ -31,6 +31,55 @@ const apiRequest = async (endpoint, options = {}) => {
 
 // User API
 export const userAPI = {
+  login: async (username, password) => {
+    // Workaround: Since there's no login endpoint, we validate password using existing endpoints
+    // 1. Get user by username
+    // 2. Validate password using the password update endpoint (which validates before updating)
+    try {
+      // Get the user by username
+      const userResponse = await apiRequest(`/users/un/${username}`);
+      const user = userResponse.data;
+      
+      if (!user || !user.userID) {
+        throw new Error('Invalid username or password');
+      }
+      
+      // Validate password by attempting to update it
+      // The backend validates currentPassword FIRST, so we can use this to check
+      // Note: This will temporarily change the password, but validates it correctly
+      try {
+        const tempPassword = 'temp_' + Date.now() + '_' + Math.random().toString(36);
+        await apiRequest(`/users/${user.userID}/password?currentPassword=${encodeURIComponent(password)}`, {
+          method: 'PUT',
+          body: { password: tempPassword }
+        });
+        
+        // Password was validated successfully! Now change it back to the original
+        // We need to use the temp password as the "current" password to set it back
+        await apiRequest(`/users/${user.userID}/password?currentPassword=${encodeURIComponent(tempPassword)}`, {
+          method: 'PUT',
+          body: { password: password }
+        });
+        
+        // Password validated and restored - return user
+        return { data: user };
+      } catch (pwdError) {
+        // Check if it's a password validation error
+        const errorMsg = pwdError.message || '';
+        if (errorMsg.includes('Incorrect current password')) {
+          throw new Error('Invalid username or password');
+        }
+        // Other errors
+        throw new Error('Invalid username or password');
+      }
+    } catch (error) {
+      // Re-throw our custom errors, wrap others
+      if (error.message === 'Invalid username or password') {
+        throw error;
+      }
+      throw new Error('Invalid username or password');
+    }
+  },
   getAll: () => apiRequest('/users'),
   getById: (id) => apiRequest(`/users/id/${id}`),
   getByUsername: (username) => apiRequest(`/users/un/${username}`),

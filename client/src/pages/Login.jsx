@@ -15,8 +15,8 @@ function Login() {
     setLoading(true);
 
     try {
-      // Get user by username
-      const response = await userAPI.getByUsername(username);
+      // Validate username and password with backend
+      const response = await userAPI.login(username, password);
       const user = response.data;
       
       // Store user info in localStorage for session
@@ -29,7 +29,7 @@ function Login() {
       
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid username or user not found');
+      setError(err.message || 'Invalid username or password');
       console.error('Login error:', err);
     } finally {
       setLoading(false);
