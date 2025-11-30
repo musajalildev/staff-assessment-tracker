@@ -4,15 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.*;
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
-
-import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
-
-import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
 
 @Entity
@@ -35,7 +26,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;// format verification?
 
-
+    @JsonIgnore
     @Column(nullable = false, unique = true)
     private String password; // required encryption
 
@@ -45,7 +36,7 @@ public class User {
     @OneToMany(mappedBy = "checker")
     private List<Assessment> checkerFor;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private userType userType;
 
     // constructors

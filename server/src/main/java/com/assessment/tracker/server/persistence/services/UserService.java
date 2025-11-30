@@ -1,20 +1,15 @@
 package com.assessment.tracker.server.persistence.services;
 
+import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
-
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
 
 import java.util.List;
@@ -61,9 +56,8 @@ public class UserService {
 
     }
 
-    public boolean deleteAllUsers(){
+    public void deleteAllUsers(){
         userRepository.deleteAll();
-        return true;
     }
 
 
@@ -96,8 +90,10 @@ public class UserService {
     }
 
 
-    public void updateUserPassword(String newPassword, UUID id) {
+    public void updateUserPassword(PasswordUpdDTO passwordInfo , UUID id) {
+        //sets new password and encrypts it
         User currentUser= userRepository.findByUserID(id);
+        String newPassword = passwordInfo.newPassword;
 
         assert currentUser != null;
         //encryption

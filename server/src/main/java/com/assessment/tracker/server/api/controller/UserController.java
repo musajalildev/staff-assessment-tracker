@@ -1,15 +1,14 @@
 package com.assessment.tracker.server.api.controller;
 
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
 import com.assessment.tracker.server.api.DTO.*;
+import com.assessment.tracker.server.api.DTO.userHelperDTOs.*;
 
+import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
 import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
+import com.assessment.tracker.server.utils.mappers.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,14 +20,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users") // corresponding to service
 
-// rerun application after every change
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     private String getUsernameByEmailOrUsername(String identifier) {
@@ -37,48 +37,49 @@ public class UserController {
             user = userService.getUserByUsername(identifier);
         }
         return user.getUsername();
-
-        // helper method to extract user based on either email or username
     }
 
-    // implement CRUD operations
     // -------------------- CREATE --------------------
     @PostMapping("/")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+        User user = userMapper.apiToEntity(userDTO);
         User createdUser = userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userMapper.entityToApi(createdUser));
     }
 
     // -------------------- READ --------------------
-    // implement get users w/o query params
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return (users != null) ? ResponseEntity.ok(users)
-                : ResponseEntity.notFound().build();
+        if (users == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(
+                users.stream().map(userMapper::entityToApi).toList()
+        );
     }
 
-    // implement get user and get all users w query params
-    @GetMapping("/un/{username}") // separate routing for username to avoid ambiguity
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+    @GetMapping("/un/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
-        return (user != null) ? ResponseEntity.ok(user)
+        return (user != null)
+                ? ResponseEntity.ok(userMapper.entityToApi(user))
                 : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/email/{email}") // separate routing for email to avoid ambiguity
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
         User user = userService.getUserByEmail(email);
-        return (user != null) ? ResponseEntity.ok(user)
+        return (user != null)
+                ? ResponseEntity.ok(userMapper.entityToApi(user))
                 : ResponseEntity.notFound().build();
-
     }
 
-    // separate routing to avoid ambiguity
     @GetMapping("/id/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         User user = userService.getUser(id);
-        return (user != null) ? ResponseEntity.ok(user)
+        return (user != null)
+                ? ResponseEntity.ok(userMapper.entityToApi(user))
                 : ResponseEntity.notFound().build();
     }
 
@@ -87,92 +88,108 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserPermission(id).toString());
     }
 
-    @GetMapping("{permit}")
-    public ResponseEntity<List<User>> getAllUsersByPermission(@PathVariable userType permit) {
-        return ResponseEntity.ok(userService.getAllUsersByPermission(permit));
+    @GetMapping("/{permit}")
+    public ResponseEntity<List<UserDTO>> getAllUsersByPermission(@PathVariable userType permit) {
+        return ResponseEntity.ok(
+                userService.getAllUsersByPermission(permit)
+                        .stream().map(userMapper::entityToApi).toList()
+        );
     }
 
-    // Implement update user (implement change to update using DTOs)
     // -------------------- UPDATE --------------------
     @PutMapping("/{id}/password")
-    public ResponseEntity<String> updateUserPassword(@PathVariable UUID id, @RequestBody User updatedUser,
-                                                   @RequestParam String currentPassword) {
-        User target = userService.getUser(id);
-        //check if current password is correct(frontend would require this)
-        if (!userService.validatePassword(currentPassword, target.getPassword())) {
+    public ResponseEntity<String> updateUserPassword(@PathVariable UUID id,
+                                                     @RequestBody PasswordUpdDTO passwordData) {
 
+        User target = userService.getUser(id);
+        if (target == null) return ResponseEntity.notFound().build();
+
+        if (!userService.validatePassword(passwordData.currentPassword, target.getPassword())) {
             return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
         }
-        return changeUserPassword(id, updatedUser, target);
+
+        return changeUserPassword(id, passwordData, target);
     }
 
-    private ResponseEntity<String> changeUserPassword(UUID id, User updatedUser, User target) {
-        if (target == null)
-            return ResponseEntity.notFound().build();
-        String current_Password = target.getPassword();
+    private ResponseEntity<String> changeUserPassword(UUID id, PasswordUpdDTO passwordInfo,
+                                                      User target) {
+        if (target == null) return ResponseEntity.notFound().build();
 
-        if(updatedUser != null){
-            if (current_Password.equals(updatedUser.getPassword()))
-            {   System.out.println("Old password is same as new password, unable to update");
+        String currentPassword = target.getPassword();
+
+        if (passwordInfo != null) {
+            if (currentPassword.equals(passwordInfo.newPassword)) {
                 return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
             }
-            userService.updateUserPassword(updatedUser.getPassword(), id);
+            userService.updateUserPassword(passwordInfo, id);
             return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
         }
 
         return new ResponseEntity<>("No valid incoming data", HttpStatus.BAD_REQUEST);
-
     }
 
     @PutMapping("/{id}/email")
-    public ResponseEntity<User> updateUserEmail(@PathVariable UUID id, @RequestBody User updatedUser) {
+    public ResponseEntity<UserDTO> updateUserEmail(
+            @PathVariable UUID id,
+            @RequestBody EmailUpdDTO updatedUserDTO
+    ) {
         User existing = userService.getUser(id);
-        if (existing == null)
-            return ResponseEntity.notFound().build();
+        String incomingEmail = updatedUserDTO.email;
+        if (existing == null) return ResponseEntity.notFound().build();
+        //check that incoming data isnt blank
+        if(incomingEmail.isBlank()){
+            System.out.println("Blank email");
+            return ResponseEntity.badRequest().build();
+        }
 
-        User updated = userService.updateUserEmail(updatedUser.getEmail(), id);
-        return ResponseEntity.ok(updated);
+        User updated = userService.updateUserEmail(incomingEmail, id);
+        return ResponseEntity.ok(userMapper.entityToApi(updated));
     }
 
     @PutMapping("/{id}/username")
-    public ResponseEntity<User> updateUsername(@PathVariable UUID id, @RequestBody User updatedUser) {
+    public ResponseEntity<UserDTO> updateUsername(
+            @PathVariable UUID id,
+            @RequestBody usernameUpdDTO updatedUserDTO
+    ) {
         User existing = userService.getUser(id);
-        if (existing == null)
-            return ResponseEntity.notFound().build();
+        String incomingUsername = updatedUserDTO.username;
+        if (existing == null) return ResponseEntity.notFound().build();
 
-        User updated = userService.updateUsername(updatedUser.getUsername(), id);
-        return ResponseEntity.ok(updated);
+        //check that incoming data isnt blank
+        if(incomingUsername.isBlank()){
+            System.out.println("Blank username");
+            return ResponseEntity.badRequest().build();
+        }
+
+        User updated = userService.updateUsername(incomingUsername, id);
+        return ResponseEntity.ok(userMapper.entityToApi(updated));
     }
 
     @PutMapping("/{id}/permission")
-    public ResponseEntity<User> updateUserPermission(@PathVariable UUID id, @RequestBody User updatedUser) {
+    public ResponseEntity<UserDTO> updateUserPermission(
+            @PathVariable UUID id,
+            @RequestBody UserTypeUpdDTO updatedUserDTO
+    ) {
         User existing = userService.getUser(id);
-        if (existing == null)
-            return ResponseEntity.notFound().build();
+        //incomingUT (incoming user type :D )
+        userType incomingUT = updatedUserDTO.userType;
+        if (existing == null) return ResponseEntity.notFound().build();
 
-        userType permission = updatedUser.getUserType();
-
-        User updated = userService.updateUserPermission(permission, id);
-        return new ResponseEntity<>(updated, HttpStatus.OK);
-
+        User updated = userService.updateUserPermission(incomingUT, id);
+        return new ResponseEntity<>(userMapper.entityToApi(updated), HttpStatus.OK);
     }
 
     // -------------------- DELETE --------------------
-    // implement delete user by id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        boolean deleted = (userService.deleteUser(id));
-        if (!deleted) {
-            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>("User deleted successfully.", HttpStatus.OK);
+        boolean deleted = userService.deleteUser(id);
+        return deleted
+                ? ResponseEntity.ok("User deleted successfully.")
+                : new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
     }
 
-    // implement delete all users :)
     @DeleteMapping("/wipe")
     public ResponseEntity<String> deleteAllUsers(@RequestParam String confirm) {
-        boolean deleted = userService.deleteAllUsers();
         if (!"YUTA_BUM".equals(confirm)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Invalid confirmation value. Action not performed.");
@@ -180,5 +197,5 @@ public class UserController {
         userService.deleteAllUsers();
         return new ResponseEntity<>("All Users Erased", HttpStatus.OK);
     }
-
 }
+
