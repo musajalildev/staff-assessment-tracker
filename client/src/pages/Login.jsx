@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { userAPI, assignedUserAPI } from '../services/api';
 
 function Login() {
-  const [username, setUsername] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,13 +19,14 @@ function Login() {
     setLoading(true);
 
     try {
-      // Validate username and password with backend
-      const response = await userAPI.login(username, password);
+      // Validate username/email and password with backend
+      const response = await userAPI.login(usernameOrEmail, password);
       const user = response.data;
       
-      // Fetch user's roles
+      // Fetch user's roles using the actual username from the user object
+      // The getUserRoles endpoint accepts both username and email
       try {
-        const rolesResponse = await assignedUserAPI.getUserRoles(username);
+        const rolesResponse = await assignedUserAPI.getUserRoles(user.username);
         const roles = rolesResponse.data || [];
         
         if (roles.length === 0) {
@@ -62,7 +63,7 @@ function Login() {
         console.error('Role fetch error:', roleError);
       }
     } catch (err) {
-      setError(err.message || 'Invalid username or password');
+      setError(err.message || 'Invalid username/email or password');
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -107,13 +108,15 @@ function Login() {
             <p className="sub">Sign in to manage modules and assessments.</p>
             <form className="form" onSubmit={handleSubmit}>
               <div className="field">
-                <label className="label" htmlFor="username">Username</label>
+                <label className="label" htmlFor="usernameOrEmail">Username or Email</label>
                 <input
                   className="input"
-                  id="username"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  id="usernameOrEmail"
+                  name="usernameOrEmail"
+                  type="text"
+                  value={usernameOrEmail}
+                  onChange={(e) => setUsernameOrEmail(e.target.value)}
+                  placeholder="Enter username or email"
                   required
                 />
               </div>
@@ -134,7 +137,7 @@ function Login() {
               </button>
               {error && <p className="sub mt-12" style={{ color: 'red' }}>{error}</p>}
             </form>
-            <p className="sub mt-18">Use seeded users: john, mary, kofi, sakura, musa</p>
+            <p className="sub mt-18">Use seeded users: john, mary, kofi, sakura, musa<br />Or use their emails: john@example.com, mary@example.com, etc.</p>
           </>
         ) : (
           <>
