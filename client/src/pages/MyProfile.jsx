@@ -1,38 +1,71 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { userAPI, assignedUserAPI } from '../services/api';
 
 function MyProfile() {
   const navigate = useNavigate();
-
-  // Controls whether the profile is in "edit" mode or "view" mode
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Mock user data (temporary) — this would come from backend API
-  const [profile, setProfile] = useState({
-    id: 1,
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    role: 'Admin',
-    department: 'Engineering',
-    joinDate: '2024-01-15'
+  const [profile, setProfile] = useState(null);
+  const [userRoles, setUserRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    userType: ''
   });
 
-  // Stores the editable form data when the user is editing
-  const [formData, setFormData] = useState(profile);
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setLoading(true);
+        const storedUser = localStorage.getItem('currentUser');
+        if (!storedUser) {
+          navigate('/login');
+          return;
+        }
 
-  // Activate editing mode and load current profile data into the form
+        const currentUser = JSON.parse(storedUser);
+        const [userRes, rolesRes] = await Promise.all([
+          userAPI.getById(currentUser.id),
+          assignedUserAPI.getUserRolesById(currentUser.id).catch(() => ({ data: [] }))
+        ]);
+
+        const user = userRes.data;
+        setProfile(user);
+        setFormData({
+          username: user.username,
+          email: user.email,
+          userType: user.userType
+        });
+        setUserRoles(rolesRes.data || []);
+      } catch (err) {
+        setError('Failed to load profile');
+        console.error('Error loading profile:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, [navigate]);
+
   const handleEdit = () => {
     setIsEditing(true);
-    setFormData(profile);
   };
 
-  // Cancel editing and return to view mode without saving
   const handleCancel = () => {
     setIsEditing(false);
+    if (profile) {
+      setFormData({
+        username: profile.username,
+        email: profile.email,
+        userType: profile.userType
+      });
+    }
   };
 
-  // Update form values as the user types
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -41,13 +74,73 @@ function MyProfile() {
     });
   };
 
-  // Save profile changes (currently only updates local state)
-  // TODO: Replace with API call to save to server
-  const handleSave = () => {
-    setProfile(formData);
-    setIsEditing(false);
-    console.log('Profile updated:', formData);
+  const handleSave = async () => {
+    if (!profile) return;
+
+    setError('');
+    try {
+      const updates = [];
+      
+      if (formData.username !== profile.username) {
+        await userAPI.updateUsername(profile.userID, { username: formData.username });
+        updates.push('username');
+      }
+      
+      if (formData.email !== profile.email) {
+        await userAPI.updateEmail(profile.userID, { email: formData.email });
+        updates.push('email');
+      }
+
+      // Reload profile
+      const userRes = await userAPI.getById(profile.userID);
+      setProfile(userRes.data);
+      setFormData({
+        username: userRes.data.username,
+        email: userRes.data.email,
+        userType: userRes.data.userType
+      });
+      
+      // Update localStorage
+      const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+      localStorage.setItem('currentUser', JSON.stringify({
+        ...storedUser,
+        username: userRes.data.username,
+        email: userRes.data.email
+      }));
+
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+    } catch (err) {
+      setError('Failed to update profile');
+      console.error('Error updating profile:', err);
+    }
   };
+
+  const getUserTypeLabel = (userType) => {
+    if (!userType) return 'N/A';
+    return userType.replace(/_/g, ' ').toLowerCase()
+      .replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="card">
+          <p>Loading profile...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <Layout>
+        <div className="card">
+          <p>Profile not found. Please log in again.</p>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     // Layout wrapper: gives navbar/sidebar consistent across all pages
@@ -70,15 +163,16 @@ function MyProfile() {
         {isEditing ? (
           <div className="profile-form">
 
-            {/* Name */}
+            {/* Username */}
             <div className="form-group">
-              <label htmlFor="name">Name</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
+                className="input"
               />
             </div>
 
@@ -91,27 +185,34 @@ function MyProfile() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                className="input"
               />
             </div>
 
-            {/* Department */}
+            {/* User Type (read-only) */}
             <div className="form-group">
-              <label htmlFor="department">Department</label>
+              <label htmlFor="userType">User Type</label>
               <input
                 type="text"
-                id="department"
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
+                id="userType"
+                name="userType"
+                value={getUserTypeLabel(formData.userType)}
+                disabled
+                className="input"
+                style={{ opacity: 0.6 }}
               />
+              <small style={{ color: '#666' }}>User type cannot be changed</small>
             </div>
 
+            {error && (
+              <div style={{ color: 'red', marginTop: '12px' }}>{error}</div>
+            )}
             {/* Form actions: Save + Cancel */}
-            <div className="form-actions">
-              <button onClick={handleSave} className="btn btn-success">
+            <div className="form-actions" style={{ marginTop: '24px' }}>
+              <button onClick={handleSave} className="btn primary">
                 Save Changes
               </button>
-              <button onClick={handleCancel} className="btn btn-secondary">
+              <button onClick={handleCancel} className="btn" style={{ marginLeft: '12px' }}>
                 Cancel
               </button>
             </div>
@@ -120,29 +221,39 @@ function MyProfile() {
         ) : (
 
           /* VIEW MODE (not editing) — shows profile info in table format */
-          <div className="card" style={{ marginTop: '80px' }}>
+          <div className="card" style={{ marginTop: '24px' }}>
             <h2>Personal Information</h2>
             <table className="table" style={{ marginTop: '16px' }}>
               <tbody>
                 <tr>
-                  <td><strong>Name</strong></td>
-                  <td>{profile.name}</td>
+                  <td><strong>Username</strong></td>
+                  <td>{profile.username}</td>
                 </tr>
                 <tr>
                   <td><strong>Email</strong></td>
                   <td>{profile.email}</td>
                 </tr>
                 <tr>
-                  <td><strong>Role</strong></td>
-                  <td>{profile.role}</td>
+                  <td><strong>User Type</strong></td>
+                  <td>{getUserTypeLabel(profile.userType)}</td>
                 </tr>
                 <tr>
-                  <td><strong>Department</strong></td>
-                  <td>{profile.department}</td>
+                  <td><strong>User ID</strong></td>
+                  <td>{profile.userID}</td>
                 </tr>
                 <tr>
-                  <td><strong>Join Date</strong></td>
-                  <td>{new Date(profile.joinDate).toLocaleDateString()}</td>
+                  <td><strong>Roles</strong></td>
+                  <td>
+                    {userRoles.length > 0 ? (
+                      userRoles.map((role, i) => (
+                        <span key={i} className="pill" style={{ marginRight: '8px' }}>
+                          {role}
+                        </span>
+                      ))
+                    ) : (
+                      'No roles assigned'
+                    )}
+                  </td>
                 </tr>
               </tbody>
             </table>

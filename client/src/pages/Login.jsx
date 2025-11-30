@@ -1,16 +1,39 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { userAPI } from '../services/api';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement actual authentication
-    // For now, just navigate to dashboard
-    navigate('/dashboard');
+    setError('');
+    setLoading(true);
+
+    try {
+      // Get user by username
+      const response = await userAPI.getByUsername(username);
+      const user = response.data;
+      
+      // Store user info in localStorage for session
+      localStorage.setItem('currentUser', JSON.stringify({
+        id: user.userID,
+        username: user.username,
+        email: user.email,
+        userType: user.userType
+      }));
+      
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Invalid username or user not found');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,9 +69,12 @@ function Login() {
               required
             />
           </div>
-          <button className="btn primary" type="submit">Sign in</button>
+          <button className="btn primary" type="submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+          {error && <p className="sub mt-12" style={{ color: 'red' }}>{error}</p>}
         </form>
-        <p className="sub mt-18">Demo only — no authentication wired yet.</p>
+        <p className="sub mt-18">Use seeded users: john, mary, kofi, sakura, musa</p>
       </section>
     </main>
   );
