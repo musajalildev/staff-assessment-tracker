@@ -31,14 +31,28 @@ const apiRequest = async (endpoint, options = {}) => {
 
 // User API
 export const userAPI = {
-  login: async (username, password) => {
+  login: async (usernameOrEmail, password) => {
     // Workaround: Since there's no login endpoint, we validate password using existing endpoints
-    // 1. Get user by username
+    // 1. Get user by username or email (try both)
     // 2. Validate password using the password update endpoint (which validates before updating)
     try {
-      // Get the user by username
-      const userResponse = await apiRequest(`/users/un/${username}`);
-      const user = userResponse.data;
+      // Try to get the user by username first, then by email
+      let userResponse;
+      let user;
+      
+      try {
+        // Try username first
+        userResponse = await apiRequest(`/users/un/${usernameOrEmail}`);
+        user = userResponse.data;
+      } catch (err) {
+        // If not found by username, try email
+        try {
+          userResponse = await apiRequest(`/users/email/${usernameOrEmail}`);
+          user = userResponse.data;
+        } catch (emailErr) {
+          throw new Error('Invalid username or password');
+        }
+      }
       
       if (!user || !user.userID) {
         throw new Error('Invalid username or password');

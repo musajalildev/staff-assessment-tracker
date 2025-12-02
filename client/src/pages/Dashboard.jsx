@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { moduleAPI, assessmentAPI, userAPI, assignedUserAPI } from '../services/api';
@@ -10,13 +10,41 @@ function Dashboard() {
   const [userRoles, setUserRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  const [roleError, setRoleError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-          setCurrentUser(JSON.parse(storedUser));
+        if (!storedUser) {
+          navigate('/login');
+          return;
+        }
+
+        const user = JSON.parse(storedUser);
+        setCurrentUser(user);
+
+        // Validate selected role if it exists
+        if (user.selectedRole) {
+          try {
+            const rolesResponse = await assignedUserAPI.getUserRoles(user.username);
+            const validRoles = rolesResponse.data || [];
+            
+            // Check if the selected role is valid
+            if (!validRoles.includes(user.selectedRole)) {
+              setRoleError('Invalid role selected. Your selected role is not assigned to your account.');
+              // Remove invalid role and redirect to login after a delay
+              setTimeout(() => {
+                localStorage.removeItem('currentUser');
+                navigate('/login');
+              }, 3000);
+              return;
+            }
+          } catch (roleError) {
+            console.error('Error validating role:', roleError);
+            // If we can't validate, continue but log the error
+          }
         }
 
         // Load all data
@@ -45,7 +73,7 @@ function Dashboard() {
     };
 
     loadData();
-  }, []);
+  }, [navigate]);
 
   const getCurrentUserRoles = () => {
     if (!currentUser) return [];
@@ -69,6 +97,18 @@ function Dashboard() {
     );
   }
 
+  if (roleError) {
+    return (
+      <Layout>
+        <div className="card" style={{ background: 'rgba(255, 51, 102, 0.1)', borderColor: 'var(--bad)', boxShadow: '0 0 20px rgba(255, 51, 102, 0.3)' }}>
+          <h2 style={{ color: 'var(--bad)' }}>Invalid Role</h2>
+          <p style={{ color: 'var(--text)' }}>{roleError}</p>
+          <p className="sub mt-12">Redirecting to login...</p>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <header className="header">
@@ -77,6 +117,17 @@ function Dashboard() {
           <Link className="btn" to="/modules">View all modules</Link>
         </div>
       </header>
+
+      {currentUser?.selectedRole && (
+        <div className="card" style={{ marginBottom: '20px', borderColor: 'var(--brand)', boxShadow: '0 0 20px var(--brand-glow)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span className="label">Current Role:</span>
+            <span className="pill" style={{ fontSize: '14px', fontWeight: 'bold', background: 'rgba(0, 217, 255, 0.15)', borderColor: 'var(--brand)', color: 'var(--brand)' }}>
+              {currentUser.selectedRole.replace(/_/g, ' ')}
+            </span>
+          </div>
+        </div>
+      )}
 
       <section className="grid three">
         <div className="card">
@@ -94,7 +145,19 @@ function Dashboard() {
           <div className="mt-12">
             {userRolesList.length > 0 ? (
               userRolesList.map((role, i) => (
-                <span key={i} className="pill">{role}</span>
+                <span 
+                  key={i} 
+                  className="pill" 
+                  style={currentUser?.selectedRole === role ? { 
+                    background: 'rgba(0, 217, 255, 0.2)', 
+                    borderColor: 'var(--brand)',
+                    color: 'var(--brand)',
+                    fontWeight: 'bold',
+                    boxShadow: '0 0 10px var(--brand-glow)'
+                  } : {}}
+                >
+                  {role.replace(/_/g, ' ')}
+                </span>
               ))
             ) : (
               <span className="sub">No roles assigned</span>
