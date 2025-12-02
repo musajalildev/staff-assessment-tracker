@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class authorisedUser implements UserDetails {
+public class AuthorisedUser implements UserDetails {
 
     private final User user;
     private AssignedUserRepository aur;
-    public authorisedUser(User user) {
+    public AuthorisedUser(User user) {
         this.user = user;
     }
 

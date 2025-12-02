@@ -80,8 +80,7 @@ public class AssignedUserController {
     // get all user roles by ID
     @GetMapping("/role/userid/{id}")
     public ResponseEntity<List<Role>> getAllUserRolesById(@PathVariable UUID id) {
-        User user = userService.getUser(id);
-        List<Role> userRoles = assignedUserService.getUserAssignment(user);
+        List<Role> userRoles = assignedUserService.getUserAssignment(id);
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }
@@ -99,7 +98,7 @@ public class AssignedUserController {
     @GetMapping("/role/{username}")
     public ResponseEntity<List<Role>> getAllUserRoles(@PathVariable String username) {
         User user = assignedUserService.findUserWithString(username);
-        List<Role> userRoles = assignedUserService.getUserAssignment(user);
+        List<Role> userRoles = assignedUserService.getUserAssignment(user.getUserID());
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }

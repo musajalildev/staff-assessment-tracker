@@ -2,6 +2,7 @@ package com.assessment.tracker.server.api.controller;
 
 import com.assessment.tracker.server.api.DTO.*;
 import com.assessment.tracker.server.api.DTO.userHelperDTOs.*;
+import com.assessment.tracker.server.api.DTO.authenticationDTOs.*;
 
 import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
 import com.assessment.tracker.server.persistence.entities.*;
@@ -37,15 +38,6 @@ public class UserController {
             user = userService.getUserByUsername(identifier);
         }
         return user.getUsername();
-    }
-
-    // -------------------- CREATE --------------------
-    @PostMapping("/")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        User user = userMapper.apiToEntity(userDTO);
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userMapper.entityToApi(createdUser));
     }
 
     // -------------------- READ --------------------

@@ -1,10 +1,10 @@
 package com.assessment.tracker.server.utils.enums;
 
 public enum Role {
-    SETTER,
-    CHECKER,
-    MODULE_LEAD,
-    MODULE_MODERATOR,
-    MODULE_STAFF,
-    EXAM_OFFICER
+    ROLE_SETTER,
+    ROLE_CHECKER,
+    ROLE_MODULE_LEAD,
+    ROLE_MODULE_MODERATOR,
+    ROLE_MODULE_STAFF,
+    ROLE_EXAM_OFFICER
 }

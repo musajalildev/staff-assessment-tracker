@@ -1,6 +1,8 @@
 package com.assessment.tracker.server.persistence.services;
 
 import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
+import com.assessment.tracker.server.api.DTO.authenticationDTOs.*;
+
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,19 +23,44 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JpaUserDetailsService detailsService;
+    private final TokenService tokenService;
+    private final AssignedUserRepository assignedUserRepository;
+    public boolean authorised=false;
 
     private static final String USER_NOT_FOUND = "User does not exist";
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       JpaUserDetailsService jpaUserDetailsService,
+                       TokenService tokenService, AssignedUserRepository assignedUserRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-
+        this.detailsService = jpaUserDetailsService;
+        this.tokenService = tokenService;
+        this.assignedUserRepository = assignedUserRepository;
     }
 
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public TokenDTO createUser(CreateAccountDTO userinfo ) {
+        userType base_role = userinfo.userType;
+
+        User user = new User(userinfo.username, //username for an incoming account
+                passwordEncoder.encode(userinfo.password), //encoded password
+                userinfo.email, base_role); //email and role for an incoming account
+
+        userRepository.save(user);
+        User academic= userRepository.findByUsername(userinfo.username);
+        //logic for academic role assignment
+        if(base_role == userType.ROLE_ACADEMIC){
+            AssignedUser test = new AssignedUser(academic,userinfo.role);
+            assignedUserRepository.save(test);
+        }
+
+        AuthorisedUser authorisedUser = (AuthorisedUser) detailsService.loadUserByUsername(userinfo.username);
+
+        //succesful auth
+        authorised=true;
+        return tokenService.generateToken(authorisedUser.getAuthorities(), userinfo.username);
     }
 
     public List<User> getAllUsers() {
