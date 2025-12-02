@@ -1,14 +1,8 @@
 package com.assessment.tracker.server.persistence.services;
 
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
-
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
 
 import jakarta.transaction.Transactional;
@@ -25,15 +19,19 @@ public class AssignedUserService {
     private static final String ROLE_NOT_FOUND = "Role does not exist";
     private final AssignedUserRepository assignedUserRepository;
     private final UserService userService;
-    private AssignedUserController assignedUserController;
+    private final UserRepository userRepository;
 
-    public AssignedUserService(AssignedUserRepository assignedUserRepository, UserService userService) {
+
+    public AssignedUserService(AssignedUserRepository assignedUserRepository, UserService userService, UserRepository userRepository) {
         this.assignedUserRepository = assignedUserRepository;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     //implement CRUD operations
     // -------------------- CREATE --------------------
+
+    //implement create assigned user by using user id and role
     public AssignedUser createAssignment(UUID userID, Role role) {
         User currentUser= userService.getUser(userID);
         if (currentUser == null) {
@@ -51,6 +49,24 @@ public class AssignedUserService {
         }
         AssignedUser assignedUser = new AssignedUser(currentUser, role);
         return assignedUserRepository.save(assignedUser);
+    }
+
+    //implement create assigned user by using username and role
+    public void createAssignment(String username, Role role) {
+        User target =findUserWithString(username);
+
+        // check if the user exists
+        assert target != null : "User not found for ID: " + username;
+        // check if the role is valid
+        assert role != null : "Role cannot be null";
+
+        // prevent duplicates
+        if (assignedUserRepository.existsByUserAndRole(target, role)) {
+            throw new IllegalStateException("User already has role: " + role);
+        }
+
+        AssignedUser assignedUser = new AssignedUser(target, role);
+        assignedUserRepository.save(assignedUser);
     }
 
     //-------------------- READ --------------------
@@ -79,8 +95,9 @@ public class AssignedUserService {
         return userAssignments;
     }
 
-    public List<Role> getUserAssignment(User user) {
-        List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(user);
+    public List<Role> getUserAssignment(UUID userid) {
+        User currentUser= userRepository.findByUserID(userid);
+        List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(currentUser);
         List<Role> roles = new ArrayList<>();
 
         for (AssignedUser au : currentAssignments) {

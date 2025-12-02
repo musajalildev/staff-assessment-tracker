@@ -1,8 +1,8 @@
 package com.assessment.tracker.server.utils.enums;
 
 public enum userType {
-    TEACHING_SUPPORT,
-    ACADEMIC,
-    EXTERNAL_EXAMINER,
-    EXAMS_OFFICER
+    ROLE_TEACHING_SUPPORT,
+    ROLE_ACADEMIC,
+    ROLE_EXTERNAL_EXAMINER,
+    ROLE_EXAMS_OFFICER
 }
