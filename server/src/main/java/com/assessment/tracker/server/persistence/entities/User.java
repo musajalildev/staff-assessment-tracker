@@ -9,6 +9,7 @@ import com.assessment.tracker.server.api.controllerImpl.*;
 import com.assessment.tracker.server.api.DTO.*;
 
 import com.assessment.tracker.server.persistence.entities.*;
+import com.assessment.tracker.server.persistence.entities.logging.*;
 import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.services.*;
 
@@ -35,7 +36,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;// format verification?
 
-
     @Column(nullable = false, unique = true)
     private String password; // required encryption
 
@@ -45,11 +45,17 @@ public class User {
     @OneToMany(mappedBy = "checker")
     private List<Assessment> checkerFor;
 
+    @OneToMany(mappedBy = "user")
+    private List<Log> actionsTaken;
+
     @Column(nullable = false, unique = false)
-    private userType userType;
+    private UserType userType;
+
+    @OneToMany(mappedBy = "targetUser")
+    private List<UserLog> logs;
 
     // constructors
-    public User(String username, String email, String Password, userType userType) {
+    public User(String username, String email, String Password, UserType userType) {
         this.username = username;
         this.password = Password;
         this.email = email;
@@ -92,11 +98,11 @@ public class User {
         this.username = username;
     }
 
-    public userType getUserType() {
+    public UserType getUserType() {
         return userType;
     }
 
-    public void setUserType(userType userType) {
+    public void setUserType(UserType userType) {
         this.userType = userType;
     }
 

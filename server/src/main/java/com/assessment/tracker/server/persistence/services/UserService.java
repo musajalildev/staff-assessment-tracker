@@ -30,7 +30,7 @@ public class UserService {
     private static final String USER_NOT_FOUND = "User does not exist";
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
 
@@ -47,27 +47,27 @@ public class UserService {
 
     public User getUser(UUID id) {
         User focus = userRepository.findByUserID(id);
-        if (focus == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
+        if (focus == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
         }
         return focus;
     }
 
     public boolean deleteUser(UUID id) {
-        //TODO:check if user is an exam officer (deletion not allowed)
-        if(!userRepository.existsByUserID(id))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
+        // TODO:check if user is an exam officer (deletion not allowed)
+        if (!userRepository.existsByUserID(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
         userRepository.deleteByUserID(id);
         return true;
 
     }
 
-    public boolean deleteAllUsers(){
+    public boolean deleteAllUsers() {
         userRepository.deleteAll();
         return true;
     }
 
-
-    //IMPLEMENT get user by email,change password,
+    // IMPLEMENT get user by email,change password,
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -77,16 +77,16 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public userType getUserPermission(UUID id){
+    public UserType getUserPermission(UUID id) {
         User user = getUser(id);
         return user.getUserType();
     }
 
-    public List<User> getAllUsersByPermission(userType permission){
-            return userRepository.findAllByUserType(permission);
+    public List<User> getAllUsersByPermission(UserType permission) {
+        return userRepository.findAllByUserType(permission);
     }
 
-    //IMPLEMENT update user information
+    // IMPLEMENT update user information
 
     public User updateUsername(String newUser, UUID id) {
         User currentUser = getUser(id);
@@ -95,34 +95,31 @@ public class UserService {
 
     }
 
-
     public void updateUserPassword(String newPassword, UUID id) {
-        User currentUser= userRepository.findByUserID(id);
+        User currentUser = userRepository.findByUserID(id);
 
         assert currentUser != null;
-        //encryption
-        currentUser.setPassword( passwordEncoder.encode(newPassword) );
+        // encryption
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(currentUser);
     }
 
     public User updateUserEmail(String newEmail, UUID id) {
-        User currentUser= userRepository.findByUserID(id);
+        User currentUser = userRepository.findByUserID(id);
         assert currentUser != null;
-        currentUser.setEmail( newEmail );
+        currentUser.setEmail(newEmail);
         return userRepository.save(currentUser);
     }
 
-    public User updateUserPermission(userType newPermission, UUID id) {
-        User currentUser= getUser(id);
+    public User updateUserPermission(UserType newPermission, UUID id) {
+        User currentUser = getUser(id);
         currentUser.setUserType(newPermission);
         return userRepository.save(currentUser);
     }
 
-    //to be used in login service
+    // to be used in login service
     public boolean validatePassword(String raw, String encoded) {
         return passwordEncoder.matches(raw, encoded);
     }
-
-
 
 }
