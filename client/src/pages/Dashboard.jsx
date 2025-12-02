@@ -100,9 +100,9 @@ function Dashboard() {
   if (roleError) {
     return (
       <Layout>
-        <div className="card" style={{ background: '#fee', color: '#c00', border: '1px solid #fcc' }}>
-          <h2 style={{ color: '#c00' }}>Invalid Role</h2>
-          <p>{roleError}</p>
+        <div className="card" style={{ background: 'rgba(255, 51, 102, 0.1)', borderColor: 'var(--bad)', boxShadow: '0 0 20px rgba(255, 51, 102, 0.3)' }}>
+          <h2 style={{ color: 'var(--bad)' }}>Invalid Role</h2>
+          <p style={{ color: 'var(--text)' }}>{roleError}</p>
           <p className="sub mt-12">Redirecting to login...</p>
         </div>
       </Layout>
@@ -119,10 +119,10 @@ function Dashboard() {
       </header>
 
       {currentUser?.selectedRole && (
-        <div className="card" style={{ marginBottom: '16px', background: '#e8f4f8', border: '1px solid #b8d4e0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="card" style={{ marginBottom: '20px', borderColor: 'var(--brand)', boxShadow: '0 0 20px var(--brand-glow)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="label">Current Role:</span>
-            <span className="pill" style={{ fontSize: '14px', fontWeight: 'bold' }}>
+            <span className="pill" style={{ fontSize: '14px', fontWeight: 'bold', background: 'rgba(0, 217, 255, 0.15)', borderColor: 'var(--brand)', color: 'var(--brand)' }}>
               {currentUser.selectedRole.replace(/_/g, ' ')}
             </span>
           </div>
@@ -149,9 +149,11 @@ function Dashboard() {
                   key={i} 
                   className="pill" 
                   style={currentUser?.selectedRole === role ? { 
-                    background: '#4a90e2', 
-                    color: 'white',
-                    fontWeight: 'bold'
+                    background: 'rgba(0, 217, 255, 0.2)', 
+                    borderColor: 'var(--brand)',
+                    color: 'var(--brand)',
+                    fontWeight: 'bold',
+                    boxShadow: '0 0 10px var(--brand-glow)'
                   } : {}}
                 >
                   {role.replace(/_/g, ' ')}

@@ -135,7 +135,7 @@ function Login() {
               <button className="btn primary" type="submit" disabled={loading}>
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
-              {error && <p className="sub mt-12" style={{ color: 'red' }}>{error}</p>}
+              {error && <p className="sub mt-12" style={{ color: 'var(--bad)', textShadow: '0 0 10px rgba(255, 51, 102, 0.5)' }}>{error}</p>}
             </form>
             <p className="sub mt-18">Use seeded users: john, mary, kofi, sakura, musa<br />Or use their emails: john@example.com, mary@example.com, etc.</p>
           </>
@@ -180,7 +180,7 @@ function Login() {
                   Back
                 </button>
               </div>
-              {error && <p className="sub mt-12" style={{ color: 'red' }}>{error}</p>}
+              {error && <p className="sub mt-12" style={{ color: 'var(--bad)', textShadow: '0 0 10px rgba(255, 51, 102, 0.5)' }}>{error}</p>}
             </form>
           </>
         )}
