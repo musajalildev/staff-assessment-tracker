@@ -27,22 +27,29 @@ public class UserService {
     private final TokenService tokenService;
     private final AssignedUserRepository assignedUserRepository;
     public boolean authorised=false;
+    private final AssessmentRepo assessmentRepo;
 
     private static final String USER_NOT_FOUND = "User does not exist";
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JpaUserDetailsService jpaUserDetailsService,
-                       TokenService tokenService, AssignedUserRepository assignedUserRepository) {
+                       TokenService tokenService, AssignedUserRepository assignedUserRepository,
+                       AssessmentRepo assessmentRepo) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.detailsService = jpaUserDetailsService;
         this.tokenService = tokenService;
         this.assignedUserRepository = assignedUserRepository;
+        this.assessmentRepo = assessmentRepo;
     }
 
     public TokenDTO createUser(CreateAccountDTO userinfo ) {
+        //TODO: accquire assesment constructor and implement
+        // logic for assessment assignment or module assignment based on base role type
         userType base_role = userinfo.userType;
+        String assessment_id = userinfo.assessment;
+        Assessment forNow = new Assessment(); //TODO: Change when assessment controller is implemented
 
         User user = new User(userinfo.username, //username for an incoming account
                 passwordEncoder.encode(userinfo.password), //encoded password
@@ -52,7 +59,8 @@ public class UserService {
         User academic= userRepository.findByUsername(userinfo.username);
         //logic for academic role assignment
         if(base_role == userType.ROLE_ACADEMIC){
-            AssignedUser test = new AssignedUser(academic,userinfo.role);
+            //TODO: implement logic for academic role assignment
+            AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,null);
             assignedUserRepository.save(test);
         }
 

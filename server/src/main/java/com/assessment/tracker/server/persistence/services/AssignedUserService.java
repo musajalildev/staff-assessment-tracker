@@ -32,7 +32,7 @@ public class AssignedUserService {
     // -------------------- CREATE --------------------
 
     //implement create assigned user by using user id and role
-    public AssignedUser createAssignment(UUID userID, Role role) {
+    public AssignedUser createAssignment(UUID userID, AssesmentRole role, Assessment assessment) {
         User currentUser= userService.getUser(userID);
         if (currentUser == null) {
             throw new IllegalArgumentException("User not found for ID: " + userID);
@@ -47,12 +47,12 @@ public class AssignedUserService {
         if (assignedUserRepository.existsByUserAndRole(currentUser, role)) {
             throw new IllegalStateException("User already has role: " + role);
         }
-        AssignedUser assignedUser = new AssignedUser(currentUser, role);
+        AssignedUser assignedUser = new AssignedUser(currentUser, role, assessment);
         return assignedUserRepository.save(assignedUser);
     }
 
     //implement create assigned user by using username and role
-    public void createAssignment(String username, Role role) {
+    public AssignedUser createAssignment(String username, AssesmentRole role, Assessment assessment) {
         User target =findUserWithString(username);
 
         // check if the user exists
@@ -65,8 +65,8 @@ public class AssignedUserService {
             throw new IllegalStateException("User already has role: " + role);
         }
 
-        AssignedUser assignedUser = new AssignedUser(target, role);
-        assignedUserRepository.save(assignedUser);
+        AssignedUser assignedUser = new AssignedUser(target, role, assessment);
+        return assignedUserRepository.save(assignedUser);
     }
 
     //-------------------- READ --------------------
@@ -95,10 +95,10 @@ public class AssignedUserService {
         return userAssignments;
     }
 
-    public List<Role> getUserAssignment(UUID userid) {
+    public List<AssesmentRole> getUserAssignment(UUID userid) {
         User currentUser= userRepository.findByUserID(userid);
         List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(currentUser);
-        List<Role> roles = new ArrayList<>();
+        List<AssesmentRole> roles = new ArrayList<>();
 
         for (AssignedUser au : currentAssignments) {
             roles.add(au.getRole());
@@ -109,7 +109,7 @@ public class AssignedUserService {
 
 
     //implement getting all users for a certain role
-    public List<AssignedUser> getAllCommonRole( Role role){
+    public List<AssignedUser> getAllCommonRole( AssesmentRole role){
         return assignedUserRepository.findAllByRole(role);
     }
 
@@ -144,14 +144,14 @@ public class AssignedUserService {
     //implement update assigned user information
 
     //implement update user assignment using ID
-    public AssignedUser updateUserAssignment(Role role, int id) {
+    public AssignedUser updateUserAssignment(AssesmentRole role, int id) {
         AssignedUser currentUser = getAssignedUser(id);
         currentUser.setRole(role);
         return assignedUserRepository.save(currentUser);
     }
 
     //implement update user assignment using email or username
-    public AssignedUser updateUserAssignment(Role role, String username) {
+    public AssignedUser updateUserAssignment(AssesmentRole role, String username) {
         User currentUser= findUserWithString(username);
         return getAssignedUser(role, currentUser);
 
@@ -159,7 +159,7 @@ public class AssignedUserService {
 
 
     //helper method to extract user assignment info
-    private AssignedUser getAssignedUser(Role role, User currentUser) {
+    private AssignedUser getAssignedUser(AssesmentRole role, User currentUser) {
         if(currentUser == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,ROLE_NOT_FOUND);}
 

@@ -1,14 +1,8 @@
 package com.assessment.tracker.server.api.controller;
 
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
-
 import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +31,9 @@ public class AssignedUserController {
     // -------------------- CREATE --------------------
     // implement get assigned users w/o query params
     @PostMapping({ "", "/" })
-    public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody Role role) {
-        AssignedUser createdUser = assignedUserService.createAssignment(userID, role);
+    public ResponseEntity<AssignedUser> createAssignment(@RequestBody String username, @RequestBody AssesmentRole role,
+                                                         Assessment assessment ) {
+        AssignedUser createdUser = assignedUserService.createAssignment(username, role, assessment);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
@@ -51,7 +46,7 @@ public class AssignedUserController {
     }
 
     @GetMapping("/{role}")
-    public ResponseEntity<List<AssignedUser>> getAllCommonRole(@PathVariable Role role) {
+    public ResponseEntity<List<AssignedUser>> getAllCommonRole(@PathVariable AssesmentRole role) {
         List<AssignedUser> commonUsers = assignedUserService.getAllCommonRole(role);
         return (commonUsers != null) ? ResponseEntity.ok(commonUsers)
                 : ResponseEntity.notFound().build();
@@ -79,26 +74,26 @@ public class AssignedUserController {
     // GET ALL USER ROLES (notice mapping pattern)
     // get all user roles by ID
     @GetMapping("/role/userid/{id}")
-    public ResponseEntity<List<Role>> getAllUserRolesById(@PathVariable UUID id) {
-        List<Role> userRoles = assignedUserService.getUserAssignment(id);
+    public ResponseEntity<List<AssesmentRole>> getAllUserRolesById(@PathVariable UUID id) {
+        List<AssesmentRole> userRoles = assignedUserService.getUserAssignment(id);
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }
 
     // get an assignment role enum by assignmentID
     @GetMapping("/role/assignmentID/{id}")
-    public ResponseEntity<Role> getRoleByAssignmentId(@PathVariable int id) {
+    public ResponseEntity<AssesmentRole> getRoleByAssignmentId(@PathVariable int id) {
         AssignedUser assignedUser = assignedUserService.getAssignedUser(id);
-        Role role = assignedUser.getRole();
+        AssesmentRole role = assignedUser.getRole();
         return (role != null) ? ResponseEntity.ok(role)
                 : ResponseEntity.notFound().build();
     }
 
     // get all roles for a user
     @GetMapping("/role/{username}")
-    public ResponseEntity<List<Role>> getAllUserRoles(@PathVariable String username) {
+    public ResponseEntity<List<AssesmentRole>> getAllUserRoles(@PathVariable String username) {
         User user = assignedUserService.findUserWithString(username);
-        List<Role> userRoles = assignedUserService.getUserAssignment(user.getUserID());
+        List<AssesmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserID());
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }
@@ -108,7 +103,7 @@ public class AssignedUserController {
 
     // implement update user assignment using assignmentID
     @PutMapping("/role/id/{id}")
-    public ResponseEntity<AssignedUser> updateUserRole(@PathVariable int id, @RequestBody Role role) {
+    public ResponseEntity<AssignedUser> updateUserRole(@PathVariable int id, @RequestBody AssesmentRole role) {
         AssignedUser currentUserAssignment = assignedUserService.getAssignedUser(id);
         if (currentUserAssignment != null)
 

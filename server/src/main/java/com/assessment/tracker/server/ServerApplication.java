@@ -58,18 +58,18 @@ public class ServerApplication {
                 User sakura = userRepository.findByUsername("sakura");
                 User musa = userRepository.findByUsername("musa");
 
-                AssignedUser a1 = new AssignedUser(john, Role.ROLE_CHECKER);
-                AssignedUser a2 = new AssignedUser(john, Role.ROLE_SETTER);
+                AssignedUser a1 = new AssignedUser(john, AssesmentRole.ROLE_CHECKER, null);
+                AssignedUser a2 = new AssignedUser(john, AssesmentRole.ROLE_SETTER, null);
 
-                AssignedUser a3 = new AssignedUser(mary, Role.ROLE_MODULE_STAFF);
+                AssignedUser a3 = new AssignedUser(mary, AssesmentRole.ROLE_CHECKER, null);
 
-                AssignedUser a4 = new AssignedUser(kofi, Role.ROLE_MODULE_LEAD);
-                AssignedUser a5 = new AssignedUser(kofi, Role.ROLE_EXAM_OFFICER);
+                AssignedUser a4 = new AssignedUser(kofi, AssesmentRole.ROLE_SETTER, null);
+                AssignedUser a5 = new AssignedUser(kofi, AssesmentRole.ROLE_EXAM_OFFICER, null);
 
-                AssignedUser a6 = new AssignedUser(sakura, Role.ROLE_MODULE_STAFF);
+                AssignedUser a6 = new AssignedUser(sakura, AssesmentRole.ROLE_CHECKER, null);
 
-                AssignedUser a7 = new AssignedUser(musa, Role.ROLE_SETTER);
-                AssignedUser a8 = new AssignedUser(musa, Role.ROLE_MODULE_MODERATOR);
+                AssignedUser a7 = new AssignedUser(musa, AssesmentRole.ROLE_SETTER, null);
+                AssignedUser a8 = new AssignedUser(musa, AssesmentRole.ROLE_SETTER,null);
 
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8)
@@ -77,6 +77,7 @@ public class ServerApplication {
 
                 System.out.println("Assignments seeded.");
             }
+
             if (assessmentRepository.count() == 0) {
                 Assessment a1 = new Assessment();
                 a1.setTitle("test");

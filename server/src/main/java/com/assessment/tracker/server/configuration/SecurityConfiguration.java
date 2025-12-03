@@ -62,7 +62,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/login", "/auth/signup").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
 
                 // JWT validation (your RSA public key via Nimbus)
