@@ -28,10 +28,13 @@ public class AuthorisedUser implements UserDetails {
         userType baseRoleToAuth = user.getUserType();
         authorities.add(new SimpleGrantedAuthority(baseRoleToAuth.toString()));
 
-        aur.findAllByUser(user)
-                .forEach(au -> authorities.add(
-                        new SimpleGrantedAuthority(au.getRole().toString()))
-                );
+        // Add assigned user roles if repository is available
+        if (aur != null) {
+            aur.findAllByUser(user)
+                    .forEach(au -> authorities.add(
+                            new SimpleGrantedAuthority(au.getRole().toString()))
+                    );
+        }
 
         return authorities;
     }

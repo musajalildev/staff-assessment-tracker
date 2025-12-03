@@ -3,9 +3,14 @@ const API_BASE_URL = 'http://localhost:8080';
 // Helper function to make API requests using native fetch
 const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  // Get auth token from localStorage if available
+  const authToken = localStorage.getItem('authToken');
+  
   const config = {
     headers: {
       'Content-Type': 'application/json',
+      ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
       ...options.headers,
     },
     ...options,
@@ -32,64 +37,81 @@ const apiRequest = async (endpoint, options = {}) => {
 // User API
 export const userAPI = {
   login: async (usernameOrEmail, password) => {
-    // Workaround: Since there's no login endpoint, we validate password using existing endpoints
-    // 1. Get user by username or email (try both)
-    // 2. Validate password using the password update endpoint (which validates before updating)
+    // Remove any existing token before attempting login
+    localStorage.removeItem('authToken');
+    
     try {
-      // Try to get the user by username first, then by email
-      let userResponse;
+      // Call the /auth/login endpoint with LoginDTO
+      // LoginDTO has: { identifier: string, password: string }
+      const loginResponse = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: {
+          identifier: usernameOrEmail,
+          password: password
+        }
+      });
+      
+      // The response contains a TokenDTO with a token
+      const token = loginResponse.data?.token;
+      if (!token) {
+        throw new Error('Invalid username or password');
+      }
+      
+      // Store the token for future authenticated requests
+      localStorage.setItem('authToken', token);
+      
+      // Fetch user info using the identifier
+      // If identifier contains "@", try email first; otherwise try username first
       let user;
+      const isEmail = usernameOrEmail.includes('@');
       
       try {
-        // Try username first
-        userResponse = await apiRequest(`/users/un/${usernameOrEmail}`);
-        user = userResponse.data;
-      } catch (err) {
-        // If not found by username, try email
-        try {
-          userResponse = await apiRequest(`/users/email/${usernameOrEmail}`);
+        if (isEmail) {
+          // Try email first if identifier looks like an email
+          const userResponse = await apiRequest(`/users/email/${usernameOrEmail}`);
           user = userResponse.data;
-        } catch (emailErr) {
-          throw new Error('Invalid username or password');
+        } else {
+          // Try username first if identifier doesn't look like an email
+          const userResponse = await apiRequest(`/users/un/${usernameOrEmail}`);
+          user = userResponse.data;
+        }
+      } catch (err) {
+        // If first attempt failed, try the other endpoint
+        try {
+          if (isEmail) {
+            // Try username if email failed
+            const userResponse = await apiRequest(`/users/un/${usernameOrEmail}`);
+            user = userResponse.data;
+          } else {
+            // Try email if username failed
+            const userResponse = await apiRequest(`/users/email/${usernameOrEmail}`);
+            user = userResponse.data;
+          }
+        } catch (secondErr) {
+          throw new Error('Failed to fetch user information');
         }
       }
       
       if (!user || !user.userID) {
-        throw new Error('Invalid username or password');
+        throw new Error('Failed to fetch user information');
       }
       
-      // Validate password by attempting to update it
-      // The backend validates currentPassword FIRST, so we can use this to check
-      // Note: This will temporarily change the password, but validates it correctly
-      try {
-        const tempPassword = 'temp_' + Date.now() + '_' + Math.random().toString(36);
-        await apiRequest(`/users/${user.userID}/password?currentPassword=${encodeURIComponent(password)}`, {
-          method: 'PUT',
-          body: { password: tempPassword }
-        });
-        
-        // Password was validated successfully! Now change it back to the original
-        // We need to use the temp password as the "current" password to set it back
-        await apiRequest(`/users/${user.userID}/password?currentPassword=${encodeURIComponent(tempPassword)}`, {
-          method: 'PUT',
-          body: { password: password }
-        });
-        
-        // Password validated and restored - return user
-        return { data: user };
-      } catch (pwdError) {
-        // Check if it's a password validation error
-        const errorMsg = pwdError.message || '';
-        if (errorMsg.includes('Incorrect current password')) {
-          throw new Error('Invalid username or password');
-        }
-        // Other errors
-        throw new Error('Invalid username or password');
-      }
+      return { data: user };
     } catch (error) {
-      // Re-throw our custom errors, wrap others
-      if (error.message === 'Invalid username or password') {
+      // Remove token if login failed
+      localStorage.removeItem('authToken');
+      
+      // Re-throw our custom errors
+      if (error.message === 'Invalid username or password' || error.message === 'Failed to fetch user information') {
         throw error;
+      }
+      // Check if it's an authentication error from the backend
+      if (error.message && (
+          error.message.includes('401') || 
+          error.message.includes('403') || 
+          error.message.includes('Unauthorized') ||
+          error.message.includes('Bad credentials'))) {
+        throw new Error('Invalid username or password');
       }
       throw new Error('Invalid username or password');
     }
