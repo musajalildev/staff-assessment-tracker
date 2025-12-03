@@ -1,17 +1,60 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { userAPI, assignedUserAPI } from '../services/api';
+import { userAPI } from '../services/api';
 
 function Login() {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showRoleSelection, setShowRoleSelection] = useState(false);
-  const [userRoles, setUserRoles] = useState([]);
-  const [selectedRole, setSelectedRole] = useState('');
+  const [showUserTypeSelection, setShowUserTypeSelection] = useState(false);
+  const [availableUserTypes, setAvailableUserTypes] = useState([]);
+  const [selectedUserType, setSelectedUserType] = useState('');
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+
+  // Determine available user types based on primary userType
+  const getAvailableUserTypes = (primaryUserType) => {
+    const types = [];
+    
+    switch(primaryUserType) {
+      case 'ROLE_EXAMS_OFFICER':
+        // Exams Officer can choose: Academic View or Exam Officer View (Teaching Support Team)
+        types.push('ROLE_ACADEMIC');
+        types.push('ROLE_EXAMS_OFFICER'); // This will be displayed as "Teaching Support Team"
+        break;
+      case 'ROLE_ACADEMIC':
+        types.push('ROLE_ACADEMIC');
+        break;
+      case 'ROLE_TEACHING_SUPPORT':
+        types.push('ROLE_TEACHING_SUPPORT');
+        break;
+      case 'ROLE_EXTERNAL_EXAMINER':
+        types.push('ROLE_EXTERNAL_EXAMINER');
+        break;
+      default:
+        types.push(primaryUserType);
+    }
+    
+    return types;
+  };
+
+  // Format user type for display
+  const formatUserType = (userType) => {
+    // Special case: Exams Officer view should be displayed as "Exam Officer View (Teaching Support Team)"
+    if (userType === 'ROLE_EXAMS_OFFICER') {
+      return 'Exam Officer View (Teaching Support Team)';
+    }
+    // Special case: Academic should be labeled as "Academic View"
+    if (userType === 'ROLE_ACADEMIC') {
+      return 'Academic View';
+    }
+    return userType
+      .replace('ROLE_', '')
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, l => l.toUpperCase());
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,44 +66,31 @@ function Login() {
       const response = await userAPI.login(usernameOrEmail, password);
       const user = response.data;
       
-      // Fetch user's roles using the actual username from the user object
-      // The getUserRoles endpoint accepts both username and email
-      try {
-        const rolesResponse = await assignedUserAPI.getUserRoles(user.username);
-        const roles = rolesResponse.data || [];
-        
-        if (roles.length === 0) {
-          setError('You do not have any roles assigned. Please contact an administrator.');
-          setLoading(false);
-          return;
-        }
-        
-        // Store user data temporarily
-        setUserData({
+      // Store user data temporarily
+      setUserData({
+        id: user.userID,
+        username: user.username,
+        email: user.email,
+        userType: user.userType
+      });
+      
+      // Determine available user types based on primary userType
+      const availableTypes = getAvailableUserTypes(user.userType);
+      
+      // If user has only one available type, automatically proceed
+      if (availableTypes.length === 1) {
+        localStorage.setItem('currentUser', JSON.stringify({
           id: user.userID,
           username: user.username,
           email: user.email,
-          userType: user.userType
-        });
-        
-        // If user has only one role, automatically proceed
-        if (roles.length === 1) {
-          localStorage.setItem('currentUser', JSON.stringify({
-            id: user.userID,
-            username: user.username,
-            email: user.email,
-            userType: user.userType,
-            selectedRole: roles[0]
-          }));
-          navigate('/dashboard');
-        } else {
-          // Show role selection for multiple roles
-          setUserRoles(roles);
-          setShowRoleSelection(true);
-        }
-      } catch (roleError) {
-        setError('Failed to fetch user roles. Please try again.');
-        console.error('Role fetch error:', roleError);
+          primaryUserType: user.userType,
+          selectedUserType: availableTypes[0]
+        }));
+        navigate('/dashboard');
+      } else {
+        // Show user type selection for multiple available types
+        setAvailableUserTypes(availableTypes);
+        setShowUserTypeSelection(true);
       }
     } catch (err) {
       setError(err.message || 'Invalid username/email or password');
@@ -70,25 +100,26 @@ function Login() {
     }
   };
 
-  const handleRoleSelection = (e) => {
+  const handleUserTypeSelection = (e) => {
     e.preventDefault();
     setError('');
 
-    if (!selectedRole) {
-      setError('Please select a role to continue');
+    if (!selectedUserType) {
+      setError('Please select a user type to continue');
       return;
     }
 
-    // Validate that the selected role is in the user's roles list
-    if (!userRoles.includes(selectedRole)) {
-      setError('Invalid role selected. Please select a valid role.');
+    // Validate that the selected user type is available
+    if (!availableUserTypes.includes(selectedUserType)) {
+      setError('Invalid user type selected. Please select a valid user type.');
       return;
     }
 
-    // Store user info with selected role in localStorage
+    // Store user info with selected user type in localStorage
     localStorage.setItem('currentUser', JSON.stringify({
       ...userData,
-      selectedRole: selectedRole
+      primaryUserType: userData.userType,
+      selectedUserType: selectedUserType
     }));
     
     navigate('/dashboard');
@@ -102,7 +133,7 @@ function Login() {
           <div>Assessment Tool</div>
         </div>
         
-        {!showRoleSelection ? (
+        {!showUserTypeSelection ? (
           <>
             <h2>Welcome back</h2>
             <p className="sub">Sign in to manage modules and assessments.</p>
@@ -141,23 +172,23 @@ function Login() {
           </>
         ) : (
           <>
-            <h2>Select Your Role</h2>
-            <p className="sub">You have multiple roles. Please select which role you want to use for this session.</p>
-            <form className="form" onSubmit={handleRoleSelection}>
+            <h2>Select Your User Type</h2>
+            <p className="sub">You have access to multiple user types. Please select which user type you want to use for this session.</p>
+            <form className="form" onSubmit={handleUserTypeSelection}>
               <div className="field">
-                <label className="label" htmlFor="role">Role</label>
+                <label className="label" htmlFor="userType">User Type</label>
                 <select
                   className="input"
-                  id="role"
-                  name="role"
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
+                  id="userType"
+                  name="userType"
+                  value={selectedUserType}
+                  onChange={(e) => setSelectedUserType(e.target.value)}
                   required
                 >
-                  <option value="">-- Select a role --</option>
-                  {userRoles.map((role, index) => (
-                    <option key={index} value={role}>
-                      {role.replace(/_/g, ' ')}
+                  <option value="">-- Select a user type --</option>
+                  {availableUserTypes.map((type, index) => (
+                    <option key={index} value={type}>
+                      {formatUserType(type)}
                     </option>
                   ))}
                 </select>
@@ -170,9 +201,9 @@ function Login() {
                   className="btn"
                   type="button"
                   onClick={() => {
-                    setShowRoleSelection(false);
-                    setSelectedRole('');
-                    setUserRoles([]);
+                    setShowUserTypeSelection(false);
+                    setSelectedUserType('');
+                    setAvailableUserTypes([]);
                     setUserData(null);
                     setError('');
                   }}
