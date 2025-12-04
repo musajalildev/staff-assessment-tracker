@@ -7,18 +7,22 @@ public class CreateAccountDTO {
     public String email;
     public String password;
     public userType userType;
-    public AssesmentRole assesmentRole; //now assesment roles
-    //public module role modRole
-    public String assessment;
 
+    public String assessment;// assessment involvement
+    public AssesmentRole assesmentRole ;
 
-    public CreateAccountDTO(String username, String email, String password, userType userType, AssesmentRole role, String assessment){
+    public String module; // module involvement
+    public ModuleRole moduleRole;
+
+    public CreateAccountDTO(String username, String email, String password, String assessment,
+                            userType userType, ModuleRole moduleRole, AssesmentRole assesmentRole){
         this.username = username;
         this.email = email;
         this.password = password;
         this.userType = userType;
-        this.assesmentRole = role;
         this.assessment = assessment;
+        this.moduleRole = moduleRole;
+        this.assesmentRole = assesmentRole;
     }
 
 }

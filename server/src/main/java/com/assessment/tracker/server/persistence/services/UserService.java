@@ -47,9 +47,17 @@ public class UserService {
     public TokenDTO createUser(CreateAccountDTO userinfo ) {
         //TODO: accquire assesment constructor and implement
         // logic for assessment assignment or module assignment based on base role type
+        //call repos to construct data using Strings
+
         userType base_role = userinfo.userType;
-        String assessment_id = userinfo.assessment;
-        Assessment forNow = new Assessment(); //TODO: Change when assessment controller is implemented
+
+        String assessmentData = userinfo.assessment; //data to determine specific academic role
+        String moduleData = userinfo.module;
+
+        Assessment forNow = new Assessment();
+        // TODO:Change when assessment repo method:
+        //  findByAssesmentName is implemented  in order to construct assesment from String
+
 
         User user = new User(userinfo.username, //username for an incoming account
                 passwordEncoder.encode(userinfo.password), //encoded password
@@ -59,9 +67,14 @@ public class UserService {
         User academic= userRepository.findByUsername(userinfo.username);
         //logic for academic role assignment
         if(base_role == userType.ROLE_ACADEMIC){
-            //TODO: implement logic for academic role assignment
-            AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,null);
-            assignedUserRepository.save(test);
+            //TODO: implement logic for academic role assignment(requires moduleUser)
+            if (assessmentData != null) {
+                
+                AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,null);
+                assignedUserRepository.save(test);
+            }
+            //TODO: if moduleData exists create moduleUser and save to DB
+
         }
 
         AuthorisedUser authorisedUser = (AuthorisedUser) detailsService.loadUserByUsername(userinfo.username);
