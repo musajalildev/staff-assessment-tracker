@@ -19,7 +19,6 @@ public class AssignedUser {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-
     public AssignedUser() {
     }
 
@@ -27,6 +26,7 @@ public class AssignedUser {
         this.user = user;
         this.role = role;
     }
+
     public void setRole(Role role) {
         this.role = role;
     }
@@ -46,10 +46,8 @@ public class AssignedUser {
     public int getAssignmentID() {
         return assignmentID;
     }
+
     public void setAssignmentID(int assignmentID) {
         this.assignmentID = assignmentID;
     }
 }
-
-
-

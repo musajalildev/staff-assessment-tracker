@@ -1,6 +1,6 @@
 package com.assessment.tracker.server.api.DTO;
 
-import com.assessment.tracker.server.utils.enums.userType;
+import com.assessment.tracker.server.utils.enums.UserType;
 import java.util.UUID;
 
 public class UserDTO {
@@ -8,13 +8,13 @@ public class UserDTO {
     private UUID userID;
     private String username;
     private String email;
-    private userType userType;
+    private UserType userType;
     private String password;
 
     public UserDTO() {
     }
 
-    public UserDTO(UUID userID, String username, String email, userType userType, String password) {
+    public UserDTO(UUID userID, String username, String email, UserType userType, String password) {
         this.userID = userID;
         this.username = username;
         this.email = email;
@@ -46,11 +46,11 @@ public class UserDTO {
         this.email = email;
     }
 
-    public userType getUserType() {
+    public UserType getUserType() {
         return userType;
     }
 
-    public void setUserType(userType userType) {
+    public void setUserType(UserType userType) {
         this.userType = userType;
     }
 

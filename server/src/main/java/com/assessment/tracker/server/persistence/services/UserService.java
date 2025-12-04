@@ -26,14 +26,14 @@ public class UserService {
     private final JpaUserDetailsService detailsService;
     private final TokenService tokenService;
     private final AssignedUserRepository assignedUserRepository;
-    public boolean authorised=false;
+    public boolean authorised = false;
 
     private static final String USER_NOT_FOUND = "User does not exist";
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       JpaUserDetailsService jpaUserDetailsService,
-                       TokenService tokenService, AssignedUserRepository assignedUserRepository) {
+            PasswordEncoder passwordEncoder,
+            JpaUserDetailsService jpaUserDetailsService,
+            TokenService tokenService, AssignedUserRepository assignedUserRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.detailsService = jpaUserDetailsService;
@@ -41,25 +41,25 @@ public class UserService {
         this.assignedUserRepository = assignedUserRepository;
     }
 
-    public TokenDTO createUser(CreateAccountDTO userinfo ) {
-        userType base_role = userinfo.userType;
+    public TokenDTO createUser(CreateAccountDTO userinfo) {
+        UserType base_role = userinfo.userType;
 
-        User user = new User(userinfo.username, //username for an incoming account
-                passwordEncoder.encode(userinfo.password), //encoded password
-                userinfo.email, base_role); //email and role for an incoming account
+        User user = new User(userinfo.username, // username for an incoming account
+                passwordEncoder.encode(userinfo.password), // encoded password
+                userinfo.email, base_role); // email and role for an incoming account
 
         userRepository.save(user);
-        User academic= userRepository.findByUsername(userinfo.username);
-        //logic for academic role assignment
-        if(base_role == userType.ROLE_ACADEMIC){
-            AssignedUser test = new AssignedUser(academic,userinfo.role);
+        User academic = userRepository.findByUsername(userinfo.username);
+        // logic for academic role assignment
+        if (base_role == UserType.ACADEMIC) {
+            AssignedUser test = new AssignedUser(academic, userinfo.role);
             assignedUserRepository.save(test);
         }
 
         AuthorisedUser authorisedUser = (AuthorisedUser) detailsService.loadUserByUsername(userinfo.username);
 
-        //succesful auth
-        authorised=true;
+        // succesful auth
+        authorised = true;
         return tokenService.generateToken(authorisedUser.getAuthorities(), userinfo.username);
     }
 
@@ -69,26 +69,26 @@ public class UserService {
 
     public User getUser(UUID id) {
         User focus = userRepository.findByUserID(id);
-        if (focus == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
+        if (focus == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
         }
         return focus;
     }
 
     public boolean deleteUser(UUID id) {
-        //TODO:check if user is an exam officer (deletion not allowed)
-        if(!userRepository.existsByUserID(id))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,USER_NOT_FOUND);
+        // TODO:check if user is an exam officer (deletion not allowed)
+        if (!userRepository.existsByUserID(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
         userRepository.deleteByUserID(id);
         return true;
 
     }
 
-    public void deleteAllUsers(){
+    public void deleteAllUsers() {
         userRepository.deleteAll();
     }
 
-
-    //IMPLEMENT get user by email,change password,
+    // IMPLEMENT get user by email,change password,
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -98,16 +98,16 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public userType getUserPermission(UUID id){
+    public UserType getUserPermission(UUID id) {
         User user = getUser(id);
         return user.getUserType();
     }
 
-    public List<User> getAllUsersByPermission(userType permission){
-            return userRepository.findAllByUserType(permission);
+    public List<User> getAllUsersByPermission(UserType permission) {
+        return userRepository.findAllByUserType(permission);
     }
 
-    //IMPLEMENT update user information
+    // IMPLEMENT update user information
 
     public User updateUsername(String newUser, UUID id) {
         User currentUser = getUser(id);
@@ -116,36 +116,32 @@ public class UserService {
 
     }
 
-
-    public void updateUserPassword(PasswordUpdDTO passwordInfo , UUID id) {
-        //sets new password and encrypts it
-        User currentUser= userRepository.findByUserID(id);
+    public void updateUserPassword(PasswordUpdDTO passwordInfo, UUID id) {
+        // sets new password and encrypts it
+        User currentUser = userRepository.findByUserID(id);
         String newPassword = passwordInfo.newPassword;
-
         assert currentUser != null;
-        //encryption
-        currentUser.setPassword( passwordEncoder.encode(newPassword) );
+        // encryption
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(currentUser);
     }
 
     public User updateUserEmail(String newEmail, UUID id) {
-        User currentUser= userRepository.findByUserID(id);
+        User currentUser = userRepository.findByUserID(id);
         assert currentUser != null;
-        currentUser.setEmail( newEmail );
+        currentUser.setEmail(newEmail);
         return userRepository.save(currentUser);
     }
 
-    public User updateUserPermission(userType newPermission, UUID id) {
-        User currentUser= getUser(id);
+    public User updateUserPermission(UserType newPermission, UUID id) {
+        User currentUser = getUser(id);
         currentUser.setUserType(newPermission);
         return userRepository.save(currentUser);
     }
 
-    //to be used in login service
+    // to be used in login service
     public boolean validatePassword(String raw, String encoded) {
         return passwordEncoder.matches(raw, encoded);
     }
-
-
 
 }
