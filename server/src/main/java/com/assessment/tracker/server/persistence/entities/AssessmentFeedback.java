@@ -12,6 +12,8 @@ import com.assessment.tracker.server.persistence.services.*;
 import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class AssessmentFeedback {
     @Id
@@ -22,7 +24,19 @@ public class AssessmentFeedback {
     @JoinColumn(name = "assessmentID")
     private Assessment assessment;
 
+    @ManyToOne
+    @JoinColumn(name = "authorID")
+    private User author;
+
     private String feedback;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDateTime.now();
+    }
 
     public String getFeedback() {
         return feedback;
@@ -40,8 +54,28 @@ public class AssessmentFeedback {
         this.assessment = assessment;
     }
 
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
     public Integer getID() {
         return ID;
+    }
+
+    public void setID(Integer ID) {
+        this.ID = ID;
     }
 
 }
