@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useState, useEffect } from 'react';
 import { assessmentAPI, userAPI } from '../services/api';
+import FeedbackSection from '../components/FeedbackSection';
 
 function AssessmentDetail() {
   const { moduleId, assessmentId } = useParams();
@@ -212,6 +213,16 @@ function AssessmentDetail() {
           </div>
         </div>
       </section>
+
+      {assessment && (
+        <FeedbackSection 
+          assessment={assessment} 
+          onFeedbackAdded={() => {
+            // Optionally reload assessment data when feedback is added
+            console.log('Feedback added, reloading assessment...');
+          }}
+        />
+      )}
     </Layout>
   );
 }

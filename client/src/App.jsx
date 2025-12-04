@@ -10,6 +10,7 @@ import AssessmentDetail from './pages/AssessmentDetail';
 import AssessmentNew from './pages/AssessmentNew';
 import UserManagement from './pages/UserManagement';
 import MyProfile from './pages/MyProfile';
+import FeedbackTest from './pages/FeedbackTest';
 import './App.css';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/modules/:id/edit" element={<ModuleEdit />} />
         <Route path="/modules/:moduleId/assessments/new" element={<AssessmentNew />} />
         <Route path="/modules/:moduleId/assessments/:assessmentId" element={<AssessmentDetail />} />
+        <Route path="/test/feedback/:assessmentId" element={<FeedbackTest />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/profile" element={<MyProfile />} />
       </Routes>

@@ -169,5 +169,31 @@ export const assignedUserAPI = {
   deleteUserAssignments: (userId) => apiRequest(`/assign/user/${userId}`, { method: 'DELETE' }),
 };
 
+// Feedback API
+export const feedbackAPI = {
+  // Get all feedback for an assessment
+  getByAssessment: (assessmentId) => apiRequest(`/assessments/${assessmentId}/feedback`),
+  
+  // Get specific feedback by ID
+  getById: (feedbackId) => apiRequest(`/assessments/feedback/${feedbackId}`),
+  
+  // Create new feedback
+  create: (assessmentId, feedback) => apiRequest(`/assessments/${assessmentId}/feedback`, {
+    method: 'POST',
+    body: feedback
+  }),
+  
+  // Update feedback
+  update: (feedbackId, feedback) => apiRequest(`/assessments/feedback/${feedbackId}`, {
+    method: 'PUT',
+    body: feedback
+  }),
+  
+  // Delete feedback
+  delete: (feedbackId) => apiRequest(`/assessments/feedback/${feedbackId}`, {
+    method: 'DELETE'
+  }),
+};
+
 export default { apiRequest };
 

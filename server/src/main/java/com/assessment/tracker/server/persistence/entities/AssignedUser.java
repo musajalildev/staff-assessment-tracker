@@ -26,7 +26,6 @@ public class AssignedUser {
     @Enumerated(EnumType.STRING)
     private AssesmentRole role;
 
-
     public AssignedUser() {
     }
 
@@ -54,10 +53,8 @@ public class AssignedUser {
     public int getAssignmentID() {
         return assignmentID;
     }
+
     public void setAssignmentID(int assignmentID) {
         this.assignmentID = assignmentID;
     }
 }
-
-
-
