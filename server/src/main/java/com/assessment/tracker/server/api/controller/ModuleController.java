@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 public interface ModuleController {
-    @GetMapping(path= "/api/v1/module", consumes = "application/json")
+    @GetMapping(path= "/api/module/all", consumes = "application/json")
     ResponseEntity<List<ModuleDTO>> getAllModules();
 
-    @PutMapping(path = "/api/v1/module", consumes = "application/json")
+    @PutMapping(path = "/api/module/", consumes = "application/json")
     ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode);
 
-    @PutMapping(path = "/api/v1/module", consumes = "application/json")
+    @PutMapping(path = "/api/module/update", consumes = "application/json")
     ResponseEntity<Module> updateModule(UUID id, ModuleDTO dto);
 
-    @PostMapping(path = "/api/v1/module", consumes = "application/json")
+    @PostMapping(path = "/api/module/create", consumes = "application/json")
     ResponseEntity<ModuleDTO> createModule(ModuleDTO module);
 
-    @PostMapping(path = "/api/v1/module/csv", consumes = "text/csv")
+    @PostMapping(path = "/api/module/csv", consumes = "text/csv")
     ResponseEntity<ModuleDTO> createModuleCSV(@RequestBody InputStream csv);
 }

@@ -35,16 +35,19 @@ public class ModuleService {
         moduleRepository.save(module);
     }
 
-    public List<ModuleDTO> getModuleDTOListByCode(int moduleCode) {
-        List<Module> moduleList = moduleRepository.findByModuleCode(moduleCode);
-        if (moduleList.isEmpty()) { new RuntimeException("Module not found"); }
+    public ModuleDTO getModuleDTOListByCode(int moduleCode) {
+        Module moduleList = moduleRepository.findByCode(moduleCode);
+        //if (moduleList.isEmpty()) { new RuntimeException("Module not found"); }
 
-        List<ModuleDTO> moduleDTOList = new ArrayList<>();
-        for (Module module : moduleList) {
-            moduleDTOList.add(moduleMapper.entityToApi(module));
-        }
+        //List<ModuleDTO> moduleDTOList = new ArrayList<>();
+        //for (Module module : moduleList) {
+            //moduleDTOList.add(moduleMapper.entityToApi(module));
+        //}
 
-        return moduleDTOList;
+        //return moduleDTOList;
+        ModuleDTO moduleDTO = moduleMapper.entityToApi(moduleList);
+
+        return moduleDTO;
     }
 
     public List<ModuleDTO> retrieveModules() {
