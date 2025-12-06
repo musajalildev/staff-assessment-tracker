@@ -70,6 +70,7 @@ public class SecurityConfiguration {
 
                 // do not use session (JWT = stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.cors(Customizer.withDefaults());
 
         return http.build();
     }
