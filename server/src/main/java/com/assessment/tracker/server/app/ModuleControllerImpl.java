@@ -1,11 +1,11 @@
-package com.assessment.tracker.server.api.controllerImpl;
+package com.assessment.tracker.server.app;
 
 import com.assessment.tracker.server.api.controller.*;
 import com.assessment.tracker.server.api.dto.*;
 
+import com.assessment.tracker.server.app.mappers.ModuleMapper;
 import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

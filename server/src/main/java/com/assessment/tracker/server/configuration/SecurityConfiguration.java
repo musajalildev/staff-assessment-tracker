@@ -62,6 +62,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/login", "/auth/signup").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
+                        .requestMatchers(
+                                "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

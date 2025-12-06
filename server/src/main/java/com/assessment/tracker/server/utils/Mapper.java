@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.utils.mappers;
+package com.assessment.tracker.server.utils;
 
 public interface Mapper<A, E> {
     A entityToApi(E entity);

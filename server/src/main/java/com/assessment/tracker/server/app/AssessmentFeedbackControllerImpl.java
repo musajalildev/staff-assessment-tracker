@@ -1,6 +1,5 @@
-package com.assessment.tracker.server.api.controllerImpl;
+package com.assessment.tracker.server.app;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
