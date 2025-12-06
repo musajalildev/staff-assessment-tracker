@@ -1,112 +1,125 @@
 import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
-import axios from 'axios';
 import { useState, useEffect } from 'react';
-
+import { assessmentAPI, userAPI } from '../services/api';
+import FeedbackSection from '../components/FeedbackSection';
 
 function AssessmentDetail() {
-  const { moduleId, assessmentID } = useParams();
-  const [assessment, setAssessment] = useState({});
-  const [progress, setProgress] = useState({});
+  const { moduleId, assessmentId } = useParams();
+  const [assessment, setAssessment] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [progress, setProgress] = useState(0);
   const [type, setType] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/assessment/1').then((data) => setAssessment(data.data));
-  }, []);
+    const loadAssessment = async () => {
+      try {
+        setLoading(true);
+        const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
+        
+        const [assessmentRes, usersRes] = await Promise.all([
+          assessmentAPI.getById(assessmentIdToUse),
+          userAPI.getAll().catch(() => ({ data: [] }))
+        ]);
+
+        setAssessment(assessmentRes.data);
+        setUsers(usersRes.data || []);
+      } catch (err) {
+        setError('Failed to load assessment');
+        console.error('Error loading assessment:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAssessment();
+  }, [assessmentId]);
   useEffect(() => {
-    switch (assessment.progress) {
-      case "CREATED":
-        setProgress(1);
-        break;
-      case "CHECKED":
-        setProgress(2);
-        break;
-      case "NEEDS_CHANGES":
-        setProgress(3);
-        break;
-      case "TEST_TAKING_PLACE":
-        setProgress(4);
-        break;
-      case "MARKING_STANDARDISED":
-        setProgress(5);
-        break;
-      case "MARKED":
-        setProgress(6);
-        break;
-      case "RESULTS_RETURNED":
-        setProgress(7);
-        break;
-      case "COMPLETE":
-        setProgress(8);
-        break;
-    }
-    switch (assessment.type) {
-      case "EXAM":
-        setType("Exam");
-        break;
-      case "COURSEWORK":
-        setType("Coursework");
-        break;
-      case "TEST_AUTOGRADED":
-      case "TEST_SINGLE_MARKER":
-      case "TEST_TEAM_MARKER":
-        setType("Test");
-        break;
-      default:
-        setType("Error Type")
-        break;
-    }
-    console.log(assessment);
-    console.log(progress);
+    if (!assessment) return;
+
+    const progressMap = {
+      "CREATED": 1,
+      "CHECKED": 2,
+      "NEEDS_CHANGES": 3,
+      "TEST_TAKING_PLACE": 4,
+      "MARKING_STANDARDISED": 5,
+      "MARKED": 6,
+      "RESULTS_RETURNED": 7,
+      "COMPLETE": 8
+    };
+    setProgress(progressMap[assessment.progress] || 0);
+
+    const typeMap = {
+      "EXAM": "Exam",
+      "COURSEWORK": "Coursework",
+      "TEST_AUTOGRADED": "Test (Autograded)",
+      "TEST_SINGLE_MARKER": "Test (Single Marker)",
+      "TEST_TEAM_MARKER": "Test (Team Marker)"
+    };
+    setType(typeMap[assessment.type] || assessment.type || "N/A");
   }, [assessment]);
 
   const progressAssessment = async () => {
-    switch (assessment.progress) {
-      case "CREATED":
-        assessment.progress = "CHECKED";
-        break;
-      case "CHECKED":
-        assessment.progress = "NEEDS_CHANGES";
-        break;
-      case "NEEDS_CHANGES":
-        assessment.progress = "TEST_TAKING_PLACE";
-        break;
-      case "TEST_TAKING_PLACE":
-        assessment.progress = "MARKING_STANDARDISED";
-        break;
-      case "MARKING_STANDARDISED":
-        assessment.progress = "MARKED";
-        break;
-      case "MARKED":
-        assessment.progress = "RESULTS_RETURNED";
-        break;
-      case "RESULTS_RETURNED":
-        assessment.progress = "COMPLETE";
-        break;
-      case "COMPLETE":
-        assessment.progress = "CHECKED";
-        break;
+    if (!assessment) return;
+
+    const progressSequence = [
+      "CREATED", "CHECKED", "NEEDS_CHANGES", "TEST_TAKING_PLACE",
+      "MARKING_STANDARDISED", "MARKED", "RESULTS_RETURNED", "COMPLETE"
+    ];
+    
+    const currentIndex = progressSequence.indexOf(assessment.progress);
+    const nextProgress = currentIndex < progressSequence.length - 1 
+      ? progressSequence[currentIndex + 1]
+      : progressSequence[1]; // Loop back to CHECKED if at end
+
+    const updatedAssessment = {
+      ...assessment,
+      progress: nextProgress
+    };
+
+    try {
+      const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
+      setAssessment(result.data);
+    } catch (err) {
+      console.error('Error updating assessment:', err);
+      alert('Failed to update assessment progress');
     }
-    console.log("progress");
-    const result = await axios.put('http://localhost:8080/api/assessment/1', assessment)
-    console.log(result);
-    setAssessment(result.data);
+  };
+
+  const getUserName = (user) => {
+    if (!user) return 'N/A';
+    if (typeof user === 'string') return user;
+    return user.username || user.email || 'N/A';
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="card">
+          <p>Loading assessment...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error || !assessment) {
+    return (
+      <Layout>
+        <div className="content">
+          <h2>{error || 'Assessment not found'}</h2>
+          <Link to={`/modules/${moduleId}`}>Back to Module</Link>
+        </div>
+      </Layout>
+    );
   }
 
 
-  /*useEffect(() => {
-    axios.get(`/api/assessment/${assessmentID}`)
-      .then(response => {
-        console.log("Full response:", response);   // logs headers, status, data
-        console.log("Response data:", response.data); // logs just the body
-      })
-      .catch(error => console.error("API error:", error));
-  }, [assessmentId]);
-  /**/
   return (
     <Layout>
       <header className="header">
-        <div className="h-title">{assessment.title} • {type}</div>
+        <div className="h-title">{assessment.title || 'Untitled Assessment'} • {type}</div>
         <div className="actions">
           <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
           <button className="btn primary" onClick={progressAssessment}>Progress to Next Stage</button>
@@ -117,18 +130,17 @@ function AssessmentDetail() {
         <div className="card">
           <div className="label">People</div>
           <div className="mt-12">
-            <div><strong>Setter:</strong> John Smith</div>
-            <div className="mt-12"><strong>Checker:</strong> Anna Lee</div>
-            <div className="mt-12"><strong>Moderator:</strong> (module default)</div>
-            <div className="mt-12"><strong>External Examiner:</strong> —</div>
+            <div><strong>Setter:</strong> {getUserName(assessment.setter)}</div>
+            <div className="mt-12"><strong>Checker:</strong> {getUserName(assessment.checker)}</div>
+            <div className="mt-12"><strong>Assessment ID:</strong> {assessment.id || assessment.ID}</div>
           </div>
           <div className="sep"></div>
           <div className="label mt-12">Details</div>
           <div className="mt-12">
-            <span className="pill">Marked by team</span>
-            {/*is this needed*/}
-            <span className="pill">Weight: 20%</span>
-            <span className="pill">Due: 10 Dec</span>
+            <span className="pill">Type: {type}</span>
+            <span className="pill">Progress: {assessment.progress || 'N/A'}</span>
+            {assessment.teamMarked && <span className="pill">Team Marked</span>}
+            {assessment.autoGraded && <span className="pill">Auto Graded</span>}
           </div>
         </div>
         <div className="card">
@@ -174,10 +186,18 @@ function AssessmentDetail() {
                 <div className="title">Marking</div>
               </div>
             </div>
-            <div className={(() => { if (progress > 7) return "step done"; if (progress == 7) return "step active"; return "step" })()}>
+            <div className={progress > 7 ? "step done" : progress === 7 ? "step active" : "step"}>
               <div className="dot"></div>
               <div>
-                <div className="title">Returned</div>
+                <div className="title">Results Returned</div>
+                <div className="meta">Complete</div>
+              </div>
+            </div>
+            <div className={progress > 8 ? "step done" : progress === 8 ? "step active" : "step"}>
+              <div className="dot"></div>
+              <div>
+                <div className="title">Complete</div>
+                <div className="meta">Assessment finished</div>
               </div>
             </div>
           </div>
@@ -188,14 +208,22 @@ function AssessmentDetail() {
         <div className="card">
           <div className="h-title" style={{ fontSize: '18px' }}>Actions</div>
           <div className="mt-12" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button className="btn">Request Changes</button>
-            <button className="btn">Assign Different Checker</button>
-            <button className="btn">Upload Files</button>
-            <button className="btn">Add Note</button>
+            <button className="btn" onClick={progressAssessment}>Update Progress</button>
+            <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
           </div>
         </div>
       </section>
-    </Layout >
+
+      {assessment && (
+        <FeedbackSection 
+          assessment={assessment} 
+          onFeedbackAdded={() => {
+            // Optionally reload assessment data when feedback is added
+            console.log('Feedback added, reloading assessment...');
+          }}
+        />
+      )}
+    </Layout>
   );
 }
 

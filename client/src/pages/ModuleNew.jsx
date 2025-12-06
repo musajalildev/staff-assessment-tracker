@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { moduleAPI, userAPI } from '../services/api';
 
 function ModuleNew() {
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     code: '',
     title: '',
@@ -12,6 +16,18 @@ function ModuleNew() {
     staff: ''
   });
 
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const usersRes = await userAPI.getAll();
+        setUsers(usersRes.data || []);
+      } catch (err) {
+        console.error('Error loading users:', err);
+      }
+    };
+    loadUsers();
+  }, []);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -19,11 +35,27 @@ function ModuleNew() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement API call to create module
-    console.log('Creating module:', formData);
-    navigate('/modules');
+    setError('');
+    setLoading(true);
+
+    try {
+      const moduleData = {
+        code: formData.code,
+        title: formData.title,
+        moduleLeaderID: formData.lead ? parseInt(formData.lead) : null,
+        archived: false
+      };
+
+      await moduleAPI.create(moduleData);
+      navigate('/modules');
+    } catch (err) {
+      setError('Failed to create module. Please try again.');
+      console.error('Error creating module:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,12 +105,15 @@ function ModuleNew() {
                 onChange={handleChange}
               >
                 <option value="">Select...</option>
-                <option value="1">Jane Doe</option>
-                <option value="2">John Smith</option>
+                {users.map((user) => (
+                  <option key={user.userID} value={user.userID}>
+                    {user.username} ({user.email})
+                  </option>
+                ))}
               </select>
             </div>
             <div className="field">
-              <label className="label" htmlFor="moderator">Moderator</label>
+              <label className="label" htmlFor="moderator">Moderator (Optional)</label>
               <select
                 className="select"
                 id="moderator"
@@ -87,13 +122,16 @@ function ModuleNew() {
                 onChange={handleChange}
               >
                 <option value="">Select...</option>
-                <option value="1">Anna Lee</option>
-                <option value="2">Mary Chan</option>
+                {users.map((user) => (
+                  <option key={user.userID} value={user.userID}>
+                    {user.username} ({user.email})
+                  </option>
+                ))}
               </select>
             </div>
           </div>
           <div className="field">
-            <label className="label" htmlFor="staff">Other Staff (comma separated)</label>
+            <label className="label" htmlFor="staff">Other Staff (comma separated - Optional)</label>
             <input
               className="input"
               id="staff"
@@ -102,6 +140,26 @@ function ModuleNew() {
               value={formData.staff}
               onChange={handleChange}
             />
+          </div>
+          {error && (
+            <div style={{ color: 'red', marginTop: '12px' }}>{error}</div>
+          )}
+          <div className="field" style={{ marginTop: '24px' }}>
+            <button 
+              className="btn primary" 
+              type="submit" 
+              disabled={loading || !formData.code || !formData.title}
+            >
+              {loading ? 'Creating...' : 'Create Module'}
+            </button>
+            <button 
+              className="btn" 
+              type="button"
+              onClick={() => navigate('/modules')}
+              style={{ marginLeft: '12px' }}
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </section>

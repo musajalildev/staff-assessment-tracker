@@ -59,3 +59,7 @@ package.json
 *.njsproj
 *.sln
 *.sw?
+*.db
+
+### Secrets ###
+/src/main/resources/certs/**.pem

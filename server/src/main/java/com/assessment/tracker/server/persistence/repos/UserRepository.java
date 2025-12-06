@@ -30,5 +30,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     void deleteByUserID(UUID id);
 
     // getting by common permission
-    List<User> findAllByUserType(userType permission);
+    List<User> findAllByUserType(UserType permission);
 }

@@ -16,4 +16,5 @@ import com.assessment.tracker.server.utils.enums.*;
 
 @Repository
 public interface AssessmentFeedbackRepo extends JpaRepository<AssessmentFeedback, Integer> {
+    java.util.List<AssessmentFeedback> findByAssessment_ID(Integer assessmentID);
 }
