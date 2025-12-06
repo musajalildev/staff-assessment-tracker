@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.api.DTO.authenticationDTOs;
+package com.assessment.tracker.server.api.dto.authenticationDTOs;
 
 import com.assessment.tracker.server.utils.enums.*;
 

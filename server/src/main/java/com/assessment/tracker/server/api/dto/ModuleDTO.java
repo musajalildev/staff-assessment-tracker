@@ -1,17 +1,6 @@
-package com.assessment.tracker.server.api.DTO;
+package com.assessment.tracker.server.api.dto;
 
 import java.util.List;
-
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
-
-import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
-
-import com.assessment.tracker.server.utils.mappers.*;
-import com.assessment.tracker.server.utils.enums.*;
 
 public class ModuleDTO {
     private String id;

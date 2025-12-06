@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.api.DTO.userHelperDTOs;
+package com.assessment.tracker.server.api.dto.userHelperDTOs;
 
 import com.assessment.tracker.server.utils.enums.*;
 

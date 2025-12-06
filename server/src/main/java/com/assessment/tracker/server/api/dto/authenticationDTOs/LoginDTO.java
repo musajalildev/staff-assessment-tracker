@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.api.DTO.authenticationDTOs;
+package com.assessment.tracker.server.api.dto.authenticationDTOs;
 
 public class LoginDTO {
     public String identifier;
