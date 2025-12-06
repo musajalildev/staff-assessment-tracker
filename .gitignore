@@ -60,3 +60,5 @@ dist-ssr
 
 ### Secrets ###
 /src/main/resources/certs/**.pem
+
+/server/src/main/resources/certs/**.pem
