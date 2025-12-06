@@ -136,7 +136,7 @@ export const moduleAPI = {
   getAll: () => apiRequest('/api/v1/module'),
   getByCode: (code) => apiRequest(`/api/v1/module?moduleCode=${code}`),
   create: (module) => apiRequest('/api/v1/module', { method: 'POST', body: module }),
-  update: (module) => apiRequest('/api/v1/module', { method: 'PUT', body: module }),
+  update: (id, module) => apiRequest('/api/v1/module', { method: 'PUT', body: module }),
   createFromCSV: (csvData) => apiRequest('/api/v1/module/csv', {
     method: 'POST',
     headers: { 'Content-Type': 'text/csv' },
@@ -150,7 +150,7 @@ export const assessmentAPI = {
   create: (assessment) => apiRequest('/api/v1/assessment', { method: 'POST', body: assessment }),
   update: (id, assessment) => apiRequest(`/api/assessment/${id}`, { method: 'PUT', body: assessment }),
 };
-
+`/api/assessment/${id}
 // AssignedUser API (Roles)
 export const assignedUserAPI = {
   getAll: () => apiRequest('/assign'),
