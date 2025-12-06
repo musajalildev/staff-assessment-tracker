@@ -1,192 +1,109 @@
 package com.assessment.tracker.server.api.controller;
 
-import com.assessment.tracker.server.api.dto.*;
-import com.assessment.tracker.server.api.dto.userHelperDTOs.*;
-
+import com.assessment.tracker.server.api.dto.UserDTO;
+import com.assessment.tracker.server.api.dto.userHelperDTOs.EmailUpdDTO;
 import com.assessment.tracker.server.api.dto.userHelperDTOs.PasswordUpdDTO;
-import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.services.*;
-
-import com.assessment.tracker.server.utils.enums.*;
-import com.assessment.tracker.server.utils.mappers.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.assessment.tracker.server.api.dto.userHelperDTOs.UserTypeUpdDTO;
+import com.assessment.tracker.server.api.dto.userHelperDTOs.usernameUpdDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/users") // corresponding to service
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import java.util.List;
+import java.util.UUID;
 
-public class UserController {
+@Tag(name = "User", description = "User-Related-Operations")
+public interface UserController {
 
-    private final UserService userService;
-    private final UserMapper userMapper;
+    @Operation(
+            summary = "Get all users",
+            description = "Retrieve a list of all users in the system",
+            tags = {"User"}
+    )
+    ResponseEntity<List<UserDTO>> getAllUsers();
 
-    @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
+    @Operation(
+            summary = "Get user by username",
+            description = "Retrieve a user by their unique username",
+            tags = {"User"}
+    )
+    ResponseEntity<UserDTO> getUserByUsername(
+            @Parameter(description = "Username of the user") @PathVariable String username
+    );
 
-    private String getUsernameByEmailOrUsername(String identifier) {
-        User user = userService.getUserByEmail(identifier);
-        if (user == null) {
-            user = userService.getUserByUsername(identifier);
-        }
-        return user.getUsername();
-    }
+    @Operation(
+            summary = "Get user by email",
+            description = "Retrieve a user by their unique email",
+            tags = {"User"}
+    )
+    ResponseEntity<UserDTO> getUserByEmail(
+            @Parameter(description = "Email of the user") @PathVariable String email
+    );
 
-    // -------------------- READ --------------------
-    @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        if (users == null)
-            return ResponseEntity.notFound().build();
+    @Operation(
+            summary = "Get user by ID",
+            description = "Retrieve a user by their unique ID",
+            tags = {"User"})
+    ResponseEntity<UserDTO> getUserById(
+            @Parameter(description = "ID of the user") @PathVariable UUID id
+    );
 
-        return ResponseEntity.ok(
-                users.stream().map(userMapper::entityToApi).toList());
-    }
+    @Operation(
+            summary = "Get user permissions",
+            description = "Retrieve the permissions of a specific user by ID",
+            tags = {"User"})
+    ResponseEntity<String> getUserPermission(
+            @Parameter(description = "ID of the user") @PathVariable UUID id
+    );
 
-    @GetMapping("/un/{username}")
-    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-        User user = userService.getUserByUsername(username);
-        return (user != null)
-                ? ResponseEntity.ok(userMapper.entityToApi(user))
-                : ResponseEntity.notFound().build();
-    }
+    @Operation(
+            summary = "Update user password",
+            description = "Update the password of a specific user by ID",
+            tags = {"User"})
+    ResponseEntity<String> updateUserPassword(
+            @Parameter(description = "ID of the user") @PathVariable UUID id,
+            @Parameter(description = "New password data") @RequestBody PasswordUpdDTO passwordData
+    );
 
-    @GetMapping("/email/{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
-        User user = userService.getUserByEmail(email);
-        return (user != null)
-                ? ResponseEntity.ok(userMapper.entityToApi(user))
-                : ResponseEntity.notFound().build();
-    }
+    @Operation(
+            summary = "Update user email",
+            description = "Update the email of a specific user by ID",
+            tags = {"User"})
+    ResponseEntity<UserDTO> updateUserEmail(
+            @Parameter(description = "ID of the user") @PathVariable UUID id,
+            @Parameter(description = "Updated email data") @RequestBody EmailUpdDTO updatedUserDTO
+    );
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
-        User user = userService.getUser(id);
-        return (user != null)
-                ? ResponseEntity.ok(userMapper.entityToApi(user))
-                : ResponseEntity.notFound().build();
-    }
+    @Operation(
+            summary = "Update username",
+            description = "Update the username of a specific user by ID",
+            tags = {"User"})
+    ResponseEntity<UserDTO> updateUsername(
+            @Parameter(description = "ID of the user") @PathVariable UUID id,
+            @Parameter(description = "Updated username data") @RequestBody usernameUpdDTO updatedUserDTO
+    );
 
-    @GetMapping("/permission/{id}")
-    public ResponseEntity<String> getUserPermission(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getUserPermission(id).toString());
-    }
+    @Operation(
+            summary = "Update user permission",
+            description = "Update the permission type of a specific user by ID",
+            tags = {"User"})
+    ResponseEntity<UserDTO> updateUserPermission(
+            @Parameter(description = "ID of the user") @PathVariable UUID id,
+            @Parameter(description = "Updated permission data") @RequestBody UserTypeUpdDTO updatedUserDTO
+    );
 
-    @GetMapping("/{permit}")
-    public ResponseEntity<List<UserDTO>> getAllUsersByPermission(@PathVariable UserType permit) {
-        return ResponseEntity.ok(
-                userService.getAllUsersByPermission(permit)
-                        .stream().map(userMapper::entityToApi).toList());
-    }
-
-    // -------------------- UPDATE --------------------
-    @PutMapping("/{id}/password")
-    public ResponseEntity<String> updateUserPassword(@PathVariable UUID id,
-            @RequestBody PasswordUpdDTO passwordData) {
-
-        User target = userService.getUser(id);
-        if (target == null)
-            return ResponseEntity.notFound().build();
-
-        if (!userService.validatePassword(passwordData.currentPassword, target.getPassword())) {
-            return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
-        }
-
-        return changeUserPassword(id, passwordData, target);
-    }
-
-    private ResponseEntity<String> changeUserPassword(UUID id, PasswordUpdDTO passwordInfo,
-            User target) {
-        if (target == null)
-            return ResponseEntity.notFound().build();
-
-        String currentPassword = target.getPassword();
-
-        if (passwordInfo != null) {
-            if (currentPassword.equals(passwordInfo.newPassword)) {
-                return new ResponseEntity<>("updatedUser", HttpStatus.BAD_REQUEST);
-            }
-            userService.updateUserPassword(passwordInfo, id);
-            return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>("No valid incoming data", HttpStatus.BAD_REQUEST);
-    }
-
-    @PutMapping("/{id}/email")
-    public ResponseEntity<UserDTO> updateUserEmail(
-            @PathVariable UUID id,
-            @RequestBody EmailUpdDTO updatedUserDTO) {
-        User existing = userService.getUser(id);
-        String incomingEmail = updatedUserDTO.email;
-        if (existing == null)
-            return ResponseEntity.notFound().build();
-        // check that incoming data isnt blank
-        if (incomingEmail.isBlank()) {
-            System.out.println("Blank email");
-            return ResponseEntity.badRequest().build();
-        }
-
-        User updated = userService.updateUserEmail(incomingEmail, id);
-        return ResponseEntity.ok(userMapper.entityToApi(updated));
-    }
-
-    @PutMapping("/{id}/username")
-    public ResponseEntity<UserDTO> updateUsername(
-            @PathVariable UUID id,
-            @RequestBody usernameUpdDTO updatedUserDTO) {
-        User existing = userService.getUser(id);
-        String incomingUsername = updatedUserDTO.username;
-        if (existing == null)
-            return ResponseEntity.notFound().build();
-
-        // check that incoming data isnt blank
-        if (incomingUsername.isBlank()) {
-            System.out.println("Blank username");
-            return ResponseEntity.badRequest().build();
-        }
-
-        User updated = userService.updateUsername(incomingUsername, id);
-        return ResponseEntity.ok(userMapper.entityToApi(updated));
-    }
-
-    @PutMapping("/{id}/permission")
-    public ResponseEntity<UserDTO> updateUserPermission(
-            @PathVariable UUID id,
-            @RequestBody UserTypeUpdDTO updatedUserDTO) {
-        User existing = userService.getUser(id);
-        // incomingUT (incoming user type :D )
-        UserType incomingUT = updatedUserDTO.userType;
-        if (existing == null)
-            return ResponseEntity.notFound().build();
-
-        User updated = userService.updateUserPermission(incomingUT, id);
-        return new ResponseEntity<>(userMapper.entityToApi(updated), HttpStatus.OK);
-    }
-
-    // -------------------- DELETE --------------------
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        boolean deleted = userService.deleteUser(id);
-        return deleted
-                ? ResponseEntity.ok("User deleted successfully.")
-                : new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
-    }
-
-    @DeleteMapping("/wipe")
-    public ResponseEntity<String> deleteAllUsers(@RequestParam String confirm) {
-        if (!"YUTA_BUM".equals(confirm)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid confirmation value. Action not performed.");
-        }
-        userService.deleteAllUsers();
-        return new ResponseEntity<>("All Users Erased", HttpStatus.OK);
-    }
+    @Operation(
+            summary = "Delete user",
+            description = "Delete a specific user by their ID",
+            tags = {"User"})
+    ResponseEntity<String> deleteUser(
+            @Parameter(description = "ID of the user") @PathVariable UUID id
+    );
 }

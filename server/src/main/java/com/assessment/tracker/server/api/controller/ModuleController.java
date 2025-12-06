@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+@Tag(name = "Module", description = "Module-Related-Operations")
 public interface ModuleController {
 
         @GetMapping(
@@ -18,35 +19,35 @@ public interface ModuleController {
                 consumes = "application/json")
         @Operation(
                 summary = "Gets module based on module code",
-                description = "Returns respective module object")
-        @Tag(name = "Module", description = "Module-Related-Operations")
+                description = "Returns respective module object",
+                tags = {"Module"})
         ModuleDTO getModule(@RequestParam(required = false) String moduleCode);
 
         @PutMapping(path = "/api/v1/module", consumes = "application/json")
         @Operation(
                 summary = "Update module based on updated schema",
-                description = "Returns respective module object")
-        @Tag(name = "Module", description = "Module-Related-Operations")
+                description = "Returns respective module object",
+                tags = {"Module"})
         ResponseEntity<ModuleDTO> updateModule(@RequestBody ModuleDTO module);
 
         @GetMapping(path = "/api/v1/module", produces = "application/json")
         @Operation(
                 summary = "Update module based on updated schema",
-                description = "Returns respective module object")
-        @Tag(name = "Module", description = "Module-Related-Operations")
+                description = "Returns respective module object",
+                tags = {"Module"})
         List<ModuleDTO> getModules();
 
         @PostMapping(path = "/api/v1/module", consumes = "application/json")
         @Operation(
                 summary = "Create module based on schema",
-                description = "Returns response entity if the creation is successful")
-        @Tag(name = "Module", description = "Module-Related-Operations")
+                description = "Returns response entity if the creation is successful",
+                tags = {"Module"})
         ResponseEntity<ModuleDTO> createModule(ModuleDTO module);
 
         @PostMapping(path = "/api/v1/module/csv", consumes = "text/csv")
         @Operation(
                 summary = "Create module based on CSV",
-                description = "Returns whether the operation is successful")
-        @Tag(name = "Module", description = "Module-Related-Operations")
+                description = "Returns whether the operation is successful",
+                tags={"Module"})
         ResponseEntity<ModuleDTO> createModuleCSV(@RequestBody InputStream csv);
 }
