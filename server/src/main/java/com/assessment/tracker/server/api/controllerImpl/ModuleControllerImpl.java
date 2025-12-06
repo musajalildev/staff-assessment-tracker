@@ -1,47 +1,44 @@
 package com.assessment.tracker.server.api.controllerImpl;
 
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
+import com.assessment.tracker.server.api.controller.ModuleController;
+import com.assessment.tracker.server.api.DTO.ModuleDTO;
+import com.assessment.tracker.server.persistence.entities.Module;
+import com.assessment.tracker.server.persistence.services.ModuleService;
+import com.assessment.tracker.server.utils.mappers.ModuleMapper;
 
-import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
-
-import com.assessment.tracker.server.utils.mappers.*;
-import com.assessment.tracker.server.utils.enums.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class ModuleControllerImpl implements ModuleController {
-
-    private final ModuleMapper moduleMapper;
-    private final ModuleService moduleService;
-
     @Autowired
-    public ModuleControllerImpl(ModuleService moduleService, ModuleMapper moduleMapper) {
-        this.moduleMapper = moduleMapper;
-        this.moduleService = moduleService;
+    private ModuleMapper moduleMapper;
+    private ModuleService moduleService;
+
+    @Override
+    public ResponseEntity<List<ModuleDTO>> getAllModules() {
+        List<ModuleDTO> dtos = moduleService.retrieveModules();
+        return ResponseEntity.ok(dtos);
     }
 
     @Override
-    public ModuleDTO getModule(String moduleCode) {
-        return null;
+    public ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode) {
+        List<ModuleDTO> dtos = moduleService.getModuleDTOListByCode(moduleCode);
+
+        return ResponseEntity.ok(dtos.get(0));
     }
 
     @Override
-    public ResponseEntity<ModuleDTO> updateModule(ModuleDTO module) {
-        return null;
-    }
+    public ResponseEntity<Module> updateModule(UUID id, ModuleDTO dto) {
+        Module entity = moduleMapper.apiToEntity(dto);
+        moduleService.update(id, entity);
 
-    @Override
-    public List<ModuleDTO> getModules() {
-        return List.of();
+        return ResponseEntity.ok(entity);
     }
 
     @Override
