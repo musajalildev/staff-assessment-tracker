@@ -1,7 +1,8 @@
-package com.assessment.tracker.server.utils.mappers;
+package com.assessment.tracker.server.app.mappers;
 
 import com.assessment.tracker.server.api.dto.UserDTO;
 import com.assessment.tracker.server.persistence.entities.User;
+import com.assessment.tracker.server.utils.Mapper;
 import org.springframework.stereotype.Component;
 
 @Component
