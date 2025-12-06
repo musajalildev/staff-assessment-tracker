@@ -150,7 +150,7 @@ export const assessmentAPI = {
   create: (assessment) => apiRequest('/api/v1/assessment', { method: 'POST', body: assessment }),
   update: (id, assessment) => apiRequest(`/api/assessment/${id}`, { method: 'PUT', body: assessment }),
 };
-`/api/assessment/${id}
+//api/assessment/${id}
 // AssignedUser API (Roles)
 export const assignedUserAPI = {
   getAll: () => apiRequest('/assign'),
