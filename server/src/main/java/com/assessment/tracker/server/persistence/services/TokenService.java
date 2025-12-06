@@ -1,6 +1,6 @@
 package com.assessment.tracker.server.persistence.services;
 
-import com.assessment.tracker.server.api.DTO.authenticationDTOs.TokenDTO;
+import com.assessment.tracker.server.api.dto.authenticationDTOs.TokenDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;

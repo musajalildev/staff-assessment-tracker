@@ -1,7 +1,7 @@
 package com.assessment.tracker.server.persistence.services;
 
-import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
-import com.assessment.tracker.server.api.DTO.authenticationDTOs.*;
+import com.assessment.tracker.server.api.dto.userHelperDTOs.PasswordUpdDTO;
+import com.assessment.tracker.server.api.dto.authenticationDTOs.*;
 
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;

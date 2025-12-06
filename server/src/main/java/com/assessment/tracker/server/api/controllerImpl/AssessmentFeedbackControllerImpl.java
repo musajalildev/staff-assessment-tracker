@@ -1,5 +1,6 @@
 package com.assessment.tracker.server.api.controllerImpl;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.DTO.*;
+import com.assessment.tracker.server.api.dto.*;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.services.*;
 

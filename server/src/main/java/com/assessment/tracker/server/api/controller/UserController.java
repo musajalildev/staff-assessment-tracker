@@ -1,10 +1,9 @@
 package com.assessment.tracker.server.api.controller;
 
-import com.assessment.tracker.server.api.DTO.*;
-import com.assessment.tracker.server.api.DTO.userHelperDTOs.*;
-import com.assessment.tracker.server.api.DTO.authenticationDTOs.*;
+import com.assessment.tracker.server.api.dto.*;
+import com.assessment.tracker.server.api.dto.userHelperDTOs.*;
 
-import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
+import com.assessment.tracker.server.api.dto.userHelperDTOs.PasswordUpdDTO;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.services.*;
 

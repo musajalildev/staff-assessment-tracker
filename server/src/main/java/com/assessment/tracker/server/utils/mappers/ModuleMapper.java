@@ -1,6 +1,6 @@
 package com.assessment.tracker.server.utils.mappers;
 
-import com.assessment.tracker.server.api.DTO.*;
+import com.assessment.tracker.server.api.dto.*;
 
 import com.assessment.tracker.server.persistence.entities.Module;
 
