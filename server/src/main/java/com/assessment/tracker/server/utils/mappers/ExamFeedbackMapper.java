@@ -13,6 +13,7 @@ import com.assessment.tracker.server.utils.enums.*;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.assessment.tracker.server.api.DTO.ExamFeedbackDTO;
 
 @Component
 public class ExamFeedbackMapper implements Mapper<ExamFeedbackDTO, ExamFeedback> {
@@ -54,10 +55,8 @@ public class ExamFeedbackMapper implements Mapper<ExamFeedbackDTO, ExamFeedback>
         entity.setID(dto.getId());
         entity.setFeedback(dto.getFeedback());
         entity.setCreatedDate(dto.getCreatedDate());
-
         // Note: Assessment and Author relationships should be set by the service
         // based on IDs, not here in the mapper
-
         return entity;
     }
 }

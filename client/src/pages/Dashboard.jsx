@@ -59,10 +59,10 @@ function Dashboard() {
         const userId = user?.id || user?.userID;
         const username = user?.username;
         const currentView = user?.selectedUserType || user?.selectedRole;
-        
+
         // Filter modules by role
         const filteredModules = filterModulesByRole(allModules, assignedRes.data || [], [], userId, username, currentView);
-        
+
         setModules(filteredModules);
         setUsers(usersRes.data || []);
         setUserRoles(assignedRes.data || []);
