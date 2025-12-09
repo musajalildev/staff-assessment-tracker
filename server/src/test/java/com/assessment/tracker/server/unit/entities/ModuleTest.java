@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.integration.persistence.entities;
+package com.assessment.tracker.server.unit.entities;
 
 import com.assessment.tracker.server.persistence.entities.Module;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

@@ -4,7 +4,7 @@ import com.assessment.tracker.server.persistence.entities.User;
 import com.assessment.tracker.server.persistence.entities.Module;
 import com.assessment.tracker.server.persistence.repos.UserRepository;
 import com.assessment.tracker.server.utils.enums.UserType;
-import com.assessment.tracker.server.utils.mappers.CsvMapper;
+import com.assessment.tracker.server.app.mappers.CsvMapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,8 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class ServerApplicationTests {
 
-    @Autowired private CsvMapper csvMapper;
-    @Autowired private UserRepository userRepository;
+    @Autowired
+    private CsvMapper csvMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void csvMapper_correctlyMapsModulesUsersAndAssessments() {

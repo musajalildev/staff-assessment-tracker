@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.integration.persistence.repositories;
+package com.assessment.tracker.server.unit.repositories;
 
 import com.assessment.tracker.server.persistence.entities.AssignedUser;
 import com.assessment.tracker.server.persistence.entities.User;

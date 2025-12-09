@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.integration.persistence.entities;
+package com.assessment.tracker.server.unit.entities;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -26,9 +26,7 @@ public abstract class EntityTest<T>{
 
     @Test
     void testPersistence() {
-        entityManager.persist(entity);
-        entityManager.flush();
-        entityManager.clear();
+        entityManager.persistAndFlush(entity);
 
         T loaded = (T) entityManager.find(entity.getClass(), getId(entity));
         assertNotNull(loaded);
@@ -36,8 +34,7 @@ public abstract class EntityTest<T>{
 
     @Test
     void findEntity() {
-        entityManager.persist(entity);
-        entityManager.flush();
+        entityManager.persistAndFlush(entity);
 
         T loaded = (T) entityManager.find(entity.getClass(), getId(entity));
 
@@ -47,8 +44,8 @@ public abstract class EntityTest<T>{
 
     @Test
     void testRemoval() {
-        entityManager.persist(entity);
-        entityManager.flush();
+        entityManager.persistAndFlush(entity);
+        entityManager.clear();
 
         T loaded = (T) entityManager.find(entity.getClass(), getId(entity));
         assertNotNull(loaded);

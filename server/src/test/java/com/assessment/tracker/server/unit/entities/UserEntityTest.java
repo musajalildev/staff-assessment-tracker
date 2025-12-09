@@ -1,16 +1,21 @@
-package com.assessment.tracker.server.integration.persistence.entities;
+package com.assessment.tracker.server.unit.entities;
 
+import com.assessment.tracker.server.configuration.RsaKeyProperties;
 import com.assessment.tracker.server.persistence.entities.User;
-import com.assessment.tracker.server.utils.enums.userType;
+import com.assessment.tracker.server.utils.enums.UserType;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +29,9 @@ public class UserEntityTest extends EntityTest<User> {
             return new BCryptPasswordEncoder();
         }
     }
+
+    @MockitoBean
+    private RsaKeyProperties rsaKeyProperties;
 
     @Test
     void testUpdate() {
@@ -47,7 +55,7 @@ public class UserEntityTest extends EntityTest<User> {
                 "username",
                 "email@email.com",
                 "superSecretPassword",
-                userType.ACADEMIC
+                UserType.ACADEMIC
         );
     }
    @Override
