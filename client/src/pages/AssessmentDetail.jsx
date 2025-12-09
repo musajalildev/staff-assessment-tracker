@@ -3,22 +3,26 @@ import Layout from '../components/Layout';
 import { useState, useEffect } from 'react';
 import { assessmentAPI, userAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
+import { useNavigate } from "react-router-dom";
 
 function AssessmentDetail() {
   const { moduleId, assessmentId } = useParams();
   const [assessment, setAssessment] = useState(null);
   const [users, setUsers] = useState([]);
   const [progress, setProgress] = useState(0);
+  const [progressSequence, setProgressSequence] = useState([]);
   const [type, setType] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
+  // Loads the relevant Assessment
   useEffect(() => {
     const loadAssessment = async () => {
       try {
         setLoading(true);
         const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
-        
+
         const [assessmentRes, usersRes] = await Promise.all([
           assessmentAPI.getById(assessmentIdToUse),
           userAPI.getAll().catch(() => ({ data: [] }))
@@ -36,9 +40,20 @@ function AssessmentDetail() {
 
     loadAssessment();
   }, [assessmentId]);
+  // Sets up maps for progress and type
   useEffect(() => {
     if (!assessment) return;
-
+    const typeMap = {
+      "EXAM": "Exam",
+      "COURSEWORK": "Coursework",
+      "TEST_AUTOGRADED": "Test (Autograded)",
+      "TEST_SINGLE_MARKER": "Test (Single Marker)",
+      "TEST_TEAM_MARKER": "Test (Team Marker)"
+    };
+    setType(typeMap[assessment.type] || assessment.type || "N/A");
+    /*switch (assessment.type) {
+      case "EXAM"
+    }/**/
     const progressMap = {
       "CREATED": 1,
       "CHECKED": 2,
@@ -51,28 +66,32 @@ function AssessmentDetail() {
     };
     setProgress(progressMap[assessment.progress] || 0);
 
-    const typeMap = {
-      "EXAM": "Exam",
-      "COURSEWORK": "Coursework",
-      "TEST_AUTOGRADED": "Test (Autograded)",
-      "TEST_SINGLE_MARKER": "Test (Single Marker)",
-      "TEST_TEAM_MARKER": "Test (Team Marker)"
-    };
-    setType(typeMap[assessment.type] || assessment.type || "N/A");
-  }, [assessment]);
 
+
+  }, [assessment]);
+  // Code to Progress Assessments
   const progressAssessment = async () => {
     if (!assessment) return;
+    if (assessment.progress == "CHECKED") {
+      navigate("/test/feedback/" + assessmentId)
+      return
+    }
 
     const progressSequence = [
       "CREATED", "CHECKED", "NEEDS_CHANGES", "TEST_TAKING_PLACE",
       "MARKING_STANDARDISED", "MARKED", "RESULTS_RETURNED", "COMPLETE"
     ];
-    
+
+
     const currentIndex = progressSequence.indexOf(assessment.progress);
-    const nextProgress = currentIndex < progressSequence.length - 1 
+    let nextProgress = currentIndex < progressSequence.length - 1
       ? progressSequence[currentIndex + 1]
-      : progressSequence[1]; // Loop back to CHECKED if at end
+      : progressSequence[1]; // Loop back to CHECKED if at end Test feature
+    if (assessment.progress == "NEEDS_CHANGES") {
+      console.log("needs_changes");
+      nextProgress = "CHECKED";
+    }
+
 
     const updatedAssessment = {
       ...assessment,
@@ -215,8 +234,8 @@ function AssessmentDetail() {
       </section>
 
       {assessment && (
-        <FeedbackSection 
-          assessment={assessment} 
+        <FeedbackSection
+          assessment={assessment}
           onFeedbackAdded={() => {
             // Optionally reload assessment data when feedback is added
             console.log('Feedback added, reloading assessment...');

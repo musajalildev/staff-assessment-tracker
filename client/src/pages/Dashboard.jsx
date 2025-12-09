@@ -30,7 +30,7 @@ function Dashboard() {
           try {
             const rolesResponse = await assignedUserAPI.getUserRoles(user.username);
             const validRoles = rolesResponse.data || [];
-            
+
             // Check if the selected role is valid
             if (!validRoles.includes(user.selectedRole)) {
               setRoleError('Invalid role selected. Your selected role is not assigned to your account.');
@@ -60,8 +60,8 @@ function Dashboard() {
 
         // Try to get assessments (if any exist)
         try {
-          const assessmentRes = await assessmentAPI.getById(1);
-          setAssessments([assessmentRes.data]);
+          const assessmentRes = await assessmentAPI.getAll();
+          setAssessments(assessmentRes.data);
         } catch (e) {
           setAssessments([]);
         }
@@ -83,7 +83,14 @@ function Dashboard() {
   };
 
   const userRolesList = getCurrentUserRoles();
-  const assessmentsInProgress = assessments.filter(a => 
+  console.log("assessments");
+  console.log(assessments);
+  console.log(typeof (assessments));
+  console.log(assessments.length);
+  console.log(assessments.slice(0, 3));
+
+  assessments.slice(0, 3).map((assessment) => (console.log(assessment.id)));
+  const assessmentsInProgress = assessments.filter(a =>
     a.progress && a.progress !== 'COMPLETE'
   ).length;
 
@@ -145,11 +152,11 @@ function Dashboard() {
           <div className="mt-12">
             {userRolesList.length > 0 ? (
               userRolesList.map((role, i) => (
-                <span 
-                  key={i} 
-                  className="pill" 
-                  style={currentUser?.selectedRole === role ? { 
-                    background: 'rgba(0, 217, 255, 0.2)', 
+                <span
+                  key={i}
+                  className="pill"
+                  style={currentUser?.selectedRole === role ? {
+                    background: 'rgba(0, 217, 255, 0.2)',
                     borderColor: 'var(--brand)',
                     color: 'var(--brand)',
                     fontWeight: 'bold',
@@ -204,7 +211,7 @@ function Dashboard() {
                 <div key={assessment.id || assessment.ID} className="step active">
                   <div className="dot"></div>
                   <div>
-                    <div className="title">{assessment.title || 'Untitled Assessment'}</div>
+                    <div className="title"><Link to={`/modules/${assessment.module || 1}/assessments/${assessment.id || assessment.ID}`}>{assessment.title || 'Untitled Assessment'}</Link></div>
                     <div className="meta">
                       {assessment.type || 'N/A'} • {assessment.progress || 'N/A'}
                     </div>

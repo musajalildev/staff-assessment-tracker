@@ -9,7 +9,7 @@ public class AssessmentFeedbackDTO {
     private String feedback;
     private UserDTO author;
     private LocalDateTime createdDate;
-    
+
     // Convenience fields for frontend compatibility
     private UUID authorID;
     private String authorUsername;

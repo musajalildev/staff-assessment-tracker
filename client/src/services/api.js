@@ -6,6 +6,7 @@ const apiRequest = async (endpoint, options = {}) => {
 
   // Get auth token from localStorage if available
   const authToken = localStorage.getItem('authToken');
+  // console.log("token:" + authToken)
 
   const config = {
     headers: {
@@ -149,6 +150,7 @@ export const assessmentAPI = {
   getById: (id) => apiRequest(`/api/assessment/${id}`),
   create: (assessment) => apiRequest('/api/v1/assessment', { method: 'POST', body: assessment }),
   update: (id, assessment) => apiRequest(`/api/assessment/${id}`, { method: 'PUT', body: assessment }),
+  getAll: () => apiRequest(`/api/assessment/all`),
 };
 //api/assessment/${id}
 // AssignedUser API (Roles)
