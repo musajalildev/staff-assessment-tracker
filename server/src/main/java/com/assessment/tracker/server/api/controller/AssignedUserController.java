@@ -1,160 +1,96 @@
 package com.assessment.tracker.server.api.controller;
 
-import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.services.*;
-
-import com.assessment.tracker.server.utils.enums.*;
-import com.assessment.tracker.server.api.DTO.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RestController;
+import com.assessment.tracker.server.api.dto.AssessmentRolesDTO;
+import com.assessment.tracker.server.persistence.entities.Assessment;
+import com.assessment.tracker.server.persistence.entities.AssignedUser;
+import com.assessment.tracker.server.utils.enums.AssessmentRole;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
-/** @noinspection DuplicatedCode */
-@RestController
+@Tag(name = "Assignment", description = "User Role Assignment Operations")
 @RequestMapping("/assign")
-public class AssignedUserController {
+public interface AssignedUserController {
 
-    private final AssignedUserService assignedUserService;
-    private final UserService userService;
-
-    @Autowired
-    public AssignedUserController(AssignedUserService assignedUserService, UserService userService) {
-        this.assignedUserService = assignedUserService;
-        this.userService = userService;
-    }
-
-    // implement CRUD operations
     // -------------------- CREATE --------------------
-    // implement get assigned users w/o query params
-    @PostMapping({ "", "/" })
-    public ResponseEntity<AssignedUser> createAssignment(@RequestBody String username, @RequestBody AssessmentRole role,
-            Assessment assessment) {
-        AssignedUser createdUser = assignedUserService.createAssignment(username, role, assessment);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
+    @Operation(summary = "Create a user assignment", description = "Assign a role to a user by their UUID")
+    @PostMapping({"", "/"})
+    ResponseEntity<AssignedUser> createAssignment(
+            @Parameter(description = "ID of the user") @RequestBody UUID userID,
+            @Parameter(description = "Role to assign") @RequestBody AssessmentRole role,
+            Assessment assessment
+    );
 
     // -------------------- READ --------------------
+    @Operation(summary = "Get all assigned users", description = "Retrieve all user-role assignments")
     @GetMapping
-    public ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers() {
-        List<AssessmentRolesDTO> assessmentRoles = assignedUserService.getAllAssignedUsers();
-        return (assessmentRoles != null) ? ResponseEntity.ok(assessmentRoles)
-                : ResponseEntity.notFound().build();
-    }
+    ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers();
 
+    @Operation(summary = "Get all users with a specific role", description = "Retrieve assignments filtered by role")
     @GetMapping("/{role}")
-    public ResponseEntity<List<AssignedUser>> getAllCommonRole(@PathVariable AssessmentRole role) {
-        List<AssignedUser> commonUsers = assignedUserService.getAllCommonRole(role);
-        return (commonUsers != null) ? ResponseEntity.ok(commonUsers)
-                : ResponseEntity.notFound().build();
+    ResponseEntity<List<AssignedUser>> getAllCommonRole(
+            @Parameter(description = "Role to filter") @PathVariable AssessmentRole role
+    );
 
-    }
-
-    // get user-role assignment data by assignment id, path variable
+    @Operation(summary = "Get assignment by ID", description = "Retrieve assignment data by assignment ID")
     @GetMapping("/id/{id}")
-    public ResponseEntity<AssignedUser> getAssignedUser(@PathVariable int id) {
-        AssignedUser assignedUser = assignedUserService.getAssignedUser(id);
-        return (assignedUser != null) ? ResponseEntity.ok(assignedUser)
-                : ResponseEntity.notFound().build();
-    }
+    ResponseEntity<AssignedUser> getAssignedUser(
+            @Parameter(description = "Assignment ID") @PathVariable int id
+    );
 
-    // get user-role assignment by email/username, path variable
-    // will allow the service method to check if string is present
-    // as email or username
+    @Operation(summary = "Get assignments by username", description = "Retrieve all assignments for a user by username or email")
     @GetMapping("/un/{username}")
-    public ResponseEntity<List<AssignedUser>> getAssignedUserByUsername(@PathVariable String username) {
-        List<AssignedUser> assignedUser = assignedUserService.getAssignedUser(username);
-        return (assignedUser != null) ? ResponseEntity.ok(assignedUser)
-                : ResponseEntity.notFound().build();
-    }
+    ResponseEntity<List<AssignedUser>> getAssignedUserByUsername(
+            @Parameter(description = "Username or email") @PathVariable String username
+    );
 
-    // GET ALL USER ROLES (notice mapping pattern)
-    // get all user roles by ID
+    @Operation(summary = "Get all roles for a user by ID", description = "Retrieve all roles assigned to a user by UUID")
     @GetMapping("/role/userid/{id}")
-    public ResponseEntity<List<AssessmentRole>> getAllUserRolesById(@PathVariable UUID id) {
-        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(id);
-        return (userRoles != null) ? ResponseEntity.ok(userRoles)
-                : ResponseEntity.notFound().build();
-    }
+    ResponseEntity<List<AssessmentRole>> getAllUserRolesById(
+            @Parameter(description = "User ID") @PathVariable UUID id
+    );
 
-    // get an assignment role enum by assignmentID
+    @Operation(summary = "Get role by assignment ID", description = "Retrieve a role assigned for a specific assignment")
     @GetMapping("/role/assignmentID/{id}")
-    public ResponseEntity<AssessmentRole> getRoleByAssignmentId(@PathVariable int id) {
-        AssignedUser assignedUser = assignedUserService.getAssignedUser(id);
-        AssessmentRole role = assignedUser.getRole();
-        return (role != null) ? ResponseEntity.ok(role)
-                : ResponseEntity.notFound().build();
-    }
+    ResponseEntity<AssessmentRole> getRoleByAssignmentId(
+            @Parameter(description = "Assignment ID") @PathVariable int id
+    );
 
-    // get all roles for a user
+    @Operation(summary = "Get all roles for a user by username", description = "Retrieve all roles for a user identified by username or email")
     @GetMapping("/role/{username}")
-    public ResponseEntity<List<AssessmentRole>> getAllUserRoles(@PathVariable String username) {
-        User user = assignedUserService.findUserWithString(username);
-        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserID());
-        return (userRoles != null) ? ResponseEntity.ok(userRoles)
-                : ResponseEntity.notFound().build();
-    }
+    ResponseEntity<List<AssessmentRole>> getAllUserRoles(
+            @Parameter(description = "Username or email") @PathVariable String username
+    );
 
     // -------------------- UPDATE --------------------
-    // implement update user information
-
-    // implement update user assignment using assignmentID
+    @Operation(summary = "Update a user's role", description = "Update role of an assignment by ID")
     @PutMapping("/role/id/{id}")
-    public ResponseEntity<AssignedUser> updateUserRole(@PathVariable int id, @RequestBody AssessmentRole role) {
-        AssignedUser currentUserAssignment = assignedUserService.getAssignedUser(id);
-        if (currentUserAssignment != null)
+    ResponseEntity<AssignedUser> updateUserRole(
+            @Parameter(description = "Assignment ID") @PathVariable int id,
+            @Parameter(description = "New role") @RequestBody AssessmentRole role
+    );
 
-            if (currentUserAssignment.getRole() == role) {
-                return ResponseEntity.status(HttpStatus.CREATED).build();
-            } else {
-                currentUserAssignment.setRole(role);
-                return ResponseEntity.ok(assignedUserService.updateUserAssignment(role, id));
-            }
-        return ResponseEntity.notFound().build();
-    }
-
-    // ----------------------DELETE----------------
-    // implement deletion of user assignment
+    // -------------------- DELETE --------------------
+    @Operation(summary = "Delete an assignment by ID", description = "Delete a specific assignment")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAssignedUser(@PathVariable int id) {
-        String name = assignedUserService.getAssignedUser(id).getUser().getUsername();
-        String role = assignedUserService.getAssignedUser(id).getRole().toString();
-        boolean deleted = assignedUserService.deleteAssignedUser(id);
-        return (deleted) ? new ResponseEntity<>(
-                "Name: " + name +
-                        "\n Role: " + role +
-                        "\n User Role Assignment Erased",
-                HttpStatus.OK)
-                : new ResponseEntity<>("User Role Assignment Not Found", HttpStatus.NOT_FOUND);
+    ResponseEntity<String> deleteAssignedUser(
+            @Parameter(description = "Assignment ID") @PathVariable int id
+    );
 
-    }
-
-    // delete all assignments for a user
+    @Operation(summary = "Delete all assignments for a user", description = "Delete all role assignments for a specific user by UUID")
     @DeleteMapping("/user/{userid}")
-    public ResponseEntity<String> deleteUserAssignments(@PathVariable UUID userid) {
-        String username = userService.getUser(userid).getUsername();
-        boolean deleted = assignedUserService.deleteAllUserAssignments(userid);
-        return (deleted) ? new ResponseEntity<>(
-                "User: " + username +
-                        "\n Role Assignments Erased",
-                HttpStatus.OK)
-                : new ResponseEntity<>("All User Role Assignments Not Found", HttpStatus.NOT_FOUND);
-    }
+    ResponseEntity<String> deleteUserAssignments(
+            @Parameter(description = "User ID") @PathVariable UUID userid
+    );
 
-    // delete all. use carefully :)
+    @Operation(summary = "Delete all assignments", description = "Delete all assignments. Confirmation required")
     @DeleteMapping("/wipe")
-    public ResponseEntity<String> deleteAllAssignments(@RequestParam String confirm) {
-        boolean deleted = assignedUserService.deleteAllAssignments();
-        if (!"DELETE_EVERYTHING".equals(confirm)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid confirmation value. Action not performed.");
-        }
-        assignedUserService.deleteAllAssignments();
-        return ResponseEntity.ok("All data deleted.");
-    }
-
+    ResponseEntity<String> deleteAllAssignments(
+            @Parameter(description = "Confirmation string (must be 'DELETE_EVERYTHING')") @RequestParam String confirm
+    );
 }

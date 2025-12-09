@@ -63,9 +63,11 @@ public class SecurityConfiguration {
                         .requestMatchers("/h2-console").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
-                        .anyRequest().permitAll()
-                )
-
+                        .requestMatchers(
+                                "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().authenticated()
+                    )
                 // JWT validation (your RSA public key via Nimbus)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults())
