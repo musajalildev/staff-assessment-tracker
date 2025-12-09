@@ -1,12 +1,14 @@
-package com.assessment.tracker.server.api.controllerImpl;
+package com.assessment.tracker.server.app;
 
 import com.assessment.tracker.server.api.controller.ModuleController;
-import com.assessment.tracker.server.api.DTO.ModuleDTO;
+import com.assessment.tracker.server.api.dto.ModuleDTO;
 import com.assessment.tracker.server.persistence.entities.Module;
+import com.assessment.tracker.server.persistence.entities.ModuleRole;
 import com.assessment.tracker.server.persistence.services.ModuleService;
-import com.assessment.tracker.server.utils.mappers.ModuleMapper;
-import com.assessment.tracker.server.utils.mappers.CsvMapper;
+import com.assessment.tracker.server.app.mappers.ModuleMapper;
+import com.assessment.tracker.server.app.mappers.CsvMapper;
 
+import com.assessment.tracker.server.utils.enums.ModuleRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -19,10 +21,17 @@ import java.util.UUID;
 
 @RestController
 public class ModuleControllerImpl implements ModuleController {
+
+    private final ModuleMapper moduleMapper;
+    private final ModuleService moduleService;
+    private final CsvMapper csvMapper;
+
     @Autowired
-    private ModuleMapper moduleMapper;
-    private ModuleService moduleService;
-    private CsvMapper csvMapper;
+    public ModuleControllerImpl(ModuleMapper moduleMapper, ModuleService moduleService, CsvMapper csvMapper) {
+        this.moduleMapper = moduleMapper;
+        this.moduleService = moduleService;
+        this.csvMapper = csvMapper;
+    }
 
     @Override
     public ResponseEntity<List<ModuleDTO>> getAllModules() {
@@ -33,16 +42,15 @@ public class ModuleControllerImpl implements ModuleController {
     @Override
     public ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode) {
         ModuleDTO dtos = moduleService.getModuleDTOListByCode(moduleCode);
-
         return ResponseEntity.ok(dtos);
     }
 
     @Override
-    public ResponseEntity<Module> updateModule(UUID id, ModuleDTO dto) {
+    public ResponseEntity<ModuleDTO> updateModule(UUID id, ModuleDTO dto) {
         Module entity = moduleMapper.apiToEntity(dto);
         moduleService.update(id, entity);
 
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(moduleMapper.entityToApi(entity));
     }
 
     @Override
@@ -52,7 +60,7 @@ public class ModuleControllerImpl implements ModuleController {
     }
 
     @Override
-    public ResponseEntity<Void> createModulesFromCSV(@RequestPart("csv") MultipartFile file, String uploader) {
+    public ResponseEntity<Void> createModulesFromCSV(MultipartFile file, String uploader) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }

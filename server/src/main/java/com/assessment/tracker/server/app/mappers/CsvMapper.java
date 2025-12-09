@@ -1,10 +1,12 @@
-package com.assessment.tracker.server.utils.mappers;
+package com.assessment.tracker.server.app.mappers;
 
 import com.assessment.tracker.server.persistence.entities.Assessment;
 import com.assessment.tracker.server.persistence.entities.Module;
+import com.assessment.tracker.server.utils.Mapper;
 import com.assessment.tracker.server.utils.enums.AssessmentType;
 import com.assessment.tracker.server.persistence.services.UserService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +20,11 @@ import java.util.UUID;
 @Component
 public class CsvMapper implements Mapper<MultipartFile, List<Module>> {
 
-    private UserService userService;
+    private final UserService userService;
 
+    @Autowired
     public CsvMapper(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
