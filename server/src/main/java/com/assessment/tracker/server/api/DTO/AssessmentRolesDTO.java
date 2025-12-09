@@ -9,6 +9,7 @@ public class AssessmentRolesDTO {
     AssessmentRole role;
 
     public AssessmentRolesDTO(Integer assessmentID, UUID userID, AssessmentRole role) {
+
         this.assessmentID = assessmentID;
         this.userID = userID;
         this.role = role;
@@ -29,6 +30,7 @@ public class AssessmentRolesDTO {
     public void setUserID(UUID userID) {
         this.userID = userID;
     }
+
 
     public AssessmentRole getRole() {
         return role;

@@ -59,7 +59,8 @@ function Dashboard() {
         const userId = user?.id || user?.userID;
         const username = user?.username;
         const currentView = user?.selectedUserType || user?.selectedRole;
-
+        console.log("test3");
+        console.log(assignedRes);
         // Filter modules by role
         const filteredModules = filterModulesByRole(allModules, assignedRes.data || [], [], userId, username, currentView);
 
@@ -87,6 +88,15 @@ function Dashboard() {
 
   const getCurrentUserRoles = () => {
     if (!currentUser) return [];
+    console.log("Test2")
+    console.log(userRoles);
+    console.log(userRoles
+      .map(au => au.role));
+    console.log(userRoles
+      .filter(au => au.user?.userID === currentUser.id || au.user?.username === currentUser.username)
+      .map(au => au.role));
+    console.log(userRoles
+      .filter(au => au.user?.userID === currentUser.id || au.user?.username === currentUser.username));
     return userRoles
       .filter(au => au.user?.userID === currentUser.id || au.user?.username === currentUser.username)
       .map(au => au.role);

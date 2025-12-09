@@ -5,7 +5,7 @@ import { assessmentAPI, userAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
 
-function Test() {
+function TestDetail() {
     const { moduleId, assessmentId } = useParams();
     const [assessment, setAssessment] = useState(null);
     const [users, setUsers] = useState([]);
@@ -247,5 +247,5 @@ function Test() {
     );
 }
 
-export default Test;
+export default TestDetail;
 

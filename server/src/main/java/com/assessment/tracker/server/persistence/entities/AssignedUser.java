@@ -11,7 +11,7 @@ public class AssignedUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public int assignmentID;
+    public int assignmentID; // CHANGE TO ASSESSMENT
 
     public String username;
 

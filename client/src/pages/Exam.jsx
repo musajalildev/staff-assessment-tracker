@@ -5,7 +5,7 @@ import { assessmentAPI, userAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
 
-function AssessmentDetail() {
+function ExamDetail() {
     const { moduleId, assessmentId } = useParams();
     const [assessment, setAssessment] = useState(null);
     const [users, setUsers] = useState([]);
@@ -246,5 +246,5 @@ function AssessmentDetail() {
     );
 }
 
-export default AssessmentDetail;
+export default ExamDetail;
 
