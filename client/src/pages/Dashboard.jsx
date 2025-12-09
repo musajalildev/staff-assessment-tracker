@@ -66,6 +66,7 @@ function Dashboard() {
         setModules(filteredModules);
         setUsers(usersRes.data || []);
         setUserRoles(assignedRes.data || []);
+        console.log(assignedRes);
 
         // Try to get assessments (if any exist)
         try {
@@ -92,11 +93,6 @@ function Dashboard() {
   };
 
   const userRolesList = getCurrentUserRoles();
-  console.log("assessments");
-  console.log(assessments);
-  console.log(typeof (assessments));
-  console.log(assessments.length);
-  console.log(assessments.slice(0, 3));
 
   assessments.slice(0, 3).map((assessment) => (console.log(assessment.id)));
   const assessmentsInProgress = assessments.filter(a =>
