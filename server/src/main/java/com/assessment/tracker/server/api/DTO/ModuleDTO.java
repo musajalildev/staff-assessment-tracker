@@ -5,7 +5,8 @@ import java.util.List;
 
 public class ModuleDTO {
     private UUID id;
-    private int leaderID;
+    private UUID leaderID;
+    private List<UUID> otherStaffIDs;
     private int code;
     private String title;
     private List<AssessmentDTO> assessments;
@@ -15,7 +16,8 @@ public class ModuleDTO {
     public ModuleDTO(UUID id, int code, String title, List<AssessmentDTO> assessments, boolean archived) {}
 
     public void setID(UUID id) {this.id = id;}
-    public void setLeaderID(int newLeaderID) { this.leaderID = newLeaderID; }
+    public void setLeaderID(UUID newLeaderID) { this.leaderID = newLeaderID; }
+    public void setOtherStaffIDs(List<UUID> newOtherStaffIDs) { this.otherStaffIDs = newOtherStaffIDs; }
     public void setCode(int code) {
         this.code = code;
     }
@@ -33,7 +35,8 @@ public class ModuleDTO {
     public UUID getID() {
         return id;
     }
-    public int getLeaderID() { return leaderID; }
+    public UUID getLeaderID() { return leaderID; }
+    public List<UUID> getOtherStaffIDs() {return otherStaffIDs;}
     public int getCode() {
         return code;
     }

@@ -13,6 +13,7 @@ import java.util.UUID;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ModuleService {
@@ -36,16 +37,8 @@ public class ModuleService {
     }
 
     public ModuleDTO getModuleDTOListByCode(int moduleCode) {
-        Module moduleList = moduleRepository.findByCode(moduleCode);
-        //if (moduleList.isEmpty()) { new RuntimeException("Module not found"); }
-
-        //List<ModuleDTO> moduleDTOList = new ArrayList<>();
-        //for (Module module : moduleList) {
-            //moduleDTOList.add(moduleMapper.entityToApi(module));
-        //}
-
-        //return moduleDTOList;
-        ModuleDTO moduleDTO = moduleMapper.entityToApi(moduleList);
+        Module module = moduleRepository.findByCode(moduleCode);
+        ModuleDTO moduleDTO = moduleMapper.entityToApi(module);
 
         return moduleDTO;
     }
@@ -59,4 +52,6 @@ public class ModuleService {
 
         return moduleDTOList;
     }
+
+
 }
