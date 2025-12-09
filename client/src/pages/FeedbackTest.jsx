@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import FeedbackSection from '../components/FeedbackSection';
-import { userAPI } from '../services/api';
+import { assessmentAPI, userAPI } from '../services/api';
 
 /**
  * Standalone test page for FeedbackSection component
@@ -19,7 +19,9 @@ function FeedbackTest() {
   const [assessment, setAssessment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [on, setOn] = useState(true);
 
+  const toggle = () => setOn(!on);
   useEffect(() => {
     // Check if user is logged in
     const storedUser = localStorage.getItem('currentUser');
@@ -33,31 +35,100 @@ function FeedbackTest() {
     setLoading(false);
   }, []);
 
-  // Mock assessment data (optional - component works without it)
   useEffect(() => {
-    if (assessmentId) {
-      setAssessment({
-        id: parseInt(assessmentId),
-        ID: parseInt(assessmentId),
-        title: `Test Assessment ${assessmentId}`,
-        progress: 'CREATED'
-      });
-    }
+    const loadAssessment = async () => {
+      try {
+        setLoading(true);
+        const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
+
+        const [assessmentRes, usersRes] = await Promise.all([
+          assessmentAPI.getById(assessmentIdToUse),
+          userAPI.getAll().catch(() => ({ data: [] }))
+        ]);
+
+        setAssessment(assessmentRes.data);
+      } catch (err) {
+        setError('Failed to load assessment');
+        console.error('Error loading assessment:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAssessment();
   }, [assessmentId]);
+
+  const progressAssessment = async () => {
+    if (!assessment) return;
+    if (assessment.progress != "CHECKED") {
+      return;
+    }
+
+
+    let nextProgress = "";
+    if (on) {
+      nextProgress = "NEEDS_CHANGES";
+    } else {
+      nextProgress = "TEST_TAKING_PLACE"
+    }
+
+
+
+    const updatedAssessment = {
+      ...assessment,
+      progress: nextProgress
+    };
+
+    try {
+      const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
+      setAssessment(result.data);
+      navigate("/dashboard")
+    } catch (err) {
+      console.error('Error updating assessment:', err);
+      alert('Failed to update assessment progress');
+    }
+  };
+
+  const getUserName = (user) => {
+    if (!user) return 'N/A';
+    if (typeof user === 'string') return user;
+    return user.username || user.email || 'N/A';
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="card">
+          <p>Loading assessment...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error || !assessment) {
+    return (
+      <Layout>
+        <div className="content">
+          <h2>{error || 'Assessment not found'}</h2>
+          <Link to={`/modules/${moduleId}`}>Back to Module</Link>
+        </div>
+      </Layout>
+    );
+  }
 
   const handleQuickLogin = async () => {
     try {
       // Try to login with a test user (modify credentials as needed)
       const response = await userAPI.login('john', 'password');
       const user = response.data;
-      
+
       const userData = {
         id: user.userID,
         username: user.username,
         email: user.email,
         userType: user.userType
       };
-      
+
       localStorage.setItem('currentUser', JSON.stringify(userData));
       setCurrentUser(userData);
       setError('');
@@ -102,13 +173,13 @@ function FeedbackTest() {
 
       <section className="card mt-24">
         <div className="h-title" style={{ fontSize: '18px' }}>Test Setup</div>
-        
+
         {error && (
-          <div className="card" style={{ 
-            background: 'rgba(255, 51, 102, 0.1)', 
-            color: 'var(--bad)', 
+          <div className="card" style={{
+            background: 'rgba(255, 51, 102, 0.1)',
+            color: 'var(--bad)',
             marginTop: '16px',
-            borderColor: 'var(--bad)' 
+            borderColor: 'var(--bad)'
           }}>
             {error}
           </div>
@@ -144,7 +215,7 @@ function FeedbackTest() {
         )}
 
         <div className="sep mt-24"></div>
-        
+
         <div className="mt-24">
           <div className="h-title" style={{ fontSize: '16px' }}>Instructions</div>
           <ol style={{ marginTop: '12px', paddingLeft: '20px', lineHeight: '1.8' }}>
@@ -156,12 +227,14 @@ function FeedbackTest() {
           </ol>
         </div>
       </section>
+      <button onClick={() => setOn(!on)} >{on ? "Needs Changes" : "No Changes Needed"}</button>
 
       {assessmentId && (
         <div className="mt-24">
-          <FeedbackSection 
+          <FeedbackSection
             assessment={assessment}
             onFeedbackAdded={() => {
+              progressAssessment()
               console.log('Feedback added callback triggered');
             }}
           />

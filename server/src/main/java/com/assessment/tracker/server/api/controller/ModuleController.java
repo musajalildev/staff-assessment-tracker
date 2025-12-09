@@ -20,6 +20,8 @@ public interface ModuleController {
     @GetMapping(path = "/api/module/all", consumes = "application/json")
     ResponseEntity<List<ModuleDTO>> getAllModules();
 
+    @PutMapping(path = "/api/module/", consumes = "application/json")
+    ResponseEntity<ModuleDTO> getFirstModuleByCode(String moduleCode);
     @PutMapping(
             path = "/api/module/",
             consumes = "application/json")

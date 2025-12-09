@@ -16,6 +16,7 @@ public class CorsConfiguration {
                 // Apply CORS to all endpoints
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173") // React dev server
+                        // .allowedOrigins("**")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*") // allow all headers
                         .allowCredentials(true); // allow cookies/session auth

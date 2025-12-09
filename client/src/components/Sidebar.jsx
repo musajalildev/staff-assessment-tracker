@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { assignedUserAPI } from '../services/api';
-import { getCurrentUser, canManageUsers, isTeachingSupport, isExamsOfficer } from '../utils/permissions';
+import { getCurrentUser, canManageUsers } from '../utils/permissions';
 
 function Sidebar() {
   const location = useLocation();
@@ -64,7 +64,7 @@ function Sidebar() {
         <Link to="/modules" className={isActive('/modules')}>
           Modules
         </Link>
-        {(canManage || isTeachingSupport(assignedUsers, currentUser?.id || currentUser?.userID || currentUser?.ID, currentUser?.username) || isExamsOfficer(assignedUsers, currentUser?.id || currentUser?.userID || currentUser?.ID, currentUser?.username)) && (
+        {canManage && (
           <Link to="/users" className={isActive('/users')}>
             Users
           </Link>
@@ -72,8 +72,10 @@ function Sidebar() {
         <Link to="/profile" className={isActive('/profile')}>
           My Profile
         </Link>
-        <Link to="/login">Logout</Link>
       </nav>
+      <div className="nav-footer">
+        <Link to="/login" className="logout-link">Logout</Link>
+      </div>
     </aside>
   );
 }

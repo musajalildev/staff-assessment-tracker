@@ -51,7 +51,8 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // allow H2 console (optional)
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .headers(headers -> headers.frameOptions
+                        (frame -> frame.sameOrigin()))
 
                 // disable CSRF because you are using JWT (stateless)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -59,22 +60,24 @@ public class SecurityConfiguration {
                 // authorization rules
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/auth/signup").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
                         .requestMatchers(
                                 "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
-                )
-
+                        .anyRequest().permitAll()
+                    )
                 // JWT validation (your RSA public key via Nimbus)
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults()))
+                        .jwt(Customizer.withDefaults())
+                )
 
                 // do not use session (JWT = stateless)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.cors(Customizer.withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy
+                        (SessionCreationPolicy.STATELESS));
+
 
         return http.build();
     }
@@ -98,7 +101,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

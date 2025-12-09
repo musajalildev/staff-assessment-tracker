@@ -1,6 +1,7 @@
 package com.assessment.tracker.server.persistence.entities;
 
 import com.assessment.tracker.server.persistence.repos.AssignedUserRepository;
+import com.assessment.tracker.server.persistence.repos.UserRepository;
 import com.assessment.tracker.server.utils.enums.UserType;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -50,5 +51,9 @@ public class AuthorisedUser implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public User getUser() {
+        return user;
     }
 }

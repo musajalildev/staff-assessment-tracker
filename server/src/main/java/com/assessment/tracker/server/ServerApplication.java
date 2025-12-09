@@ -2,11 +2,10 @@ package com.assessment.tracker.server;
 
 import com.assessment.tracker.server.configuration.RsaKeyProperties;
 import com.assessment.tracker.server.persistence.entities.*;
+import com.assessment.tracker.server.persistence.entities.Module;
 import com.assessment.tracker.server.persistence.entities.logging.*;
 import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.repos.logging.*;
-import com.assessment.tracker.server.persistence.services.*;
-import com.assessment.tracker.server.persistence.services.logging.*;
 
 import com.assessment.tracker.server.utils.enums.*;
 
@@ -35,6 +34,7 @@ public class ServerApplication {
             LogRepository logRepository,
             UserLogRepository userLogRepository,
             AssessmentLogRepository assessmentLogRepository,
+            ModuleRepo moduleRepo,
             ModuleLogRepository moduleLogRepository) {
 
         return args -> {
@@ -63,24 +63,29 @@ public class ServerApplication {
                 User sakura = userRepository.findByUsername("sakura");
                 User musa = userRepository.findByUsername("musa");
 
-                AssignedUser a1 = new AssignedUser(john, Role.ACADEMIC);
-                AssignedUser a2 = new AssignedUser(john, Role.TEACHING_SUPPORT);
+                AssignedUser a1 = new AssignedUser(john, AssessmentRole.ROLE_CHECKER, null);
+                AssignedUser a2 = new AssignedUser(john, AssessmentRole.ROLE_SETTER, null);
 
-                AssignedUser a3 = new AssignedUser(mary, Role.EXAM_OFFICER);
+                AssignedUser a3 = new AssignedUser(mary, AssessmentRole.ROLE_CHECKER, null);
 
-                AssignedUser a4 = new AssignedUser(kofi, Role.EXTERNAL_EXAMINER);
-                AssignedUser a5 = new AssignedUser(kofi, Role.ACADEMIC);
+                AssignedUser a4 = new AssignedUser(kofi, AssessmentRole.ROLE_SETTER, null);
+                AssignedUser a5 = new AssignedUser(kofi, AssessmentRole.ROLE_EXAM_OFFICER, null);
 
-                AssignedUser a6 = new AssignedUser(sakura, Role.TEACHING_SUPPORT);
+                AssignedUser a6 = new AssignedUser(sakura, AssessmentRole.ROLE_CHECKER, null);
 
-                AssignedUser a7 = new AssignedUser(musa, Role.EXAM_OFFICER);
-                AssignedUser a8 = new AssignedUser(musa, Role.EXTERNAL_EXAMINER);
+                AssignedUser a7 = new AssignedUser(musa, AssessmentRole.ROLE_SETTER, null);
+                AssignedUser a8 = new AssignedUser(musa, AssessmentRole.ROLE_SETTER,null);
 
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8));
 
+                if (assignedUserRepository.count() == 0) {
+                    System.out.println("Error w assigned user repo");
+                }
+
                 System.out.println("Assignments seeded.");
             }
+
             if (assessmentRepository.count() == 0) {
                 Assessment a1 = new Assessment();
                 a1.setTitle("test");
@@ -121,16 +126,23 @@ public class ServerApplication {
 
                 System.out.println("Assessment Log seeded.");
             }
+            //testing module in user creation
+            Module m1 = new Module("1","test",false);
+            Module m2 = new Module("2","test2",false);
+            Module m3 = new Module("3","test3",false);
+            moduleRepo.saveAll(List.of(m1,m2,m3));
+
+
 
         };
     }
 
     private static List<User> getUsers() {
-        User u1 = new User("john", "john@example.com", "john123", UserType.ACADEMIC);
-        User u2 = new User("mary", "mary@example.com", "mary123", UserType.TEACHING_SUPPORT);
-        User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.EXTERNAL_EXAMINER);
-        User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ACADEMIC);
-        User u5 = new User("musa", "musa@example.com", "musa123", UserType.ACADEMIC);
+        User u1 = new User("john", "john@example.com", "john123", UserType.ROLE_ACADEMIC);
+        User u2 = new User("mary", "mary@example.com", "mary123", UserType.ROLE_TEACHING_SUPPORT);
+        User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.ROLE_EXTERNAL_EXAMINER);
+        User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ROLE_ACADEMIC);
+        User u5 = new User("musa", "musa@example.com", "musa123", UserType.ROLE_TEACHING_SUPPORT);
 
         // password encoding for test data
         return List.of(u1, u2, u3, u4, u5);

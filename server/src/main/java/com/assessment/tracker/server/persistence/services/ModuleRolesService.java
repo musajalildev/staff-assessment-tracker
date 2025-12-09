@@ -55,6 +55,8 @@ public class ModuleRolesService {
         return dtos;
     }
 
+    //Retrieve all specific module roles
+
     public void delete(UUID id) {
         ModuleRolesRepo.deleteById(id);
     }

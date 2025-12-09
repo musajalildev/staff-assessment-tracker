@@ -4,34 +4,43 @@ import com.assessment.tracker.server.utils.enums.*;
 
 import jakarta.persistence.*;
 
-//entity that grants every possible role an ID
+//entity that grants every possible assesment-specific role an ID
 @Entity
 @Table(name = "roles")
 public class AssignedUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public int assignmentID;
+    public int assignmentID; // CHANGE TO ASSESSMENT
+
+    public String username;
 
     @ManyToOne
     private User user;
 
+
+    @ManyToOne
+    private Assessment assessment;
+    //TODO: Assesment constructor and to be set as not optional
+    // since role is attached to assessment
+
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private AssessmentRole role;
 
     public AssignedUser() {
     }
 
-    public AssignedUser(User user, Role role) {
+    public AssignedUser(User user, AssessmentRole role, Assessment assessment) {
         this.user = user;
+        this.username=user.getUsername();
+        this.role = role;
+        this.assessment = assessment;
+    }
+    public void setRole(AssessmentRole role) {
         this.role = role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Role getRole() {
+    public AssessmentRole getRole() {
         return role;
     }
 

@@ -13,11 +13,11 @@ public interface AssignedUserRepository extends JpaRepository<AssignedUser, Inte
 
     AssignedUser findByUser(User user);
 
-    AssignedUser findByRole(Role role);
+    AssignedUser findByRole(AssessmentRole role);
 
-    boolean existsByUserAndRole(User user, Role role);
+    boolean existsByUserAndRole(User user, AssessmentRole role);
 
-    List<AssignedUser> findAllByRole(Role role);
+    List<AssignedUser> findAllByRole(AssessmentRole role);
 
     List<AssignedUser> findAllByUser(User user);
 }

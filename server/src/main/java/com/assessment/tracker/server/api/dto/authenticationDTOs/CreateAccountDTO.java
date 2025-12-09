@@ -7,15 +7,25 @@ public class CreateAccountDTO {
     public String email;
     public String password;
     public UserType userType;
-    public Role role; // now assesment roles
-    // public module role modRole
 
-    public CreateAccountDTO(String username, String email, String password, UserType userType, Role role) {
+    public String assessment;// assessment involvement
+    public AssessmentRole assessmentRole;
+
+    public String moduleCode; // TODO: louis to change field to string
+    public ModuleRoles moduleRole;
+
+    public CreateAccountDTO(String username, String email, String password, String assessment,String moduleCode,
+                            UserType userType, ModuleRoles moduleRole, AssessmentRole assessmentRole){
         this.username = username;
         this.email = email;
         this.password = password;
         this.userType = userType;
-        this.role = role;
+
+        this.assessment = assessment;
+        this.assessmentRole = assessmentRole;
+
+        this.moduleCode = moduleCode;
+        this.moduleRole = moduleRole;
     }
 
 }

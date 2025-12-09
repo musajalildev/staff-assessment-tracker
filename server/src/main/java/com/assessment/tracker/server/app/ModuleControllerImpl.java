@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +39,7 @@ public class ModuleControllerImpl implements ModuleController {
     }
 
     @Override
-    public ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode) {
+    public ResponseEntity<ModuleDTO> getFirstModuleByCode(String moduleCode) {
         ModuleDTO dtos = moduleService.getModuleDTOListByCode(moduleCode);
         return ResponseEntity.ok(dtos);
     }

@@ -1,7 +1,9 @@
 package com.assessment.tracker.server.persistence.services;
 
+import com.assessment.tracker.server.api.DTO.AssessmentRolesDTO;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.repos.*;
+import com.assessment.tracker.server.utils.mappers.*;
 
 import com.assessment.tracker.server.utils.enums.*;
 
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -18,21 +21,23 @@ public class AssignedUserService {
 
     private static final String ROLE_NOT_FOUND = "Role does not exist";
     private final AssignedUserRepository assignedUserRepository;
+    private final AssessmentRoleMapper assessmentRoleMapper;
     private final UserService userService;
     private final UserRepository userRepository;
 
-
-    public AssignedUserService(AssignedUserRepository assignedUserRepository, UserService userService, UserRepository userRepository) {
+    public AssignedUserService(AssignedUserRepository assignedUserRepository, UserService userService,
+            UserRepository userRepository, AssessmentRoleMapper assessmentRoleMapper) {
         this.assignedUserRepository = assignedUserRepository;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.assessmentRoleMapper = assessmentRoleMapper;
     }
 
-    //implement CRUD operations
+    // implement CRUD operations
     // -------------------- CREATE --------------------
 
     //implement create assigned user by using user id and role
-    public AssignedUser createAssignment(UUID userID, Role role) {
+    public AssignedUser createAssignment(UUID userID, AssessmentRole role, Assessment assessment) {
         User currentUser= userService.getUser(userID);
         if (currentUser == null) {
             throw new IllegalArgumentException("User not found for ID: " + userID);
@@ -47,14 +52,13 @@ public class AssignedUserService {
         if (assignedUserRepository.existsByUserAndRole(currentUser, role)) {
             throw new IllegalStateException("User already has role: " + role);
         }
-        AssignedUser assignedUser = new AssignedUser(currentUser, role);
+        AssignedUser assignedUser = new AssignedUser(currentUser, role, assessment);
         return assignedUserRepository.save(assignedUser);
     }
 
     //implement create assigned user by using username and role
-    public void createAssignment(String username, Role role) {
+    public AssignedUser createAssignment(String username, AssessmentRole role, Assessment assessment) {
         User target =findUserWithString(username);
-
         // check if the user exists
         assert target != null : "User not found for ID: " + username;
         // check if the role is valid
@@ -65,26 +69,32 @@ public class AssignedUserService {
             throw new IllegalStateException("User already has role: " + role);
         }
 
-        AssignedUser assignedUser = new AssignedUser(target, role);
-        assignedUserRepository.save(assignedUser);
+        AssignedUser assignedUser = new AssignedUser(target, role, assessment);
+        return assignedUserRepository.save(assignedUser);
     }
 
-    //-------------------- READ --------------------
-    //implement get assigned users w/o query params
-    public List<AssignedUser> getAllAssignedUsers() {
-        return assignedUserRepository.findAll();
+    // -------------------- READ --------------------
+    // implement get assigned users w/o query params
+    public List<AssessmentRolesDTO> getAllAssignedUsers() {
+        List<AssignedUser> entities = assignedUserRepository.findAll();
+        List<AssessmentRolesDTO> dtos = new ArrayList<>();
+        for (AssignedUser entity : entities) {
+            dtos.add(assessmentRoleMapper.entityToApi(entity));
+        }
+        return dtos;
     }
 
-    //implement extracting assigned user by id and also finding out a user's role
+    // implement extracting assigned user by id and also finding out a user's role
     public AssignedUser getAssignedUser(int id) {
         return assignedUserRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,ROLE_NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ROLE_NOT_FOUND));
     }
 
-    //implement extracting assigned user by username and also finding out a user's role'
-    //in this method username can be either email or username
+    // implement extracting assigned user by username and also finding out a user's
+    // role'
+    // in this method username can be either email or username
     public List<AssignedUser> getAssignedUser(String username) {
-        User currentUser=findUserWithString(username);
+        User currentUser = findUserWithString(username);
         List<AssignedUser> userAssignments = new ArrayList<>();
         for (AssignedUser au : assignedUserRepository.findAll()) {
 
@@ -95,10 +105,10 @@ public class AssignedUserService {
         return userAssignments;
     }
 
-    public List<Role> getUserAssignment(UUID userid) {
+    public List<AssessmentRole> getUserAssignment(UUID userid) {
         User currentUser= userRepository.findByUserID(userid);
         List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(currentUser);
-        List<Role> roles = new ArrayList<>();
+        List<AssessmentRole> roles = new ArrayList<>();
 
         for (AssignedUser au : currentAssignments) {
             roles.add(au.getRole());
@@ -109,49 +119,49 @@ public class AssignedUserService {
 
 
     //implement getting all users for a certain role
-    public List<AssignedUser> getAllCommonRole( Role role){
+    public List<AssignedUser> getAllCommonRole( AssessmentRole role){
         return assignedUserRepository.findAllByRole(role);
     }
 
     // -------------------- DELETE --------------------
-    //implement delete assigned user by id
+    // implement delete assigned user by id
     public boolean deleteAssignedUser(int id) {
-        if(!assignedUserRepository.existsById(id))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,ROLE_NOT_FOUND);
+        if (!assignedUserRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ROLE_NOT_FOUND);
 
         assignedUserRepository.deleteById(id);
         return true;
     }
 
-    //implement deleting all user-role assignments for a user
+    // implement deleting all user-role assignments for a user
     public boolean deleteAllUserAssignments(UUID userid) {
-        User currentUser=userService.getUser(userid);
+        User currentUser = userService.getUser(userid);
         List<AssignedUser> currentAssignments = assignedUserRepository.findAllByUser(currentUser);
-        if(currentAssignments.isEmpty()){
+        if (currentAssignments.isEmpty()) {
             return false;
         }
         assignedUserRepository.deleteAll(currentAssignments);
         return true;
     }
 
-    //IMPLEMENT DELETE ALL
-    public boolean deleteAllAssignments(){
+    // IMPLEMENT DELETE ALL
+    public boolean deleteAllAssignments() {
         assignedUserRepository.deleteAll();
         return true;
     }
 
     // -------------------- UPDATE --------------------
-    //implement update assigned user information
+    // implement update assigned user information
 
     //implement update user assignment using ID
-    public AssignedUser updateUserAssignment(Role role, int id) {
+    public AssignedUser updateUserAssignment(AssessmentRole role, int id) {
         AssignedUser currentUser = getAssignedUser(id);
         currentUser.setRole(role);
         return assignedUserRepository.save(currentUser);
     }
 
     //implement update user assignment using email or username
-    public AssignedUser updateUserAssignment(Role role, String username) {
+    public AssignedUser updateUserAssignment(AssessmentRole role, String username) {
         User currentUser= findUserWithString(username);
         return getAssignedUser(role, currentUser);
 
@@ -159,21 +169,21 @@ public class AssignedUserService {
 
 
     //helper method to extract user assignment info
-    private AssignedUser getAssignedUser(Role role, User currentUser) {
+    private AssignedUser getAssignedUser(AssessmentRole role, User currentUser) {
         if(currentUser == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,ROLE_NOT_FOUND);}
 
         AssignedUser currentAssignment = assignedUserRepository.findByUser(currentUser);
-        if(currentAssignment.getRole() == role){
+        if (currentAssignment.getRole() == role) {
             return currentAssignment;
         }
         currentAssignment.setRole(role);
         return assignedUserRepository.save(currentAssignment);
     }
 
-    public User findUserWithString( String identifier){
+    public User findUserWithString(String identifier) {
         User user = userService.getUserByEmail(identifier);
-        if(user == null){
+        if (user == null) {
             user = userService.getUserByUsername(identifier);
         }
         return user;

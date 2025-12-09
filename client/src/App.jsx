@@ -8,6 +8,7 @@ import ModuleNew from './pages/ModuleNew';
 import ModuleEdit from './pages/ModuleEdit';
 import ModuleCSVUpload from './pages/ModuleCSVUpload';
 import AssessmentDetail from './pages/AssessmentDetail';
+import Test from './pages/Test';
 import AssessmentNew from './pages/AssessmentNew';
 import UserManagement from './pages/UserManagement';
 import UserNew from './pages/UserNew';
@@ -29,6 +30,7 @@ function App() {
         <Route path="/modules/:id/edit" element={<ModuleEdit />} />
         <Route path="/modules/:moduleId/assessments/new" element={<AssessmentNew />} />
         <Route path="/modules/:moduleId/assessments/:assessmentId" element={<AssessmentDetail />} />
+        <Route path="/modules/:moduleId/test/:assessmentId" element={<Test />} />
         <Route path="/test/feedback/:assessmentId" element={<FeedbackTest />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/users/new" element={<UserNew />} />
