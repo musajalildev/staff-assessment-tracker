@@ -44,6 +44,17 @@ public class Assessment {
     @OneToMany(mappedBy = "targetAssessment")
     private List<AssessmentLog> logs;
 
+    public Assessment() {}
+
+    public Assessment(Module module,  AssessmentType assessmentType, AssessmentProgress progress, String title) {
+        this.module = module;
+        this.assessmentType = assessmentType;
+        this.progress = progress;
+        this.title = title;
+    }
+
+
+
     // Getters and setters
 
     public void setID(Integer iD) {
