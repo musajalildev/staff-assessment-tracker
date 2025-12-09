@@ -155,7 +155,7 @@ export const assessmentAPI = {
 //api/assessment/${id}
 // AssignedUser API (Roles)
 export const assignedUserAPI = {
-  getAll: () => apiRequest('/assign'),
+  getAll: () => { console.log("test4"); console.log(apiRequest('/assign')); apiRequest('/assign') },
   getById: (id) => apiRequest(`/assign/id/${id}`),
   getByUsername: (username) => apiRequest(`/assign/un/${username}`),
   getByRole: (role) => apiRequest(`/assign/${role}`),

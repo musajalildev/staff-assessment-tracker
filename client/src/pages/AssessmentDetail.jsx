@@ -133,11 +133,6 @@ function AssessmentDetail() {
         nextProgress = "CHECKED";
       }
 
-      if (requireComment && !comment.trim()) {
-        alert('Please provide a comment for this action');
-        return;
-      }
-
       const nextStage = getNextStage(assessment.progress, assessment.type);
       if (!nextStage) {
         alert('Already at final stage');

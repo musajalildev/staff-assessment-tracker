@@ -44,9 +44,9 @@ public class AssignedUserController {
 
     // -------------------- READ --------------------
     @GetMapping
-    public ResponseEntity<List<AssignedUser>> getAllAssignedUsers() {
-        List<AssignedUser> assignedUsers = assignedUserService.getAllAssignedUsers();
-        return (assignedUsers != null) ? ResponseEntity.ok(assignedUsers)
+    public ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers() {
+        List<AssessmentRolesDTO> assessmentRoles = assignedUserService.getAllAssignedUsers();
+        return (assessmentRoles != null) ? ResponseEntity.ok(assessmentRoles)
                 : ResponseEntity.notFound().build();
     }
 
