@@ -34,7 +34,7 @@ public class ModuleControllerImpl implements ModuleController {
     }
 
     @Override
-    public ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode) {
+    public ResponseEntity<ModuleDTO> getFirstModuleByCode(String moduleCode) {
         ModuleDTO dtos = moduleService.getModuleDTOListByCode(moduleCode);
 
         return ResponseEntity.ok(dtos);

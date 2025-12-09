@@ -36,7 +36,7 @@ public class ModuleService {
         moduleRepository.save(module);
     }
 
-    public ModuleDTO getModuleDTOListByCode(int moduleCode) {
+    public ModuleDTO getModuleDTOListByCode(String moduleCode) {
         Module module = moduleRepository.findByCode(moduleCode);
         ModuleDTO moduleDTO = moduleMapper.entityToApi(module);
 

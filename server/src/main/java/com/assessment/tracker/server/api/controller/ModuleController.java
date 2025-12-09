@@ -18,7 +18,7 @@ public interface ModuleController {
     ResponseEntity<List<ModuleDTO>> getAllModules();
 
     @PutMapping(path = "/api/module/", consumes = "application/json")
-    ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode);
+    ResponseEntity<ModuleDTO> getFirstModuleByCode(String moduleCode);
 
     @PutMapping(path = "/api/module/update", consumes = "application/json")
     ResponseEntity<Module> updateModule(UUID id, ModuleDTO dto);

@@ -61,7 +61,7 @@ public class UserService {
         String assessmentData = userinfo.assessment; //data to determine specific academic role
         String moduleData = userinfo.moduleCode;
 
-        Module coreModule = moduleRepo.findByCode(1); //TODO: use actual module code
+        //Module coreModule = moduleRepo.findByCode(); //TODO: use actual module code
         Assessment coreAssesment = assessmentRepo.findByTitle(assessmentData);
 
         //base user construction
