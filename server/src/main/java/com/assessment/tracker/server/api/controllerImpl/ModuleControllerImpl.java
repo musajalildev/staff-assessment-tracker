@@ -7,22 +7,25 @@ import com.assessment.tracker.server.persistence.services.ModuleService;
 import com.assessment.tracker.server.utils.mappers.ModuleMapper;
 import com.assessment.tracker.server.utils.mappers.CsvMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 public class ModuleControllerImpl implements ModuleController {
-    @Autowired
-    private ModuleMapper moduleMapper;
-    private ModuleService moduleService;
-    private CsvMapper csvMapper;
+    private final ModuleMapper moduleMapper;
+    private final ModuleService moduleService;
+    private final CsvMapper csvMapper;
+
+    public ModuleControllerImpl(ModuleMapper moduleMapper, ModuleService moduleService, CsvMapper csvMapper) {
+        this.moduleMapper = moduleMapper;
+        this.moduleService = moduleService;
+        this.csvMapper = csvMapper;
+    }
 
     @Override
     public ResponseEntity<List<ModuleDTO>> getAllModules() {
