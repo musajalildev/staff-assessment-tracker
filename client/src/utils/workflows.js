@@ -33,7 +33,7 @@ export const EXAM_STAGES = [
   { value: 'SETTER_EO_APPROVAL', label: 'Setter Modifications + EO Approval', description: 'Final changes' },
   { value: 'EXTERNAL_EXAMINER_FEEDBACK', label: 'External Examiner Feedback', description: 'External examiner reviews' },
   { value: 'SETTER_RESPONSE', label: 'Setter Response', description: 'Formal response to feedback' },
-  { value: 'EXAMS_OFFICER_FINAL_CHECK', label: 'Exams Officer Final Check', description: 'Ready for printing' },
+  { value: 'CHECKER_FINAL_CHECK', label: 'Checker Final Check', description: 'Checker final checking before printing' },
   { value: 'SENT_TO_PRINT', label: 'Sent to Print', description: 'Paper sent to exams office' },
   { value: 'TEST_TAKING_PLACE', label: 'Exam Takes Place', description: 'Exam date' },
   { value: 'MARKING_STANDARDISED', label: 'Standardisation', description: 'If team-marked' },
@@ -121,7 +121,7 @@ export const canProgressStage = (currentStage, assessmentType, userRole, isSette
     if (currentStage === 'SETTER_EO_APPROVAL' && (isSetter || userRole === 'EXAM_OFFICER')) return true;
     if (currentStage === 'EXTERNAL_EXAMINER_FEEDBACK' && userRole === 'EXTERNAL_EXAMINER') return true;
     if (currentStage === 'SETTER_RESPONSE' && isSetter) return true;
-    if (currentStage === 'EXAMS_OFFICER_FINAL_CHECK' && userRole === 'EXAM_OFFICER') return true;
+    if (currentStage === 'CHECKER_FINAL_CHECK' && isChecker) return true;
     if (currentStage === 'MARKED' && isModuleStaff) return true;
     if (currentStage === 'ADMIN_CHECK_MARKING_TOTALS' && userRole === 'TEACHING_SUPPORT') return true;
     if (currentStage === 'MODERATION' && isModerator) return true;
