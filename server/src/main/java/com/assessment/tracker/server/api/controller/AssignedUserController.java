@@ -1,7 +1,9 @@
 package com.assessment.tracker.server.api.controller;
 
+import com.assessment.tracker.server.api.dto.AssessmentRolesDTO;
+import com.assessment.tracker.server.persistence.entities.Assessment;
 import com.assessment.tracker.server.persistence.entities.AssignedUser;
-import com.assessment.tracker.server.utils.enums.Role;
+import com.assessment.tracker.server.utils.enums.AssessmentRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,18 +22,19 @@ public interface AssignedUserController {
     @PostMapping({"", "/"})
     ResponseEntity<AssignedUser> createAssignment(
             @Parameter(description = "ID of the user") @RequestBody UUID userID,
-            @Parameter(description = "Role to assign") @RequestBody Role role
+            @Parameter(description = "Role to assign") @RequestBody AssessmentRole role,
+            Assessment assessment
     );
 
     // -------------------- READ --------------------
     @Operation(summary = "Get all assigned users", description = "Retrieve all user-role assignments")
     @GetMapping
-    ResponseEntity<List<AssignedUser>> getAllAssignedUsers();
+    ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers();
 
     @Operation(summary = "Get all users with a specific role", description = "Retrieve assignments filtered by role")
     @GetMapping("/{role}")
     ResponseEntity<List<AssignedUser>> getAllCommonRole(
-            @Parameter(description = "Role to filter") @PathVariable Role role
+            @Parameter(description = "Role to filter") @PathVariable AssessmentRole role
     );
 
     @Operation(summary = "Get assignment by ID", description = "Retrieve assignment data by assignment ID")
@@ -48,19 +51,19 @@ public interface AssignedUserController {
 
     @Operation(summary = "Get all roles for a user by ID", description = "Retrieve all roles assigned to a user by UUID")
     @GetMapping("/role/userid/{id}")
-    ResponseEntity<List<Role>> getAllUserRolesById(
+    ResponseEntity<List<AssessmentRole>> getAllUserRolesById(
             @Parameter(description = "User ID") @PathVariable UUID id
     );
 
     @Operation(summary = "Get role by assignment ID", description = "Retrieve a role assigned for a specific assignment")
     @GetMapping("/role/assignmentID/{id}")
-    ResponseEntity<Role> getRoleByAssignmentId(
+    ResponseEntity<AssessmentRole> getRoleByAssignmentId(
             @Parameter(description = "Assignment ID") @PathVariable int id
     );
 
     @Operation(summary = "Get all roles for a user by username", description = "Retrieve all roles for a user identified by username or email")
     @GetMapping("/role/{username}")
-    ResponseEntity<List<Role>> getAllUserRoles(
+    ResponseEntity<List<AssessmentRole>> getAllUserRoles(
             @Parameter(description = "Username or email") @PathVariable String username
     );
 
@@ -69,7 +72,7 @@ public interface AssignedUserController {
     @PutMapping("/role/id/{id}")
     ResponseEntity<AssignedUser> updateUserRole(
             @Parameter(description = "Assignment ID") @PathVariable int id,
-            @Parameter(description = "New role") @RequestBody Role role
+            @Parameter(description = "New role") @RequestBody AssessmentRole role
     );
 
     // -------------------- DELETE --------------------

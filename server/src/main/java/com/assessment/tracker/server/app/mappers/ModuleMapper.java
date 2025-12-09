@@ -5,15 +5,10 @@ import com.assessment.tracker.server.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.assessment.tracker.server.api.DTO.ModuleDTO;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.assessment.tracker.server.api.dto.ModuleDTO;
+import java.util.List;
 import com.assessment.tracker.server.persistence.entities.Assessment;
 import com.assessment.tracker.server.persistence.entities.Module;
-
-import org.springframework.stereotype.Component;
 
 
 @Component

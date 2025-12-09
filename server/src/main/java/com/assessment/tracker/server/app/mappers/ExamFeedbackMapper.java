@@ -1,19 +1,12 @@
-package com.assessment.tracker.server.utils.mappers;
-
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
+package com.assessment.tracker.server.app.mappers;
 
 import com.assessment.tracker.server.persistence.entities.*;
-import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
-import com.assessment.tracker.server.utils.enums.*;
+import com.assessment.tracker.server.utils.Mapper;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.assessment.tracker.server.api.DTO.ExamFeedbackDTO;
+import com.assessment.tracker.server.api.dto.ExamFeedbackDTO;
 
 @Component
 public class ExamFeedbackMapper implements Mapper<ExamFeedbackDTO, ExamFeedback> {

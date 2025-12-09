@@ -5,8 +5,6 @@ import com.assessment.tracker.server.app.mappers.AssessmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.assessment.tracker.server.api.controller.*;
@@ -18,9 +16,7 @@ import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.services.*;
 
 import com.assessment.tracker.server.persistence.services.logging.AssessmentLogService;
-import com.assessment.tracker.server.utils.mappers.*;
 import com.assessment.tracker.server.utils.enums.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.security.oauth2.jwt.*;
@@ -65,7 +61,7 @@ public class AssessmentControllerImpl implements AssessmentController {
 
     @Override
     public ResponseEntity<AssessmentDTO> createAssessment(AssessmentDTO assessmentDTO,
-            @AuthenticationPrincipal AuthorisedUser user) {
+            AuthorisedUser user) {
         Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
         AssessmentLog log = new AssessmentLog();
         log.setActionType(AssessmentActions.CREATE);

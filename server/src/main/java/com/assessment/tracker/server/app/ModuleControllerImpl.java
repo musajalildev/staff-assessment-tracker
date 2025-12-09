@@ -44,6 +44,7 @@ public class ModuleControllerImpl implements ModuleController {
         return ResponseEntity.ok(dtos);
     }
 
+
     @Override
     public ResponseEntity<ModuleDTO> updateModule(UUID id, ModuleDTO dto) {
         Module entity = moduleMapper.apiToEntity(dto);

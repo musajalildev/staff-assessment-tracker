@@ -2,6 +2,7 @@ package com.assessment.tracker.server.app.mappers;
 
 import com.assessment.tracker.server.persistence.entities.Assessment;
 import com.assessment.tracker.server.persistence.entities.Module;
+import com.assessment.tracker.server.persistence.services.UserService;
 import com.assessment.tracker.server.utils.Mapper;
 import com.assessment.tracker.server.persistence.services.AssessmentService;
 import com.assessment.tracker.server.utils.enums.AssessmentProgress;
@@ -22,10 +23,12 @@ import java.io.BufferedReader;
 public class CsvMapper implements Mapper<MultipartFile, List<Module>> {
 
     private final UserService userService;
+    private final AssessmentService assessmentService;
 
     @Autowired
-    public CsvMapper(UserService userService) {
+    public CsvMapper(UserService userService, AssessmentService assessmentService) {
         this.userService = userService;
+        this.assessmentService = assessmentService;
     }
 
     @Override

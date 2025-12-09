@@ -1,6 +1,7 @@
 package com.assessment.tracker.server.app;
 
 import com.assessment.tracker.server.api.controller.AssignedUserController;
+import com.assessment.tracker.server.api.dto.AssessmentRolesDTO;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.services.*;
 
@@ -31,21 +32,21 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     // -------------------- CREATE --------------------
     // implement get assigned users w/o query params
     @Override
-    public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody Role role) {
-        AssignedUser createdUser = assignedUserService.createAssignment(userID, role);
+    public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody AssessmentRole role, Assessment assessment) {
+        AssignedUser createdUser = assignedUserService.createAssignment(userID, role, assessment);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     // -------------------- READ --------------------
     @Override
-    public ResponseEntity<List<AssignedUser>> getAllAssignedUsers() {
-        List<AssignedUser> assignedUsers = assignedUserService.getAllAssignedUsers();
+    public ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers() {
+        List<AssessmentRolesDTO> assignedUsers = assignedUserService.getAllAssignedUsers();
         return (assignedUsers != null) ? ResponseEntity.ok(assignedUsers)
                 : ResponseEntity.notFound().build();
     }
 
     @Override
-    public ResponseEntity<List<AssignedUser>> getAllCommonRole(@PathVariable Role role) {
+    public ResponseEntity<List<AssignedUser>> getAllCommonRole(@PathVariable AssessmentRole role) {
         List<AssignedUser> commonUsers = assignedUserService.getAllCommonRole(role);
         return (commonUsers != null) ? ResponseEntity.ok(commonUsers)
                 : ResponseEntity.notFound().build();
@@ -73,26 +74,26 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     // GET ALL USER ROLES (notice mapping pattern)
     // get all user roles by ID
     @Override
-    public ResponseEntity<List<Role>> getAllUserRolesById(@PathVariable UUID id) {
-        List<Role> userRoles = assignedUserService.getUserAssignment(id);
+    public ResponseEntity<List<AssessmentRole>> getAllUserRolesById(@PathVariable UUID id) {
+        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(id);
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }
 
     // get an assignment role enum by assignmentID
     @Override
-    public ResponseEntity<Role> getRoleByAssignmentId(@PathVariable int id) {
+    public ResponseEntity<AssessmentRole> getRoleByAssignmentId(@PathVariable int id) {
         AssignedUser assignedUser = assignedUserService.getAssignedUser(id);
-        Role role = assignedUser.getRole();
+        AssessmentRole role = assignedUser.getRole();
         return (role != null) ? ResponseEntity.ok(role)
                 : ResponseEntity.notFound().build();
     }
 
     // get all roles for a user
     @Override
-    public ResponseEntity<List<Role>> getAllUserRoles(@PathVariable String username) {
+    public ResponseEntity<List<AssessmentRole>> getAllUserRoles(@PathVariable String username) {
         User user = assignedUserService.findUserWithString(username);
-        List<Role> userRoles = assignedUserService.getUserAssignment(user.getUserID());
+        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserID());
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }
@@ -102,7 +103,7 @@ public class AssignedUserControllerImpl implements AssignedUserController {
 
     // implement update user assignment using assignmentID
     @PutMapping("/role/id/{id}")
-    public ResponseEntity<AssignedUser> updateUserRole(@PathVariable int id, @RequestBody Role role) {
+    public ResponseEntity<AssignedUser> updateUserRole(@PathVariable int id, @RequestBody AssessmentRole role) {
         AssignedUser currentUserAssignment = assignedUserService.getAssignedUser(id);
         if (currentUserAssignment != null)
 

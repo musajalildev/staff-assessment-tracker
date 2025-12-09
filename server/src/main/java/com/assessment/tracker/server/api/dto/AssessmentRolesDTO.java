@@ -1,4 +1,4 @@
-package com.assessment.tracker.server.api.DTO;
+package com.assessment.tracker.server.api.dto;
 
 import java.util.UUID;
 import com.assessment.tracker.server.utils.enums.*;

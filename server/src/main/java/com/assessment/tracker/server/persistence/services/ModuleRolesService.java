@@ -1,10 +1,9 @@
 package com.assessment.tracker.server.persistence.services;
 
-import com.assessment.tracker.server.api.DTO.ModuleRoleDTO;
-import com.assessment.tracker.server.persistence.entities.Module;
+import com.assessment.tracker.server.api.dto.ModuleRoleDTO;
 import com.assessment.tracker.server.persistence.entities.ModuleRole;
 import com.assessment.tracker.server.persistence.repos.ModuleRolesRepo;
-import com.assessment.tracker.server.utils.mappers.ModuleRoleMapper;
+import com.assessment.tracker.server.app.mappers.ModuleRoleMapper;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

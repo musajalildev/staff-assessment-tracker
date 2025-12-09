@@ -1,9 +1,9 @@
-package com.assessment.tracker.server.api.DTO;
+package com.assessment.tracker.server.api.dto;
 
 import com.assessment.tracker.server.utils.enums.ModuleRoles;
 import com.assessment.tracker.server.persistence.entities.User;
 import com.assessment.tracker.server.persistence.entities.Module;
-import com.assessment.tracker.server.utils.mappers.UserMapper;
+import com.assessment.tracker.server.app.mappers.UserMapper;
 
 import java.util.UUID;
 

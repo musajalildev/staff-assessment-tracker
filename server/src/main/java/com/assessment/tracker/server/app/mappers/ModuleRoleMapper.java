@@ -1,13 +1,21 @@
-package com.assessment.tracker.server.utils.mappers;
+package com.assessment.tracker.server.app.mappers;
 
-import com.assessment.tracker.server.api.DTO.ModuleRoleDTO;
+import com.assessment.tracker.server.api.dto.ModuleRoleDTO;
 import com.assessment.tracker.server.persistence.entities.ModuleRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ModuleRoleMapper {
+
+    private final UserMapper userMapper;
+    private final ModuleMapper moduleMapper;
+
     @Autowired
-    private UserMapper userMapper;
-    private ModuleMapper moduleMapper;
+    public ModuleRoleMapper(UserMapper userMapper, ModuleMapper moduleMapper) {
+        this.moduleMapper = moduleMapper;
+        this.userMapper = userMapper;
+    }
 
     public ModuleRoleDTO entityToApi(ModuleRole entity) {
         ModuleRoleDTO DTO = new ModuleRoleDTO();

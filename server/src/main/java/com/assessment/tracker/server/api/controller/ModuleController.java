@@ -22,10 +22,6 @@ public interface ModuleController {
 
     @PutMapping(path = "/api/module/", consumes = "application/json")
     ResponseEntity<ModuleDTO> getFirstModuleByCode(String moduleCode);
-    @PutMapping(
-            path = "/api/module/",
-            consumes = "application/json")
-    ResponseEntity<ModuleDTO> getFirstModuleByCode(int moduleCode);
 
     @PutMapping(
             path = "/api/module/update",

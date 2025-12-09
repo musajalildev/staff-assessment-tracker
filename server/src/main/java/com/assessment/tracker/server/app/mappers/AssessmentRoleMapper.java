@@ -1,21 +1,18 @@
-package com.assessment.tracker.server.utils.mappers;
+package com.assessment.tracker.server.app.mappers;
 
-import com.assessment.tracker.server.api.controller.*;
-import com.assessment.tracker.server.api.controllerImpl.*;
-import com.assessment.tracker.server.api.DTO.*;
-
+import com.assessment.tracker.server.api.dto.AssessmentRolesDTO;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.repos.*;
-import com.assessment.tracker.server.persistence.services.*;
 
-import com.assessment.tracker.server.utils.mappers.*;
-import com.assessment.tracker.server.utils.enums.*;
+import com.assessment.tracker.server.utils.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, AssignedUser> {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
+    @Autowired
     public AssessmentRoleMapper(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
