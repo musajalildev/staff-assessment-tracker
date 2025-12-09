@@ -133,11 +133,11 @@ export const userAPI = {
 
 // Module API
 export const moduleAPI = {
-  getAll: () => apiRequest('/api/v1/module'),
-  getByCode: (code) => apiRequest(`/api/v1/module?moduleCode=${code}`),
-  create: (module) => apiRequest('/api/v1/module', { method: 'POST', body: module }),
-  update: (id, module) => apiRequest('/api/v1/module', { method: 'PUT', body: module }),
-  createFromCSV: (csvData) => apiRequest('/api/v1/module/csv', {
+  getAll: () => apiRequest('/api/module/all'),
+  getByCode: (code) => apiRequest(`/api/module/?moduleCode=${code}`, { method: 'PUT' }),
+  create: (module) => apiRequest('/api/module/create', { method: 'POST', body: module }),
+  update: (id, module) => apiRequest('/api/module/update', { method: 'PUT', body: { ...module, id } }),
+  createFromCSV: (csvData) => apiRequest('/api/module/csv', {
     method: 'POST',
     headers: { 'Content-Type': 'text/csv' },
     body: csvData

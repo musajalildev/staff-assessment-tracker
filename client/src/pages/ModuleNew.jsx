@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { moduleAPI, userAPI } from '../services/api';
+import { moduleAPI, userAPI, assignedUserAPI } from '../services/api';
+import { getCurrentUser, canManageModules } from '../utils/permissions';
 
 function ModuleNew() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [assignedUsers, setAssignedUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [checkingPermissions, setCheckingPermissions] = useState(true);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     code: '',
@@ -17,16 +21,42 @@ function ModuleNew() {
   });
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadData = async () => {
       try {
-        const usersRes = await userAPI.getAll();
+        const user = getCurrentUser();
+        setCurrentUser(user);
+        
+        const [usersRes, assignedRes] = await Promise.all([
+          userAPI.getAll(),
+          assignedUserAPI.getAll().catch(() => ({ data: [] }))
+        ]);
         setUsers(usersRes.data || []);
+        setAssignedUsers(assignedRes.data || []);
+        
+        // Check permissions
+        const userId = user?.id || user?.userID || user?.ID;
+        const username = user?.username;
+        const currentView = user?.selectedUserType || user?.selectedRole || user?.primaryUserType;
+        const canManage = canManageModules(assignedRes.data || [], userId, username, currentView);
+        
+        if (!canManage) {
+          setError('You do not have permission to create modules.');
+        }
+        setCheckingPermissions(false);
       } catch (err) {
-        console.error('Error loading users:', err);
+        console.error('Error loading data:', err);
+        setCheckingPermissions(false);
       }
     };
-    loadUsers();
+    loadData();
   }, []);
+
+  const canManage = canManageModules(
+    assignedUsers,
+    currentUser?.id || currentUser?.userID || currentUser?.ID,
+    currentUser?.username,
+    currentUser?.selectedUserType || currentUser?.selectedRole || currentUser?.primaryUserType
+  );
 
   const handleChange = (e) => {
     setFormData({
@@ -58,13 +88,37 @@ function ModuleNew() {
     }
   };
 
+  if (checkingPermissions) {
+    return (
+      <Layout>
+        <div className="card">
+          <p>Loading...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!canManage) {
+    return (
+      <Layout>
+        <div className="card" style={{ background: 'rgba(255, 51, 102, 0.1)', borderColor: 'var(--bad)' }}>
+          <h2 style={{ color: 'var(--bad)' }}>Access Denied</h2>
+          <p>You do not have permission to create modules. Only Teaching Support staff and Exams Officers (in admin view) can create modules.</p>
+          <button className="btn mt-12" onClick={() => navigate('/modules')}>Back to Modules</button>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <header className="header">
         <div className="h-title">Add Module</div>
         <div className="actions">
           <button className="btn" onClick={() => navigate('/modules')}>Cancel</button>
-          <button className="btn primary" onClick={handleSubmit}>Save</button>
+          <button className="btn primary" onClick={handleSubmit} disabled={loading || !formData.code || !formData.title}>
+            {loading ? 'Creating...' : 'Save'}
+          </button>
         </div>
       </header>
 
