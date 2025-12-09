@@ -51,7 +51,7 @@ public class UserRepositoryTest {
                 "user",
                 "email@email.com",
                 "password",
-                UserType.ACADEMIC);
+                UserType.ROLE_ACADEMIC);
 
         entityManager.persistAndFlush(user);
     }
@@ -112,7 +112,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindAllByUserType() {
-        List<User> users = userRepository.findAllByUserType(UserType.ACADEMIC);
+        List<User> users = userRepository.findAllByUserType(UserType.ROLE_ACADEMIC);
         assertNotNull("Null Users", users);
     }
 }
