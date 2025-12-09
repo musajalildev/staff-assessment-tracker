@@ -23,7 +23,7 @@ public class ModuleRole {
     private Module module;
 
     public ModuleRole(){}
-    public ModuleRole( User user,  ModuleRoles role, Module module){
+    public ModuleRole(User user, ModuleRoles role, Module module){
         this.module = module;
         this.username = user.getUsername();
         this.role = role;

@@ -25,7 +25,15 @@ public class Module {
     @OneToMany(mappedBy = "targetModule")
     private List<ModuleLog> logs;
 
-    //TODO : constructors
+
+    public Module() {}
+    public Module(String code, String title, boolean archived) {
+        this.code = code;
+        this.title = title;
+        this.archived = archived;
+    }
+
+
     public void setID(UUID id) { this.id = id; }
     public void setCode(String newCode) {
         this.code = newCode;
