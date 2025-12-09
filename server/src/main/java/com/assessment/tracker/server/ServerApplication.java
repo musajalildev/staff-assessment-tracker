@@ -63,18 +63,18 @@ public class ServerApplication {
                 User sakura = userRepository.findByUsername("sakura");
                 User musa = userRepository.findByUsername("musa");
 
-                AssignedUser a1 = new AssignedUser(john, Role.ROLE_CHECKER);
-                AssignedUser a2 = new AssignedUser(john, Role.ROLE_SETTER);
+                AssignedUser a1 = new AssignedUser(john, Role.ACADEMIC);
+                AssignedUser a2 = new AssignedUser(john, Role.TEACHING_SUPPORT);
 
-                AssignedUser a3 = new AssignedUser(mary, Role.ROLE_MODULE_STAFF);
+                AssignedUser a3 = new AssignedUser(mary, Role.EXAM_OFFICER);
 
-                AssignedUser a4 = new AssignedUser(kofi, Role.ROLE_MODULE_LEAD);
-                AssignedUser a5 = new AssignedUser(kofi, Role.ROLE_EXAM_OFFICER);
+                AssignedUser a4 = new AssignedUser(kofi, Role.EXTERNAL_EXAMINER);
+                AssignedUser a5 = new AssignedUser(kofi, Role.ACADEMIC);
 
-                AssignedUser a6 = new AssignedUser(sakura, Role.ROLE_MODULE_STAFF);
+                AssignedUser a6 = new AssignedUser(sakura, Role.TEACHING_SUPPORT);
 
-                AssignedUser a7 = new AssignedUser(musa, Role.ROLE_SETTER);
-                AssignedUser a8 = new AssignedUser(musa, Role.ROLE_MODULE_MODERATOR);
+                AssignedUser a7 = new AssignedUser(musa, Role.EXAM_OFFICER);
+                AssignedUser a8 = new AssignedUser(musa, Role.EXTERNAL_EXAMINER);
 
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8));

@@ -1,14 +1,28 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
+import { assignedUserAPI } from '../services/api';
+import { isExamsOfficer } from '../utils/permissions';
 
 function Layout({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [assignedUsers, setAssignedUsers] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
+    
+    // Load assigned users to check for exams officer role
+    const loadAssignedUsers = async () => {
+      try {
+        const assignedRes = await assignedUserAPI.getAll().catch(() => ({ data: [] }));
+        setAssignedUsers(assignedRes.data || []);
+      } catch (err) {
+        console.error('Error loading assigned users:', err);
+      }
+    };
+    loadAssignedUsers();
   }, []);
 
   // Format user type for display
@@ -32,12 +46,17 @@ function Layout({ children }) {
       .replace(/\b\w/g, l => l.toUpperCase());
   };
 
+  // Check if current user is an exams officer based on assigned roles
+  const userId = currentUser?.id || currentUser?.userID || currentUser?.ID;
+  const username = currentUser?.username;
+  const userIsExamsOfficer = isExamsOfficer(assignedUsers, userId, username);
+
   // Get current view label for Exams Officers
   const getCurrentViewLabel = () => {
-    if (!currentUser || currentUser.primaryUserType !== 'ROLE_EXAMS_OFFICER') {
+    if (!currentUser || !userIsExamsOfficer) {
       return null;
     }
-    if (currentUser.selectedUserType === 'ROLE_ACADEMIC') {
+    if (currentUser.selectedUserType === 'ROLE_ACADEMIC' || currentUser.selectedRole === 'ACADEMIC') {
       return 'Academic View';
     }
     return 'Exam Officer View (Teaching Support Team)';
@@ -45,17 +64,19 @@ function Layout({ children }) {
 
   // Handle view switching for Exams Officers
   const handleSwitchView = () => {
-    if (!currentUser || currentUser.primaryUserType !== 'ROLE_EXAMS_OFFICER') {
+    if (!currentUser || !userIsExamsOfficer) {
       return;
     }
 
-    const newView = currentUser.selectedUserType === 'ROLE_ACADEMIC' 
+    const currentView = currentUser.selectedUserType || currentUser.selectedRole;
+    const newView = (currentView === 'ROLE_ACADEMIC' || currentView === 'ACADEMIC')
       ? 'ROLE_EXAMS_OFFICER' 
       : 'ROLE_ACADEMIC';
 
     const updatedUser = {
       ...currentUser,
-      selectedUserType: newView
+      selectedUserType: newView,
+      selectedRole: newView === 'ROLE_EXAMS_OFFICER' ? 'EXAM_OFFICER' : 'ACADEMIC'
     };
 
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
@@ -64,7 +85,6 @@ function Layout({ children }) {
     window.location.reload();
   };
 
-  const isExamsOfficer = currentUser?.primaryUserType === 'ROLE_EXAMS_OFFICER';
   const currentView = getCurrentViewLabel();
 
   return (
@@ -81,13 +101,13 @@ function Layout({ children }) {
             borderBottom: '1px solid var(--border)'
           }}>
             <div style={{ color: 'white', fontSize: '14px', fontWeight: '600' }}>
-              {isExamsOfficer ? (
-                <>Exam Officer: {currentView}</>
+              {userIsExamsOfficer ? (
+                <>Exam Officer: {currentView || 'Exam Officer View'}</>
               ) : (
-                formatUserTypeDisplay(currentUser.selectedUserType || currentUser.userType || currentUser.primaryUserType)
+                formatUserTypeDisplay(currentUser.selectedUserType || currentUser.selectedRole || currentUser.userType || currentUser.primaryUserType)
               )}
             </div>
-            {isExamsOfficer && (
+            {userIsExamsOfficer && (
               <button
                 className="btn"
                 onClick={handleSwitchView}
@@ -97,7 +117,7 @@ function Layout({ children }) {
                   whiteSpace: 'nowrap'
                 }}
               >
-                Switch to {currentUser.selectedUserType === 'ROLE_ACADEMIC' 
+                Switch to {(currentUser.selectedUserType === 'ROLE_ACADEMIC' || currentUser.selectedRole === 'ACADEMIC')
                   ? 'Exam Officer View' 
                   : 'Academic View'}
               </button>
