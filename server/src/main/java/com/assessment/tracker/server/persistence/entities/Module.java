@@ -12,7 +12,8 @@ public class Module {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private int leaderID;
+    private UUID leaderID;
+    private List<UUID> otherStaffIDs;
     private int code;
     private String title;
     private boolean archived;
@@ -24,9 +25,10 @@ public class Module {
     private List<ModuleLog> logs;
 
     public void setID(UUID id) { this.id = id; }
-    public void setLeaderID(int newLeaderID) {
+    public void setLeaderID(UUID newLeaderID) {
         this.leaderID = newLeaderID;
     }
+    public void setOtherStaffIDs(List<UUID> newOtherStaffIDs) {this.otherStaffIDs = newOtherStaffIDs;}
     public void setCode(int newCode) {
         this.code = newCode;
     }
@@ -36,7 +38,8 @@ public class Module {
 
 
     public UUID getID() {return id;}
-    public int getLeaderID() {return leaderID;}
+    public UUID getLeaderID() {return leaderID;}
+    public List<UUID> getOtherStaffIDs() {return otherStaffIDs;}
     public int getCode() {return code;}
     public String getTitle() {return title;}
     public boolean getArchiveStatus() {return archived;}
