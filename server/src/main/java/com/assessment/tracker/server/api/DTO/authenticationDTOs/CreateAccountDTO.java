@@ -12,10 +12,10 @@ public class CreateAccountDTO {
     public AssesmentRole assesmentRole ;
 
     public String moduleCode; // TODO: louis to change field to string
-    public ModuleRole moduleRole;
+    public ModuleRoles moduleRole;
 
     public CreateAccountDTO(String username, String email, String password, String assessment,String moduleCode,
-                            UserType userType, ModuleRole moduleRole, AssesmentRole assesmentRole){
+                            UserType userType, ModuleRoles moduleRole, AssesmentRole assesmentRole){
         this.username = username;
         this.email = email;
         this.password = password;

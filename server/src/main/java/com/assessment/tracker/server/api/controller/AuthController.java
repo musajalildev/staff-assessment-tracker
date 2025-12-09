@@ -4,6 +4,7 @@ import com.assessment.tracker.server.persistence.services.*;
 import com.assessment.tracker.server.api.DTO.authenticationDTOs.*;
 import com.assessment.tracker.server.persistence.entities.AuthorisedUser;
 
+import org.antlr.v4.runtime.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,10 +35,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<TokenDTO> signup(@RequestBody CreateAccountDTO userInfoDTO) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.createUser(userInfoDTO));
+    public ResponseEntity<String> signup(@RequestBody CreateAccountDTO userInfoDTO) {
+        TokenDTO t = userService.createUser(userInfoDTO);
+        return (t != null) ? ResponseEntity.status(HttpStatus.CREATED).body("User Created Successfully ")
+                            : ResponseEntity.badRequest().body("User Not Created Successfully ");
     }
 
     @PostMapping("/login")

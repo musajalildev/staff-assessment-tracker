@@ -81,6 +81,10 @@ public class ServerApplication {
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8));
 
+                if (assignedUserRepository.count() == 0) {
+                    System.out.println("Error w assigned user repo");
+                }
+
                 System.out.println("Assignments seeded.");
             }
 

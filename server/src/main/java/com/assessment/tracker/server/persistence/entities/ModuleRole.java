@@ -12,6 +12,8 @@ public class ModuleRole {
 
     private ModuleRoles role;
 
+    public String username;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
@@ -23,6 +25,7 @@ public class ModuleRole {
     public ModuleRole(){}
     public ModuleRole( User user,  ModuleRoles role, Module module){
         this.module = module;
+        this.username = user.getUsername();
         this.role = role;
         this.user = user;
     }

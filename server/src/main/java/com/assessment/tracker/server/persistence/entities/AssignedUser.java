@@ -13,6 +13,8 @@ public class AssignedUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int assignmentID;
 
+    public String username;
+
     @ManyToOne
     private User user;
 
@@ -30,6 +32,7 @@ public class AssignedUser {
 
     public AssignedUser(User user, AssesmentRole role, Assessment assessment) {
         this.user = user;
+        this.username=user.getUsername();
         this.role = role;
         this.assessment = assessment;
     }

@@ -54,8 +54,6 @@ public class UserService {
     }
 
     public TokenDTO createUser(CreateAccountDTO userinfo ) {
-        //TODO: accquire assesment constructor and implement
-        // logic for assessment assignment or module assignment based on base role type
         //call repos to construct data using Strings
 
         UserType base_role = userinfo.userType;
@@ -67,37 +65,47 @@ public class UserService {
         Assessment coreAssesment = assessmentRepo.findByTitle(assessmentData);
 
         //base user construction
-        User user = new User(userinfo.username, //username for an incoming account
+        User user = new User(userinfo.username,//username for an incoming account
+                userinfo.email,
                 passwordEncoder.encode(userinfo.password), //encoded password
-                userinfo.email, base_role); //email and role for an incoming account
+                 base_role); //email and role for an incoming account
 
-        userRepository.save(user);
+        boolean exists= (userRepository.existsByEmail(userinfo.email)) ||
+                (userRepository.existsByUsername(userinfo.username));
 
-        User academic= userRepository.findByUsername(userinfo.username);
-        //logic for academic role assignment
-        if(base_role == UserType.ROLE_ACADEMIC){
-            //TODO: implement logic for academic role assignment(requires moduleUser)
-            if (!assessmentData.isBlank()) {
-                AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,coreAssesment);
-                assignedUserRepository.save(test);
-                System.out.println("assigned user created successfully.");
-            } else if (!moduleData.isBlank()) {
-                ModuleRole test = new ModuleRole(academic,null,coreModule);
-                moduleRolesRepo.save(test);
-                System.out.println("module user created successfully.");
-            } else {
-                throw new IllegalArgumentException("Invalid user creation request for Academic role");
+
+        if (!exists) {
+            userRepository.save(user);
+
+            User academic= userRepository.findByUsername(userinfo.username);
+            //logic for academic role assignment
+            if(base_role == UserType.ROLE_ACADEMIC){
+                //TODO: implement logic for academic role assignment(requires moduleUser)
+                if (!assessmentData.isBlank()) {
+                    AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,coreAssesment);
+                    assignedUserRepository.save(test);
+                    System.out.println("assigned user created successfully.");
+                } else if (!moduleData.isBlank()) {
+                    ModuleRole test = new ModuleRole(academic,null,coreModule);
+                    moduleRolesRepo.save(test);
+                    System.out.println("module user created successfully.");
+                } else {
+                    throw new IllegalArgumentException("Invalid user creation request for Academic role");
+                }
+
+                //TODO: fix duplicate module role enum
+
             }
 
-            //TODO: fix duplicate module role enum
+            AuthorisedUser authorisedUser = (AuthorisedUser) detailsService.loadUserByUsername(userinfo.username);
 
+            //succesful auth
+            authorised=true;
+            return tokenService.generateToken(authorisedUser.getAuthorities(), userinfo.username);
         }
 
-        AuthorisedUser authorisedUser = (AuthorisedUser) detailsService.loadUserByUsername(userinfo.username);
-
-        //succesful auth
-        authorised=true;
-        return tokenService.generateToken(authorisedUser.getAuthorities(), userinfo.username);
+        System.out.println("User already exists, unable to create user");
+        return null;
     }
 
     public List<User> getAllUsers() {

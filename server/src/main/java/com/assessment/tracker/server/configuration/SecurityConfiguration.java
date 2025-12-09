@@ -60,7 +60,7 @@ public class SecurityConfiguration {
                 // authorization rules
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/auth/signup").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
                         .anyRequest().permitAll()
@@ -72,8 +72,9 @@ public class SecurityConfiguration {
                 )
 
                 // do not use session (JWT = stateless)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.cors(Customizer.withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy
+                        (SessionCreationPolicy.STATELESS));
+
 
         return http.build();
     }
