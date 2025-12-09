@@ -20,7 +20,10 @@ public class User {
     private UUID userID; // primary key
 
     @OneToMany
-    private Set<AssignedUser> assignedUsers = new HashSet<>();
+    private Set<AssignedUser> assignedUsers;
+
+    @OneToMany
+    private Set<ModuleRole> moduleUsers;
 
     @Column(nullable = false, unique = true)
     private String username;

@@ -24,6 +24,7 @@ public class Module {
     @OneToMany(mappedBy = "targetModule")
     private List<ModuleLog> logs;
 
+    //TODO : constructors
     public void setID(UUID id) { this.id = id; }
     public void setLeaderID(UUID newLeaderID) {
         this.leaderID = newLeaderID;

@@ -1,9 +1,7 @@
 package com.assessment.tracker.server.utils.enums;
 
 public enum ModuleRoles {
-    STAFF,
-    SETTER,
-    CHECKER,
-    MODULE_LEAD,
-    MODERATOR,
+    ROLE_MODULE_LEAD,
+    ROLE_MODULE_MODERATOR,
+    ROLE_MODULE_STAFF,
 }

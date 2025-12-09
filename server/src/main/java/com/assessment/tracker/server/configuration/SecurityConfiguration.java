@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
+
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,8 +35,7 @@ import com.assessment.tracker.server.persistence.services.JpaUserDetailsService;
 @EnableMethodSecurity
 public class SecurityConfiguration {
     /*
-     * This is to be rewritten default implementation is to permit any request we
-     * will have
+     * This is to be rewritten default implementation is to permit any request we will have
      * Roles etc. therefore we need to use spring security roles
      */
 
@@ -51,7 +51,8 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // allow H2 console (optional)
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .headers(headers -> headers.frameOptions
+                        (frame -> frame.sameOrigin()))
 
                 // disable CSRF because you are using JWT (stateless)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -59,23 +60,25 @@ public class SecurityConfiguration {
                 // authorization rules
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/auth/signup").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("**").permitAll()
+                        .requestMatchers("/h2-console").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll()
+                )
 
                 // JWT validation (your RSA public key via Nimbus)
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults()))
-                .userDetailsService(userDetailsService)
+                        .jwt(Customizer.withDefaults())
+                )
 
                 // do not use session (JWT = stateless)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.cors(Customizer.withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy
+                        (SessionCreationPolicy.STATELESS));
+
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -32,11 +32,11 @@ public class ServerApplication {
     CommandLineRunner seedDatabase(UserRepository userRepository,
             AssignedUserRepository assignedUserRepository,
             PasswordEncoder pcoder,
-            ModuleRepo moduleRepository,
             AssessmentRepo assessmentRepository,
             LogRepository logRepository,
             UserLogRepository userLogRepository,
             AssessmentLogRepository assessmentLogRepository,
+            ModuleRepo moduleRepo,
             ModuleLogRepository moduleLogRepository) {
 
         return args -> {
@@ -65,65 +65,37 @@ public class ServerApplication {
                 User sakura = userRepository.findByUsername("sakura");
                 User musa = userRepository.findByUsername("musa");
 
-                AssignedUser a1 = new AssignedUser(john, Role.ACADEMIC);
-                AssignedUser a2 = new AssignedUser(john, Role.TEACHING_SUPPORT);
+                AssignedUser a1 = new AssignedUser(john, AssesmentRole.ROLE_CHECKER, null);
+                AssignedUser a2 = new AssignedUser(john, AssesmentRole.ROLE_SETTER, null);
 
-                AssignedUser a3 = new AssignedUser(mary, Role.EXAM_OFFICER);
+                AssignedUser a3 = new AssignedUser(mary, AssesmentRole.ROLE_CHECKER, null);
 
-                AssignedUser a4 = new AssignedUser(kofi, Role.EXTERNAL_EXAMINER);
-                AssignedUser a5 = new AssignedUser(kofi, Role.ACADEMIC);
+                AssignedUser a4 = new AssignedUser(kofi, AssesmentRole.ROLE_SETTER, null);
+                AssignedUser a5 = new AssignedUser(kofi, AssesmentRole.ROLE_EXAM_OFFICER, null);
 
-                AssignedUser a6 = new AssignedUser(sakura, Role.TEACHING_SUPPORT);
+                AssignedUser a6 = new AssignedUser(sakura, AssesmentRole.ROLE_CHECKER, null);
 
-                AssignedUser a7 = new AssignedUser(musa, Role.EXAM_OFFICER);
-                AssignedUser a8 = new AssignedUser(musa, Role.EXTERNAL_EXAMINER);
+                AssignedUser a7 = new AssignedUser(musa, AssesmentRole.ROLE_SETTER, null);
+                AssignedUser a8 = new AssignedUser(musa, AssesmentRole.ROLE_SETTER,null);
 
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8));
 
+                if (assignedUserRepository.count() == 0) {
+                    System.out.println("Error w assigned user repo");
+                }
+
                 System.out.println("Assignments seeded.");
             }
-            if (moduleRepository.count() == 0) {
-                Module a1 = new Module();
-                a1.setTitle("test");
-                a1.setCode(3);
-                moduleRepository.saveAll(List.of(a1));
 
-                System.out.println("Modules seeded.");
-            }
             if (assessmentRepository.count() == 0) {
                 Assessment a1 = new Assessment();
-                a1.setTitle("Test Autograded");
+                a1.setTitle("test");
                 a1.setProgress(AssessmentProgress.CHECKED);
                 a1.setAssessmentType(AssessmentType.TEST_AUTOGRADED);
-                a1.setModule(moduleRepository.findByCode(3));
+
                 assessmentRepository.saveAll(List.of(a1));
 
-                Assessment a2 = new Assessment();
-                a2.setTitle("Test Team Marker");
-                a2.setProgress(AssessmentProgress.CREATED);
-                a2.setAssessmentType(AssessmentType.TEST_TEAM_MARKER);
-                a2.setModule(moduleRepository.findByCode(3));
-
-                Assessment a3 = new Assessment();
-                a3.setTitle("Test Single Marker");
-                a3.setProgress(AssessmentProgress.CREATED);
-                a3.setAssessmentType(AssessmentType.TEST_SINGLE_MARKER);
-                a3.setModule(moduleRepository.findByCode(3));
-
-                Assessment a4 = new Assessment();
-                a4.setTitle("Exam");
-                a4.setProgress(AssessmentProgress.CREATED);
-                a4.setAssessmentType(AssessmentType.EXAM);
-                a4.setModule(moduleRepository.findByCode(3));
-
-                Assessment a5 = new Assessment();
-                a5.setTitle("Coursework");
-                a5.setProgress(AssessmentProgress.CREATED);
-                a5.setAssessmentType(AssessmentType.COURSEWORK);
-                a5.setModule(moduleRepository.findByCode(3));
-
-                assessmentRepository.saveAll(List.of(a1, a2, a3, a4, a5));
                 System.out.println("Assessments seeded.");
             }
             if (logRepository.count() == 0) {
@@ -157,15 +129,16 @@ public class ServerApplication {
                 System.out.println("Assessment Log seeded.");
             }
 
+
         };
     }
 
     private static List<User> getUsers() {
-        User u1 = new User("john", "john@example.com", "john123", UserType.ACADEMIC);
-        User u2 = new User("mary", "mary@example.com", "mary123", UserType.TEACHING_SUPPORT);
-        User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.EXTERNAL_EXAMINER);
-        User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ACADEMIC);
-        User u5 = new User("musa", "musa@example.com", "musa123", UserType.ACADEMIC);
+        User u1 = new User("john", "john@example.com", "john123", UserType.ROLE_ACADEMIC);
+        User u2 = new User("mary", "mary@example.com", "mary123", UserType.ROLE_TEACHING_SUPPORT);
+        User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.ROLE_EXTERNAL_EXAMINER);
+        User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ROLE_ACADEMIC);
+        User u5 = new User("musa", "musa@example.com", "musa123", UserType.ROLE_TEACHING_SUPPORT);
 
         // password encoding for test data
         return List.of(u1, u2, u3, u4, u5);

@@ -18,4 +18,5 @@ import com.assessment.tracker.server.utils.enums.*;
 @Repository
 public interface AssessmentRepo extends JpaRepository<Assessment, Integer> {
     Assessment findByID(Integer ID);
+    Assessment findByTitle(String title);
 }
