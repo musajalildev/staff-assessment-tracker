@@ -18,7 +18,6 @@ public class AssignedUser {
 
 
     @ManyToOne
-            (optional = true)
     private Assessment assessment;
     //TODO: Assesment constructor and to be set as not optional
     // since role is attached to assessment

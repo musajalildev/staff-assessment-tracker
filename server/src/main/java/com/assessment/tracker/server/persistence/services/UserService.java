@@ -3,6 +3,8 @@ package com.assessment.tracker.server.persistence.services;
 import com.assessment.tracker.server.api.DTO.userHelperDTOs.PasswordUpdDTO;
 import com.assessment.tracker.server.api.DTO.authenticationDTOs.*;
 
+import com.assessment.tracker.server.persistence.entities.Module;
+import com.assessment.tracker.server.persistence.entities.ModuleRole;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +30,9 @@ public class UserService {
     private final AssignedUserRepository assignedUserRepository;
     public boolean authorised=false;
     private final AssessmentRepo assessmentRepo;
+    private final ModuleRepo moduleRepo;
+    private final ModuleRolesRepo moduleRolesRepo;
+
 
     private static final String USER_NOT_FOUND = "User does not exist";
 
@@ -35,13 +40,17 @@ public class UserService {
                        PasswordEncoder passwordEncoder,
                        JpaUserDetailsService jpaUserDetailsService,
                        TokenService tokenService, AssignedUserRepository assignedUserRepository,
-                       AssessmentRepo assessmentRepo) {
+                       AssessmentRepo assessmentRepo,
+                       ModuleRepo moduleRepo,
+                       ModuleRolesRepo moduleRolesRepo) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.detailsService = jpaUserDetailsService;
         this.tokenService = tokenService;
         this.assignedUserRepository = assignedUserRepository;
         this.assessmentRepo = assessmentRepo;
+        this.moduleRepo = moduleRepo;
+        this.moduleRolesRepo = moduleRolesRepo;
     }
 
     public TokenDTO createUser(CreateAccountDTO userinfo ) {
@@ -49,31 +58,38 @@ public class UserService {
         // logic for assessment assignment or module assignment based on base role type
         //call repos to construct data using Strings
 
-        userType base_role = userinfo.userType;
+        UserType base_role = userinfo.userType;
 
         String assessmentData = userinfo.assessment; //data to determine specific academic role
-        String moduleData = userinfo.module;
+        String moduleData = userinfo.moduleCode;
 
-        Assessment forNow = new Assessment();
-        // TODO:Change when assessment repo method:
-        //  findByAssesmentName is implemented  in order to construct assesment from String
+        Module coreModule = moduleRepo.findByCode(1); //TODO: use actual module code
+        Assessment coreAssesment = assessmentRepo.findByTitle(assessmentData);
 
-
+        //base user construction
         User user = new User(userinfo.username, //username for an incoming account
                 passwordEncoder.encode(userinfo.password), //encoded password
                 userinfo.email, base_role); //email and role for an incoming account
 
         userRepository.save(user);
+
         User academic= userRepository.findByUsername(userinfo.username);
         //logic for academic role assignment
-        if(base_role == userType.ROLE_ACADEMIC){
+        if(base_role == UserType.ROLE_ACADEMIC){
             //TODO: implement logic for academic role assignment(requires moduleUser)
-            if (assessmentData != null) {
-                
-                AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,null);
+            if (!assessmentData.isBlank()) {
+                AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,coreAssesment);
                 assignedUserRepository.save(test);
+                System.out.println("assigned user created successfully.");
+            } else if (!moduleData.isBlank()) {
+                ModuleRole test = new ModuleRole(academic,null,coreModule);
+                moduleRolesRepo.save(test);
+                System.out.println("module user created successfully.");
+            } else {
+                throw new IllegalArgumentException("Invalid user creation request for Academic role");
             }
-            //TODO: if moduleData exists create moduleUser and save to DB
+
+            //TODO: fix duplicate module role enum
 
         }
 
@@ -119,12 +135,12 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public userType getUserPermission(UUID id){
+    public UserType getUserPermission(UUID id){
         User user = getUser(id);
         return user.getUserType();
     }
 
-    public List<User> getAllUsersByPermission(userType permission){
+    public List<User> getAllUsersByPermission(UserType permission){
             return userRepository.findAllByUserType(permission);
     }
 
@@ -156,7 +172,7 @@ public class UserService {
         return userRepository.save(currentUser);
     }
 
-    public User updateUserPermission(userType newPermission, UUID id) {
+    public User updateUserPermission(UserType newPermission, UUID id) {
         User currentUser= getUser(id);
         currentUser.setUserType(newPermission);
         return userRepository.save(currentUser);

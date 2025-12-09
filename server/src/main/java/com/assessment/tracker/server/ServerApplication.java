@@ -2,6 +2,7 @@ package com.assessment.tracker.server;
 
 import com.assessment.tracker.server.configuration.RsaKeyProperties;
 import com.assessment.tracker.server.persistence.entities.*;
+import com.assessment.tracker.server.persistence.entities.Module;
 import com.assessment.tracker.server.persistence.entities.logging.*;
 import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.repos.logging.*;
@@ -35,6 +36,7 @@ public class ServerApplication {
             LogRepository logRepository,
             UserLogRepository userLogRepository,
             AssessmentLogRepository assessmentLogRepository,
+            ModuleRepo moduleRepo,
             ModuleLogRepository moduleLogRepository) {
 
         return args -> {
@@ -122,16 +124,26 @@ public class ServerApplication {
 
                 System.out.println("Assessment Log seeded.");
             }
+            //creaing test modules and assesments for user creation testing
+            Module mTest = new Module();
+            mTest.setCode(1);
+            mTest.setTitle("Test Module");
+            moduleRepo.save(mTest);
+            Assessment test = new Assessment(mTest,null,null,"Test Assessment");
+            assessmentRepository.save(test);
+
+            System.out.println("Test Modules and Assessments seeded.");
+
 
         };
     }
 
     private static List<User> getUsers() {
-        User u1 = new User("john", "john@example.com", "john123", UserType.ACADEMIC);
-        User u2 = new User("mary", "mary@example.com", "mary123", UserType.TEACHING_SUPPORT);
-        User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.EXTERNAL_EXAMINER);
-        User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ACADEMIC);
-        User u5 = new User("musa", "musa@example.com", "musa123", UserType.ACADEMIC);
+        User u1 = new User("john", "john@example.com", "john123", UserType.ROLE_ACADEMIC);
+        User u2 = new User("mary", "mary@example.com", "mary123", UserType.ROLE_TEACHING_SUPPORT);
+        User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.ROLE_EXTERNAL_EXAMINER);
+        User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ROLE_ACADEMIC);
+        User u5 = new User("musa", "musa@example.com", "musa123", UserType.ROLE_TEACHING_SUPPORT);
 
         // password encoding for test data
         return List.of(u1, u2, u3, u4, u5);
