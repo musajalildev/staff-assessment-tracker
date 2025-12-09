@@ -14,10 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
-import java.util.List;
-import java.util.UUID;
 
 @Tag(name = "User", description = "User-Related-Operations")
 public interface UserController {
