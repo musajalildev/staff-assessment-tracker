@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/auth/signup").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("**").permitAll()
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
                         .anyRequest().authenticated())
@@ -67,6 +68,7 @@ public class SecurityConfiguration {
                 // JWT validation (your RSA public key via Nimbus)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults()))
+                .userDetailsService(userDetailsService)
 
                 // do not use session (JWT = stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

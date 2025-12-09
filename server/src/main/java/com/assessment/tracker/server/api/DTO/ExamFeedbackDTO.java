@@ -3,7 +3,7 @@ package com.assessment.tracker.server.api.DTO;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class AssessmentFeedbackDTO {
+public class ExamFeedbackDTO {
     private Integer id;
     private Integer assessmentID;
     private String feedback;
@@ -14,7 +14,7 @@ public class AssessmentFeedbackDTO {
     private UUID authorID;
     private String authorUsername;
 
-    public AssessmentFeedbackDTO() {
+    public ExamFeedbackDTO() {
     }
 
     public Integer getId() {

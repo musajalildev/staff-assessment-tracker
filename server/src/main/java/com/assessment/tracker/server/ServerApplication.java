@@ -2,6 +2,7 @@ package com.assessment.tracker.server;
 
 import com.assessment.tracker.server.configuration.RsaKeyProperties;
 import com.assessment.tracker.server.persistence.entities.*;
+import com.assessment.tracker.server.persistence.entities.Module;
 import com.assessment.tracker.server.persistence.entities.logging.*;
 import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.persistence.repos.logging.*;
@@ -31,6 +32,7 @@ public class ServerApplication {
     CommandLineRunner seedDatabase(UserRepository userRepository,
             AssignedUserRepository assignedUserRepository,
             PasswordEncoder pcoder,
+            ModuleRepo moduleRepository,
             AssessmentRepo assessmentRepository,
             LogRepository logRepository,
             UserLogRepository userLogRepository,
@@ -81,14 +83,47 @@ public class ServerApplication {
 
                 System.out.println("Assignments seeded.");
             }
+            if (moduleRepository.count() == 0) {
+                Module a1 = new Module();
+                a1.setTitle("test");
+                a1.setCode(3);
+                moduleRepository.saveAll(List.of(a1));
+
+                System.out.println("Modules seeded.");
+            }
             if (assessmentRepository.count() == 0) {
                 Assessment a1 = new Assessment();
-                a1.setTitle("test");
+                a1.setTitle("Test Autograded");
                 a1.setProgress(AssessmentProgress.CHECKED);
                 a1.setAssessmentType(AssessmentType.TEST_AUTOGRADED);
-
+                a1.setModule(moduleRepository.findByCode(3));
                 assessmentRepository.saveAll(List.of(a1));
 
+                Assessment a2 = new Assessment();
+                a2.setTitle("Test Team Marker");
+                a2.setProgress(AssessmentProgress.CREATED);
+                a2.setAssessmentType(AssessmentType.TEST_TEAM_MARKER);
+                a2.setModule(moduleRepository.findByCode(3));
+
+                Assessment a3 = new Assessment();
+                a3.setTitle("Test Single Marker");
+                a3.setProgress(AssessmentProgress.CREATED);
+                a3.setAssessmentType(AssessmentType.TEST_SINGLE_MARKER);
+                a3.setModule(moduleRepository.findByCode(3));
+
+                Assessment a4 = new Assessment();
+                a4.setTitle("Exam");
+                a4.setProgress(AssessmentProgress.CREATED);
+                a4.setAssessmentType(AssessmentType.EXAM);
+                a4.setModule(moduleRepository.findByCode(3));
+
+                Assessment a5 = new Assessment();
+                a5.setTitle("Coursework");
+                a5.setProgress(AssessmentProgress.CREATED);
+                a5.setAssessmentType(AssessmentType.COURSEWORK);
+                a5.setModule(moduleRepository.findByCode(3));
+
+                assessmentRepository.saveAll(List.of(a1, a2, a3, a4, a5));
                 System.out.println("Assessments seeded.");
             }
             if (logRepository.count() == 0) {
