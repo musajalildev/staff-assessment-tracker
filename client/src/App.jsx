@@ -6,9 +6,11 @@ import Modules from './pages/Modules';
 import ModuleDetail from './pages/ModuleDetail';
 import ModuleNew from './pages/ModuleNew';
 import ModuleEdit from './pages/ModuleEdit';
+import ModuleCSVUpload from './pages/ModuleCSVUpload';
 import AssessmentDetail from './pages/AssessmentDetail';
 import AssessmentNew from './pages/AssessmentNew';
 import UserManagement from './pages/UserManagement';
+import UserNew from './pages/UserNew';
 import MyProfile from './pages/MyProfile';
 import FeedbackTest from './pages/FeedbackTest';
 import './App.css';
@@ -22,12 +24,14 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/modules" element={<Modules />} />
         <Route path="/modules/new" element={<ModuleNew />} />
+        <Route path="/modules/upload-csv" element={<ModuleCSVUpload />} />
         <Route path="/modules/:id" element={<ModuleDetail />} />
         <Route path="/modules/:id/edit" element={<ModuleEdit />} />
         <Route path="/modules/:moduleId/assessments/new" element={<AssessmentNew />} />
         <Route path="/modules/:moduleId/assessments/:assessmentId" element={<AssessmentDetail />} />
         <Route path="/test/feedback/:assessmentId" element={<FeedbackTest />} />
         <Route path="/users" element={<UserManagement />} />
+        <Route path="/users/new" element={<UserNew />} />
         <Route path="/profile" element={<MyProfile />} />
       </Routes>
     </BrowserRouter>
