@@ -17,7 +17,9 @@ function AssessmentNew() {
     checker: '',
     progress: 'CREATED',
     teamMarked: false,
-    autoGraded: false
+    autoGraded: false,
+    examDate: '',
+    deadlineDate: ''
   });
 
   useEffect(() => {
@@ -64,6 +66,10 @@ function AssessmentNew() {
         progress: formData.progress,
         teamMarked: formData.teamMarked,
         autoGraded: formData.autoGraded,
+        examDate: formData.examDate || null,
+        deadlineDate: formData.deadlineDate || null,
+        setter: formData.setter ? { userID: formData.setter } : null,
+        checker: formData.checker ? { userID: formData.checker } : null,
         module: module ? { id: module.id || module.ID } : null
       };
 
@@ -110,7 +116,13 @@ function AssessmentNew() {
                 id="a-type"
                 name="type"
                 value={formData.type}
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFormData({ 
+                    ...formData, 
+                    type: e.target.value,
+                    autoGraded: e.target.value === 'TEST_AUTOGRADED' ? true : formData.autoGraded && (e.target.value.includes('TEST'))
+                  });
+                }}
               >
                 <option value="COURSEWORK">Coursework</option>
                 <option value="TEST_AUTOGRADED">Test (Autograded)</option>
@@ -156,27 +168,59 @@ function AssessmentNew() {
               </select>
             </div>
           </div>
-          <div className="field">
-            <label className="label">Options</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="teamMarked"
-                  checked={formData.teamMarked}
-                  onChange={handleChange}
-                />{' '}
-                Marked by Team
+          <div className="grid two">
+            <div className="field">
+              <label className="label" htmlFor="deadlineDate">
+                {formData.type === 'COURSEWORK' ? 'Submission Deadline' : formData.type === 'EXAM' ? 'Exam Date' : 'Test Date'}
               </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="autoGraded"
-                  checked={formData.autoGraded}
-                  onChange={handleChange}
-                />{' '}
-                Auto Graded
-              </label>
+              <input
+                type="date"
+                className="input"
+                id="deadlineDate"
+                name={formData.type === 'EXAM' ? 'examDate' : 'deadlineDate'}
+                value={formData.type === 'EXAM' ? formData.examDate : formData.deadlineDate}
+                onChange={(e) => {
+                  if (formData.type === 'EXAM') {
+                    setFormData({ ...formData, examDate: e.target.value });
+                  } else {
+                    setFormData({ ...formData, deadlineDate: e.target.value });
+                  }
+                }}
+              />
+              <p className="sub mt-8" style={{ fontSize: '12px' }}>
+                {formData.type === 'EXAM' || formData.type.includes('TEST') 
+                  ? 'Assessment will automatically progress the next working day after this date'
+                  : 'Deadline for student submissions'}
+              </p>
+            </div>
+            <div className="field">
+              <label className="label">Options</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="teamMarked"
+                    checked={formData.teamMarked}
+                    onChange={handleChange}
+                  />{' '}
+                  Marked by Team
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="autoGraded"
+                    checked={formData.autoGraded}
+                    onChange={handleChange}
+                    disabled={formData.type === 'COURSEWORK' || formData.type === 'EXAM'}
+                  />{' '}
+                  Auto Graded
+                  {(formData.type === 'COURSEWORK' || formData.type === 'EXAM') && (
+                    <span className="sub" style={{ fontSize: '11px', marginLeft: '4px' }}>
+                      (Tests only)
+                    </span>
+                  )}
+                </label>
+              </div>
             </div>
           </div>
           {error && (

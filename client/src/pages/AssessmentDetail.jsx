@@ -1,9 +1,11 @@
 import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useState, useEffect } from 'react';
-import { assessmentAPI, userAPI } from '../services/api';
+import { assessmentAPI, userAPI, assignedUserAPI, feedbackAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
+import { getWorkflowStages, getNextStage, getPreviousStage, getStageInfo, canProgressStage } from '../utils/workflows';
+import { getCurrentUser, canReverseStages, canOverrideProgress } from '../utils/permissions';
 
 function AssessmentDetail() {
   const { moduleId, assessmentId } = useParams();
@@ -15,21 +17,43 @@ function AssessmentDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [assignedUsers, setAssignedUsers] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [comment, setComment] = useState('');
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Loads the relevant Assessment
   useEffect(() => {
     const loadAssessment = async () => {
       try {
         setLoading(true);
-        const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
-
-        const [assessmentRes, usersRes] = await Promise.all([
+        const user = getCurrentUser();
+        setCurrentUser(user);
+        
+        const assessmentIdToUse = assessmentId || 1;
+        
+        const [assessmentRes, usersRes, assignedRes] = await Promise.all([
           assessmentAPI.getById(assessmentIdToUse),
-          userAPI.getAll().catch(() => ({ data: [] }))
+          userAPI.getAll().catch(() => ({ data: [] })),
+          assignedUserAPI.getAll().catch(() => ({ data: [] }))
         ]);
 
         setAssessment(assessmentRes.data);
         setUsers(usersRes.data || []);
+        setAssignedUsers(assignedRes.data || []);
+
+        // Load history/logs (when backend supports it)
+        // For now, create mock history from assessment data
+        if (assessmentRes.data?.logs) {
+          setHistory(assessmentRes.data.logs);
+        } else {
+          // Mock history for demonstration
+          setHistory([]);
+        }
       } catch (err) {
         setError('Failed to load assessment');
         console.error('Error loading assessment:', err);
@@ -71,6 +95,25 @@ function AssessmentDetail() {
   }, [assessment]);
   // Code to Progress Assessments
   const progressAssessment = async () => {
+
+  const getUserName = (user) => {
+    if (!user) return 'N/A';
+    if (typeof user === 'string') return user;
+    return user.username || user.email || 'N/A';
+  };
+
+  const getTypeLabel = (type) => {
+    const typeMap = {
+      "EXAM": "Exam",
+      "COURSEWORK": "Coursework",
+      "TEST_AUTOGRADED": "Test (Autograded)",
+      "TEST_SINGLE_MARKER": "Test (Single Marker)",
+      "TEST_TEAM_MARKER": "Test (Team Marker)"
+    };
+    return typeMap[type] || type || "N/A";
+  };
+
+  const handleProgress = async (requireComment = false) => {
     if (!assessment) return;
     if (assessment.progress == "CHECKED") {
       navigate("/test/feedback/" + assessmentId)
@@ -92,25 +135,115 @@ function AssessmentDetail() {
       nextProgress = "CHECKED";
     }
 
+    if (requireComment && !comment.trim()) {
+      alert('Please provide a comment for this action');
+      return;
+    }
+
+    const nextStage = getNextStage(assessment.progress, assessment.type);
+    if (!nextStage) {
+      alert('Already at final stage');
+      return;
+    }
 
     const updatedAssessment = {
       ...assessment,
-      progress: nextProgress
+      progress: nextStage,
+      comment: comment.trim() || undefined
     };
 
     try {
       const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
       setAssessment(result.data);
+      setComment('');
+      setShowCommentModal(false);
+      setPendingAction(null);
+      
+      // Reload to get updated history
+      const assessmentRes = await assessmentAPI.getById(assessment.id || assessment.ID);
+      if (assessmentRes.data?.logs) {
+        setHistory(assessmentRes.data.logs);
+      }
     } catch (err) {
       console.error('Error updating assessment:', err);
       alert('Failed to update assessment progress');
     }
   };
 
-  const getUserName = (user) => {
-    if (!user) return 'N/A';
-    if (typeof user === 'string') return user;
-    return user.username || user.email || 'N/A';
+  const handleReverse = async () => {
+    if (!assessment) return;
+
+    if (!window.confirm('Are you sure you want to reverse this stage? This action will undo the last progression.')) {
+      return;
+    }
+
+    const previousStage = getPreviousStage(assessment.progress, assessment.type);
+    if (!previousStage) {
+      alert('Already at first stage');
+      return;
+    }
+
+    const updatedAssessment = {
+      ...assessment,
+      progress: previousStage
+    };
+
+    try {
+      const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
+      setAssessment(result.data);
+      
+      // Reload to get updated history
+      const assessmentRes = await assessmentAPI.getById(assessment.id || assessment.ID);
+      if (assessmentRes.data?.logs) {
+        setHistory(assessmentRes.data.logs);
+      }
+    } catch (err) {
+      console.error('Error reversing assessment:', err);
+      alert('Failed to reverse assessment progress');
+    }
+  };
+
+  const requestProgress = (requireComment = false) => {
+    setPendingAction(() => () => handleProgress(requireComment));
+    if (requireComment) {
+      setShowCommentModal(true);
+    } else {
+      handleProgress(false);
+    }
+  };
+
+  const canProgress = () => {
+    if (!assessment || !currentUser) return false;
+    
+    const userId = currentUser.id || currentUser.userID;
+    const username = currentUser.username;
+    const userRoles = assignedUsers
+      .filter(au => au.user?.userID === userId || au.user?.username === username)
+      .map(au => au.role);
+    
+    const isSetter = assessment.setter?.userID === userId || assessment.setter?.username === username;
+    const isChecker = assessment.checker?.userID === userId || assessment.checker?.username === username;
+    const isModerator = false; // Would need module roles data
+    const isModuleStaff = false; // Would need module roles data
+    const canOverride = canOverrideProgress(assignedUsers, userId, username, currentUser?.selectedUserType || currentUser?.selectedRole);
+    
+    return canProgressStage(
+      assessment.progress,
+      assessment.type,
+      userRoles[0],
+      isSetter,
+      isChecker,
+      isModerator,
+      isModuleStaff,
+      canOverride
+    );
+  };
+
+  const canReverse = () => {
+    if (!assessment || !currentUser) return false;
+    const userId = currentUser.id || currentUser.userID;
+    const username = currentUser.username;
+    return canReverseStages(assignedUsers, userId, username, currentUser?.selectedUserType || currentUser?.selectedRole);
   };
 
   if (loading) {
@@ -134,16 +267,97 @@ function AssessmentDetail() {
     );
   }
 
+  const workflowStages = getWorkflowStages(assessment.type);
+  const currentStageIndex = workflowStages.findIndex(s => s.value === assessment.progress);
+  const typeLabel = getTypeLabel(assessment.type);
+
+  // Determine if comment is required (for modifications, feedback, etc.)
+  const requiresComment = ['NEEDS_CHANGES', 'SETTER_MODIFICATIONS', 'EXTERNAL_EXAMINER_FEEDBACK', 'SETTER_RESPONSE'].includes(assessment.progress);
 
   return (
     <Layout>
       <header className="header">
-        <div className="h-title">{assessment.title || 'Untitled Assessment'} • {type}</div>
+        <div className="h-title">{assessment.title || 'Untitled Assessment'} • {typeLabel}</div>
         <div className="actions">
-          <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
-          <button className="btn primary" onClick={progressAssessment}>Progress to Next Stage</button>
+          <Link 
+            className="btn" 
+            to={`/modules/${moduleId}`}
+            onClick={() => {
+              // Force a page reload to refresh module data
+              // This ensures assessments are reloaded after updates
+              setTimeout(() => window.location.reload(), 100);
+            }}
+          >
+            Back to Module
+          </Link>
+          {canProgress() && (
+            <button 
+              className="btn primary" 
+              onClick={() => requestProgress(requiresComment)}
+            >
+              Progress to Next Stage
+            </button>
+          )}
+          {canReverse() && (
+            <button 
+              className="btn" 
+              onClick={handleReverse}
+              style={{ color: 'var(--bad)' }}
+            >
+              Reverse Stage
+            </button>
+          )}
         </div>
       </header>
+
+      {showCommentModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div className="card" style={{ maxWidth: '500px', width: '90%' }}>
+            <h3 style={{ marginBottom: '16px' }}>Add Comment</h3>
+            <p className="sub" style={{ marginBottom: '12px' }}>
+              A comment is required for this action. Please provide a summary of changes or feedback.
+            </p>
+            <textarea
+              className="input"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Enter comment..."
+              rows={5}
+              style={{ width: '100%', marginBottom: '16px' }}
+            />
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button 
+                className="btn" 
+                onClick={() => {
+                  setShowCommentModal(false);
+                  setComment('');
+                  setPendingAction(null);
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn primary" 
+                onClick={() => pendingAction && pendingAction()}
+                disabled={!comment.trim()}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="grid two">
         <div className="card">
@@ -156,8 +370,8 @@ function AssessmentDetail() {
           <div className="sep"></div>
           <div className="label mt-12">Details</div>
           <div className="mt-12">
-            <span className="pill">Type: {type}</span>
-            <span className="pill">Progress: {assessment.progress || 'N/A'}</span>
+            <span className="pill">Type: {typeLabel}</span>
+            <span className="pill">Progress: {getStageInfo(assessment.progress, assessment.type).label}</span>
             {assessment.teamMarked && <span className="pill">Team Marked</span>}
             {assessment.autoGraded && <span className="pill">Auto Graded</span>}
           </div>
@@ -165,71 +379,91 @@ function AssessmentDetail() {
         <div className="card">
           <div className="label">Workflow</div>
           <div className="timeline mt-12">
-            <div className={(() => { if (progress > 1) return "step done"; if (progress == 1) return "step active"; return "step" })()}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Test created</div>
-                <div className="meta">By Setter</div>
-              </div>
-            </div>
-            <div className={(() => { if (progress > 2) return "step done"; if (progress == 2) return "step active"; return "step" })()}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Checked</div>
-                <div className="meta">Checker approves or requests changes</div>
-              </div>
-            </div>
-            <div className={(() => { if (progress > 3) return "step done"; if (progress == 3) return "step active"; return "step" })()}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Needs Changes</div>
-                <div className="meta">Visible in VLE</div>
-              </div>
-            </div>
-            <div className={(() => { if (progress > 4) return "step done"; if (progress == 4) return "step active"; return "step" })()}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Test Taking Place</div>
-                <div className="meta">Window closes</div>
-              </div>
-            </div>
-            <div className={(() => { if (progress > 5) return "step done"; if (progress == 5) return "step active"; return "step" })()}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Standardisation (if team)</div>
-              </div>
-            </div>
-            <div className={(() => { if (progress > 6) return "step done"; if (progress == 6) return "step active"; return "step" })()}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Marking</div>
-              </div>
-            </div>
-            <div className={progress > 7 ? "step done" : progress === 7 ? "step active" : "step"}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Results Returned</div>
-                <div className="meta">Complete</div>
-              </div>
-            </div>
-            <div className={progress > 8 ? "step done" : progress === 8 ? "step active" : "step"}>
-              <div className="dot"></div>
-              <div>
-                <div className="title">Complete</div>
-                <div className="meta">Assessment finished</div>
-              </div>
-            </div>
+            {workflowStages.map((stage, index) => {
+              const isDone = index < currentStageIndex;
+              const isActive = index === currentStageIndex;
+              
+              return (
+                <div 
+                  key={stage.value} 
+                  className={isDone ? "step done" : isActive ? "step active" : "step"}
+                >
+                  <div className="dot"></div>
+                  <div>
+                    <div className="title">{stage.label}</div>
+                    {stage.description && (
+                      <div className="meta">{stage.description}</div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
+      </section>
+
+      {/* History Timeline */}
+      <section className="card mt-24">
+        <div className="h-title" style={{ fontSize: '18px' }}>History</div>
+        {history.length > 0 ? (
+          <div className="timeline mt-12">
+            {history.map((log, index) => (
+              <div key={index} className="step done">
+                <div className="dot"></div>
+                <div>
+                  <div className="title">
+                    {log.previousState ? `${log.previousState} → ${log.newState}` : log.actionType || 'Action'}
+                  </div>
+                  <div className="meta">
+                    {getUserName(log.user)} • {log.logTime ? new Date(log.logTime).toLocaleString() : 'Unknown time'}
+                  </div>
+                  {log.comment && (
+                    <div className="sub" style={{ marginTop: '4px' }}>{log.comment}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="sub mt-12">No history available yet.</p>
+        )}
       </section>
 
       <section className="grid mt-24">
         <div className="card">
           <div className="h-title" style={{ fontSize: '18px' }}>Actions</div>
           <div className="mt-12" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button className="btn" onClick={progressAssessment}>Update Progress</button>
-            <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
+            {canProgress() && (
+              <button 
+                className="btn primary" 
+                onClick={() => requestProgress(requiresComment)}
+              >
+                {requiresComment ? 'Progress (Comment Required)' : 'Progress to Next Stage'}
+              </button>
+            )}
+            {canReverse() && (
+              <button 
+                className="btn" 
+                onClick={handleReverse}
+                style={{ color: 'var(--bad)' }}
+              >
+                Reverse Stage
+              </button>
+            )}
+            <Link 
+              className="btn" 
+              to={`/modules/${moduleId}`}
+              onClick={() => {
+                // Force a page reload to refresh module data
+                setTimeout(() => window.location.reload(), 100);
+              }}
+            >
+              Back to Module
+            </Link>
           </div>
+          {!canProgress() && !canReverse() && (
+            <p className="sub mt-12">You don't have permission to modify this assessment's progress.</p>
+          )}
         </div>
       </section>
 
@@ -237,8 +471,11 @@ function AssessmentDetail() {
         <FeedbackSection
           assessment={assessment}
           onFeedbackAdded={() => {
-            // Optionally reload assessment data when feedback is added
             console.log('Feedback added, reloading assessment...');
+            // Reload assessment
+            assessmentAPI.getById(assessment.id || assessment.ID).then(res => {
+              setAssessment(res.data);
+            });
           }}
         />
       )}
@@ -247,4 +484,3 @@ function AssessmentDetail() {
 }
 
 export default AssessmentDetail;
-

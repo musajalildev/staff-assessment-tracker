@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { moduleAPI, assessmentAPI, userAPI, assignedUserAPI } from '../services/api';
+import { filterModulesByRole } from '../utils/permissions';
 
 function Dashboard() {
   const [modules, setModules] = useState([]);
@@ -54,7 +55,15 @@ function Dashboard() {
           assignedUserAPI.getAll().catch(() => ({ data: [] }))
         ]);
 
-        setModules(modulesRes.data || []);
+        const allModules = modulesRes.data || [];
+        const userId = user?.id || user?.userID;
+        const username = user?.username;
+        const currentView = user?.selectedUserType || user?.selectedRole;
+        
+        // Filter modules by role
+        const filteredModules = filterModulesByRole(allModules, assignedRes.data || [], [], userId, username, currentView);
+        
+        setModules(filteredModules);
         setUsers(usersRes.data || []);
         setUserRoles(assignedRes.data || []);
 
@@ -175,7 +184,9 @@ function Dashboard() {
 
       <section className="grid two mt-24">
         <div className="card">
-          <div className="h-title" style={{ fontSize: '18px' }}>All Modules</div>
+          <div className="h-title" style={{ fontSize: '18px' }}>
+            {currentUser?.selectedRole === 'EXTERNAL_EXAMINER' ? 'Assigned Modules' : 'Modules'}
+          </div>
           <table className="table mt-12">
             <thead>
               <tr>
@@ -186,7 +197,7 @@ function Dashboard() {
             </thead>
             <tbody>
               {modules.length > 0 ? (
-                modules.map((module) => (
+                modules.filter(m => !m.archived).slice(0, 5).map((module) => (
                   <tr key={module.id || module.ID}>
                     <td>{module.code || module.moduleCode}</td>
                     <td>{module.title || 'N/A'}</td>
@@ -197,11 +208,18 @@ function Dashboard() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="sub">No modules found. Create one to get started.</td>
+                  <td colSpan="3" className="sub">No modules found.</td>
                 </tr>
               )}
             </tbody>
           </table>
+          {modules.length > 5 && (
+            <div style={{ marginTop: '12px', textAlign: 'right' }}>
+              <Link to="/modules" className="btn" style={{ fontSize: '14px', padding: '6px 12px' }}>
+                View All →
+              </Link>
+            </div>
+          )}
         </div>
         <div className="card">
           <div className="h-title" style={{ fontSize: '18px' }}>Recent Assessments</div>
