@@ -25,22 +25,22 @@ public class AssignedUser {
     // since role is attached to assessment
 
     @Enumerated(EnumType.STRING)
-    private AssesmentRole role;
+    private AssessmentRole role;
 
     public AssignedUser() {
     }
 
-    public AssignedUser(User user, AssesmentRole role, Assessment assessment) {
+    public AssignedUser(User user, AssessmentRole role, Assessment assessment) {
         this.user = user;
         this.username=user.getUsername();
         this.role = role;
         this.assessment = assessment;
     }
-    public void setRole(AssesmentRole role) {
+    public void setRole(AssessmentRole role) {
         this.role = role;
     }
 
-    public AssesmentRole getRole() {
+    public AssessmentRole getRole() {
         return role;
     }
 

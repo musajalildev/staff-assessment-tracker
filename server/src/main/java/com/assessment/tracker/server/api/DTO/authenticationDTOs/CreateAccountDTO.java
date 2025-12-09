@@ -9,20 +9,20 @@ public class CreateAccountDTO {
     public UserType userType;
 
     public String assessment;// assessment involvement
-    public AssesmentRole assesmentRole ;
+    public AssessmentRole assessmentRole;
 
     public String moduleCode; // TODO: louis to change field to string
     public ModuleRoles moduleRole;
 
     public CreateAccountDTO(String username, String email, String password, String assessment,String moduleCode,
-                            UserType userType, ModuleRoles moduleRole, AssesmentRole assesmentRole){
+                            UserType userType, ModuleRoles moduleRole, AssessmentRole assessmentRole){
         this.username = username;
         this.email = email;
         this.password = password;
         this.userType = userType;
 
         this.assessment = assessment;
-        this.assesmentRole = assesmentRole;
+        this.assessmentRole = assessmentRole;
 
         this.moduleCode = moduleCode;
         this.moduleRole = moduleRole;

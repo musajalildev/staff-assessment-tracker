@@ -61,7 +61,8 @@ public class UserService {
         String assessmentData = userinfo.assessment; //data to determine specific academic role
         String moduleData = userinfo.moduleCode;
 
-        //Module coreModule = moduleRepo.findByCode(); //TODO: use actual module code
+
+        Module coreModule = moduleRepo.findByCode(moduleData);
         Assessment coreAssesment = assessmentRepo.findByTitle(assessmentData);
 
         //base user construction
@@ -80,20 +81,18 @@ public class UserService {
             User academic= userRepository.findByUsername(userinfo.username);
             //logic for academic role assignment
             if(base_role == UserType.ROLE_ACADEMIC){
-                //TODO: implement logic for academic role assignment(requires moduleUser)
+
                 if (!assessmentData.isBlank()) {
-                    AssignedUser test = new AssignedUser(academic,userinfo.assesmentRole,coreAssesment);
+                    AssignedUser test = new AssignedUser(academic,userinfo.assessmentRole,coreAssesment);
                     assignedUserRepository.save(test);
                     System.out.println("assigned user created successfully.");
                 } else if (!moduleData.isBlank()) {
-                    ModuleRole test = new ModuleRole(academic,null,coreModule);
+                    ModuleRole test = new ModuleRole(academic,userinfo.moduleRole,coreModule);
                     moduleRolesRepo.save(test);
                     System.out.println("module user created successfully.");
                 } else {
                     throw new IllegalArgumentException("Invalid user creation request for Academic role");
                 }
-
-                //TODO: fix duplicate module role enum
 
             }
 
