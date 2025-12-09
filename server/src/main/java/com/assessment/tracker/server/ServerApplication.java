@@ -128,15 +128,6 @@ public class ServerApplication {
 
                 System.out.println("Assessment Log seeded.");
             }
-            //creaing test modules and assesments for user creation testing
-            Module mTest = new Module();
-            mTest.setCode(1);
-            mTest.setTitle("Test Module");
-            moduleRepo.save(mTest);
-            Assessment test = new Assessment(mTest,null,null,"Test Assessment");
-            assessmentRepository.save(test);
-
-            System.out.println("Test Modules and Assessments seeded.");
 
 
         };
