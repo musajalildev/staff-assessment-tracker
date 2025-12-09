@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ModuleService {
     @Autowired
     private ModuleRepo moduleRepository;
+    @Autowired
     private ModuleMapper moduleMapper;
 
     public void update(UUID id, Module newModule) {
@@ -52,6 +53,5 @@ public class ModuleService {
 
         return moduleDTOList;
     }
-
 
 }

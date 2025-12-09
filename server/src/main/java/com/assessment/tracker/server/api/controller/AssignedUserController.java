@@ -4,6 +4,7 @@ import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.services.*;
 
 import com.assessment.tracker.server.utils.enums.*;
+import com.assessment.tracker.server.api.DTO.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class AssignedUserController {
     // implement get assigned users w/o query params
     @PostMapping({ "", "/" })
     public ResponseEntity<AssignedUser> createAssignment(@RequestBody String username, @RequestBody AssessmentRole role,
-                                                         Assessment assessment ) {
+            Assessment assessment) {
         AssignedUser createdUser = assignedUserService.createAssignment(username, role, assessment);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
