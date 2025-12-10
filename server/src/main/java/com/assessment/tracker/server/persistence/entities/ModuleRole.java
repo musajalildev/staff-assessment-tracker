@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  * Linker Table to represent module-specific roles for users
- * It has a many to one relationship with User and Module
+ * It has a many-to-one relationship with User and Module
  * It has an enum of type ModuleRole that represents the relationship
  * between User and Module
  */
@@ -15,8 +15,8 @@ public class ModuleRole {
 
     private ModuleRoles role;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    UUID ID;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID ID;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -63,7 +63,7 @@ public class ModuleRole {
         return ID;
     }
 
-    public void setID(UUID id) {
-        ID = id;
+    public void setID(UUID ID) {
+        this.ID = ID;
     }
 }

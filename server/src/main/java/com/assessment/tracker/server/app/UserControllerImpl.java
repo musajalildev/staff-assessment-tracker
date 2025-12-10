@@ -171,6 +171,13 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>(userMapper.entityToApi(updated), HttpStatus.OK);
     }
 
+    //-----EXAM OFFICER OPERATIONS----- TODO: Pre-authorization
+    @PutMapping("/promote/{username}")
+    public ResponseEntity<UserDTO> promoteUser(@PathVariable String username) {
+        User toPromote= userService.getUserByUsername(username);
+        return null;
+    }
+
     // -------------------- DELETE --------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {

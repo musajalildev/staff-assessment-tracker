@@ -1,6 +1,7 @@
 package com.assessment.tracker.server.persistence.entities;
 
 import com.assessment.tracker.server.persistence.repos.AssignedUserRepository;
+import com.assessment.tracker.server.persistence.repos.ModuleRolesRepo;
 import com.assessment.tracker.server.utils.enums.UserType;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +19,7 @@ public class AuthorisedUser implements UserDetails {
 
     private final User user;
     private AssignedUserRepository aur;
+    private ModuleRolesRepo mrr;
 
     public AuthorisedUser(User user) {
         this.user = user;
@@ -36,6 +38,13 @@ public class AuthorisedUser implements UserDetails {
             aur.findAllByUser(user)
                     .forEach(au -> authorities.add(
                             new SimpleGrantedAuthority(au.getRole().toString())));
+        }
+
+        // Add module roles if repository is available
+        if(mrr != null) {
+            mrr.findAllByUser(user)
+                    .forEach(mr -> authorities.add(
+                            new SimpleGrantedAuthority(mr.getRole().toString())));
         }
 
         return authorities;
