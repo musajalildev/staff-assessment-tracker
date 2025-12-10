@@ -1,14 +1,17 @@
 import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useState, useEffect } from 'react';
-import { assessmentAPI, userAPI } from '../services/api';
+import { assessmentAPI, userAPI, assignedUserAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser, isExamsOfficer } from '../utils/permissions';
 
 function ExamDetail() {
     const { moduleId, assessmentId } = useParams();
     const [assessment, setAssessment] = useState(null);
     const [users, setUsers] = useState([]);
+    const [assignedUsers, setAssignedUsers] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
     const [progress, setProgress] = useState(0);
     const [progressSequence, setProgressSequence] = useState([]);
     const [type, setType] = useState("");
@@ -30,13 +33,18 @@ function ExamDetail() {
                 setLoading(true);
                 const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
 
-                const [assessmentRes, usersRes] = await Promise.all([
+                const user = getCurrentUser();
+                setCurrentUser(user);
+
+                const [assessmentRes, usersRes, assignedRes] = await Promise.all([
                     assessmentAPI.getById(assessmentIdToUse),
-                    userAPI.getAll().catch(() => ({ data: [] }))
+                    userAPI.getAll().catch(() => ({ data: [] })),
+                    assignedUserAPI.getAll().catch(() => ({ data: [] }))
                 ]);
 
                 setAssessment(assessmentRes.data);
                 setUsers(usersRes.data || []);
+                setAssignedUsers(assignedRes.data || []);
             } catch (err) {
                 setError('Failed to load assessment');
                 console.error('Error loading assessment:', err);
@@ -113,10 +121,81 @@ function ExamDetail() {
         }
     };
 
+    // Code to Return to Previous State
+    const returnToPreviousState = async () => {
+        if (!assessment) return;
+
+        const progressSequence = [
+            "EXAM_CREATED", "CHECKED_BY_CHECKER", "SETTER_MODIFICATIONS_1", "EXAMS_OFFICER_CHECK",
+            "SETTER_MODIFICATIONS_2", "EXTERNAL_EXAMINER_CHECK", "SETTER_FORMAL_RESPONSE", 
+            "EXAMS_OFFICER_FINAL_CHECK", "EXAM_TAKES_PLACE", "STANDARDISATION", "MARKING", 
+            "ADMIN_CHECK_TOTALS", "MODERATION"
+        ];
+
+        const currentIndex = progressSequence.indexOf(assessment.progress);
+        if (currentIndex <= 0) {
+            alert('Already at the first stage');
+            return;
+        }
+
+        const previousProgress = progressSequence[currentIndex - 1];
+
+        const updatedAssessment = {
+            ...assessment,
+            progress: previousProgress
+        };
+
+        try {
+            const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
+            setAssessment(result.data);
+        } catch (err) {
+            console.error('Error updating assessment:', err);
+            alert('Failed to return to previous state');
+        }
+    };
+
     const getUserName = (user) => {
         if (!user) return 'N/A';
         if (typeof user === 'string') return user;
         return user.username || user.email || 'N/A';
+    };
+
+    // Check if user can see return to previous state button
+    const canReturnToPreviousState = () => {
+        if (!currentUser || !assignedUsers) {
+            console.log('Permission check failed: missing currentUser or assignedUsers', { currentUser, assignedUsers });
+            return false;
+        }
+        
+        const userId = currentUser?.id || currentUser?.userID || currentUser?.ID;
+        const username = currentUser?.username;
+        
+        // Check if user is Teaching Support Team
+        const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                                  currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                                  currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
+        
+        // Check if user has AssessmentRole ROLE_EXAM_OFFICER
+        // AssessmentRolesDTO has userID directly, not nested in user object
+        const userRoles = assignedUsers
+            .filter(au => {
+                // Check userID directly from DTO (AssessmentRolesDTO.userID)
+                const auUserId = au.userID || au.user?.userID || au.user?.ID || au.user?.id;
+                const auUsername = au.username || au.user?.username;
+                // Compare as strings to handle UUID format
+                return (auUserId && String(auUserId) === String(userId)) ||
+                       (auUsername && auUsername === username);
+            })
+            .map(au => {
+                // Handle role as enum object or string
+                const role = au.role;
+                return typeof role === 'string' ? role : (role?.name || String(role));
+            });
+        
+        const hasExamOfficerRole = userRoles.some(r => String(r) === 'ROLE_EXAM_OFFICER' || String(r) === 'EXAM_OFFICER') ||
+                                   isExamsOfficer(assignedUsers, userId, username);
+        
+        return isTeachingSupport || hasExamOfficerRole;
     };
 
     if (loading) {
@@ -146,6 +225,15 @@ function ExamDetail() {
                 <div className="h-title">{assessment.title || 'Untitled Assessment'} • {type}</div>
                 <div className="actions">
                     <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
+                    {canReturnToPreviousState() && (
+                        <button 
+                            className="btn" 
+                            onClick={returnToPreviousState}
+                            disabled={!assessment || (assessment.progress === "EXAM_CREATED")}
+                        >
+                            Return to Previous State
+                        </button>
+                    )}
                     <button className="btn primary" onClick={progressAssessment}>Progress to Next Stage</button>
                 </div>
             </header>
