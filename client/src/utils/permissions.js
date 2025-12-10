@@ -64,17 +64,26 @@ export const isAcademic = (assignedUsers, userId, username) => {
  * Check if user can perform admin actions (Teaching Support or Exams Officer in admin view)
  */
 export const canPerformAdminActions = (assignedUsers, userId, username, currentView) => {
-  if (!assignedUsers || !userId && !username) return false;
+  if (!userId && !username) return false;
   
   const user = getCurrentUser();
-  const isAdmin = isTeachingSupport(assignedUsers, userId, username);
-  const isEO = isExamsOfficer(assignedUsers, userId, username);
   
-  // Exams Officer can perform admin actions if:
-  // 1. They have EXAM_OFFICER role AND
-  // 2. They're in exams officer view (selectedUserType is ROLE_EXAMS_OFFICER or selectedRole is EXAM_OFFICER)
-  // OR if currentView indicates they're in admin mode
-  const isEOAdminView = isEO && (
+  // Check if user is Teaching Support (admin) by their primary user type
+  const isBaseTeachingSupport = user?.userType === 'ROLE_TEACHING_SUPPORT' ||
+                                user?.primaryUserType === 'ROLE_TEACHING_SUPPORT' ||
+                                user?.selectedUserType === 'ROLE_TEACHING_SUPPORT';
+  
+  // Also check assignedUsers if provided (for assessment-specific roles)
+  const isAdmin = isBaseTeachingSupport || 
+                  (assignedUsers && isTeachingSupport(assignedUsers, userId, username));
+  
+  // Check if user is Exams Officer by their primary user type (not assessment roles)
+  const isBaseExamsOfficer = user?.userType === 'ROLE_EXAMS_OFFICER' ||
+                             user?.primaryUserType === 'ROLE_EXAMS_OFFICER';
+  
+  // Exams Officer can perform admin actions ONLY if they're in exams officer view
+  // (not in academic view)
+  const isEOAdminView = isBaseExamsOfficer && (
     currentView === 'EXAM_OFFICER' || 
     currentView === 'ROLE_EXAMS_OFFICER' ||
     user?.selectedUserType === 'ROLE_EXAMS_OFFICER' ||
@@ -86,9 +95,33 @@ export const canPerformAdminActions = (assignedUsers, userId, username, currentV
 
 /**
  * Check if user can see all modules (admin view)
+ * Teaching Support always sees all
+ * Exams Officers see all ONLY when in Exam Officer View (admin view)
  */
 export const canSeeAllModules = (assignedUsers, userId, username, currentView) => {
-  return canPerformAdminActions(assignedUsers, userId, username, currentView);
+  if (!userId && !username) return false;
+  
+  const user = getCurrentUser();
+  
+  // Teaching Support always sees all modules
+  const isBaseTeachingSupport = user?.userType === 'ROLE_TEACHING_SUPPORT' ||
+                                user?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
+  if (isBaseTeachingSupport) return true;
+  
+  // Exams Officers see all modules ONLY when in Exam Officer View
+  const isBaseExamsOfficer = user?.userType === 'ROLE_EXAMS_OFFICER' ||
+                             user?.primaryUserType === 'ROLE_EXAMS_OFFICER';
+  
+  if (isBaseExamsOfficer) {
+    // Must be in exams officer view (admin view) to see all modules
+    const inAdminView = currentView === 'EXAM_OFFICER' || 
+                       currentView === 'ROLE_EXAMS_OFFICER' ||
+                       user?.selectedUserType === 'ROLE_EXAMS_OFFICER' ||
+                       user?.selectedRole === 'EXAM_OFFICER';
+    return inAdminView;
+  }
+  
+  return false;
 };
 
 /**
@@ -109,28 +142,26 @@ export const canManageUsers = (assignedUsers, userId, username, currentView) => 
   
   // Check if user's base userType is ROLE_TEACHING_SUPPORT
   const isBaseTeachingSupport = user?.userType === 'ROLE_TEACHING_SUPPORT' ||
-                                user?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
                                 user?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
   if (isBaseTeachingSupport) return true;
   
-  // Check if user has TEACHING_SUPPORT role in assignedUsers
+  // Check if user has TEACHING_SUPPORT role in assignedUsers (for assessment-specific roles)
   if (assignedUsers) {
     const hasTeachingSupport = isTeachingSupport(assignedUsers, userId, username);
     if (hasTeachingSupport) return true;
   }
   
-  // Check if user is Exams Officer and in admin view
-  const isEO = assignedUsers ? isExamsOfficer(assignedUsers, userId, username) : false;
-  if (isEO) {
-    // Exams officers can manage users if they're in exams officer view
-    // Check various possible view indicators
+  // Check if user is Exams Officer by their primary user type (not assessment roles)
+  const isBaseExamsOfficer = user?.userType === 'ROLE_EXAMS_OFFICER' ||
+                             user?.primaryUserType === 'ROLE_EXAMS_OFFICER';
+  
+  if (isBaseExamsOfficer) {
+    // Exams officers can manage users ONLY if they're in exams officer view (admin view)
     const inAdminView = currentView === 'EXAM_OFFICER' || 
                        currentView === 'ROLE_EXAMS_OFFICER' ||
                        user?.selectedUserType === 'ROLE_EXAMS_OFFICER' ||
-                       user?.selectedRole === 'EXAM_OFFICER' ||
-                       user?.primaryUserType === 'ROLE_EXAMS_OFFICER';
-    // If exams officer, allow access (they can toggle view if needed)
-    return true; // Exams officers should be able to see users page
+                       user?.selectedRole === 'EXAM_OFFICER';
+    return inAdminView;
   }
   
   return false;
