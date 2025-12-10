@@ -1,26 +1,35 @@
 package com.assessment.tracker.server.persistence.services;
 
-import com.assessment.tracker.server.api.DTO.ModuleDTO;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.assessment.tracker.server.api.controller.*;
+import com.assessment.tracker.server.api.dto.*;
+
+import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.entities.Module;
-import com.assessment.tracker.server.persistence.repos.ModuleRepo;
-import com.assessment.tracker.server.utils.mappers.ModuleMapper;
+import com.assessment.tracker.server.persistence.repos.*;
+import com.assessment.tracker.server.persistence.services.*;
+import com.assessment.tracker.server.app.mappers.ModuleMapper;
+import com.assessment.tracker.server.utils.enums.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 @Service
 public class ModuleService {
+
+    private final ModuleRepo moduleRepository;
+    private final ModuleMapper moduleMapper;
+
     @Autowired
-    private ModuleRepo moduleRepository;
-    @Autowired
-    private ModuleMapper moduleMapper;
+    public ModuleService(ModuleMapper moduleMapper, ModuleRepo moduleRepository) {
+        this.moduleRepository = moduleRepository;
+        this.moduleMapper = moduleMapper;
+    }
 
     public void update(UUID id, Module newModule) {
         Optional<Module> existingModule = Optional.ofNullable(moduleRepository.findById(id));

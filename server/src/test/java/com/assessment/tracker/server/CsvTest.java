@@ -4,13 +4,12 @@ import com.assessment.tracker.server.persistence.entities.Assessment;
 import com.assessment.tracker.server.persistence.entities.Module;
 import com.assessment.tracker.server.persistence.services.AssessmentService;
 import com.assessment.tracker.server.utils.enums.AssessmentType;
-import com.assessment.tracker.server.utils.mappers.CsvMapper;
+import com.assessment.tracker.server.app.mappers.CsvMapper;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 

@@ -3,7 +3,7 @@ package com.assessment.tracker.server.api.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.assessment.tracker.server.api.DTO.AssessmentFeedbackDTO;
+import com.assessment.tracker.server.api.dto.AssessmentFeedbackDTO;
 
 import java.util.List;
 
