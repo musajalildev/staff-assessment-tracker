@@ -1,9 +1,8 @@
-package com.assessment.tracker.server.unit.repositories;
+package com.assessment.tracker.server.unit.persistence.repositories;
 
 import com.assessment.tracker.server.persistence.entities.AssignedUser;
 import com.assessment.tracker.server.persistence.entities.User;
 import com.assessment.tracker.server.persistence.repos.AssignedUserRepository;
-import com.assessment.tracker.server.utils.enums.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.List;
 
 @DataJpaTest
-public class AssignedUserRepositoryTest {
+class AssignedUserRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;

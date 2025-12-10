@@ -1,11 +1,17 @@
-package com.assessment.tracker.server.unit.entities;
+package com.assessment.tracker.server.unit.persistence.entities;
 
+import com.assessment.tracker.server.configuration.RsaKeyProperties;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,7 +31,7 @@ public abstract class EntityTest<T>{
     protected abstract Object getId(T entity);
 
     @Test
-    void testPersistence() {
+    void persistenceEntity_() {
         entityManager.persistAndFlush(entity);
 
         T loaded = (T) entityManager.find(entity.getClass(), getId(entity));
@@ -45,7 +51,6 @@ public abstract class EntityTest<T>{
     @Test
     void testRemoval() {
         entityManager.persistAndFlush(entity);
-        entityManager.clear();
 
         T loaded = (T) entityManager.find(entity.getClass(), getId(entity));
         assertNotNull(loaded);
