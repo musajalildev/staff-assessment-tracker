@@ -62,12 +62,12 @@ class ModuleRolesServiceTest {
         ModuleRole newRole = new ModuleRole();
         newRole.setRole(ModuleRoles.ROLE_MODULE_STAFF);
 
-        when(moduleRolesRepo.findByID(roleId)).thenReturn(Optional.of(existingRole));
+        when(moduleRolesRepo.findById(roleId)).thenReturn(Optional.of(existingRole));
 
         moduleRolesService.update(roleId, newRole);
 
         assertEquals(roleId, newRole.getID());
-        verify(moduleRolesRepo).findByID(roleId);
+        verify(moduleRolesRepo).findById(roleId);
         verify(moduleRolesRepo).save(newRole);
     }
 
@@ -85,7 +85,7 @@ class ModuleRolesServiceTest {
 
         assertNotNull(result);
         assertEquals(ModuleRoles.ROLE_MODULE_LEAD, result.getRole());
-        verify(moduleRolesRepo).findByID(roleId);
+        verify(moduleRolesRepo).findById(roleId);
         verify(moduleRoleMapper).entityToApi(moduleRole);
     }
 
@@ -120,6 +120,6 @@ class ModuleRolesServiceTest {
     void delete_shouldDeleteModuleRoleSuccessfully() {
         moduleRolesService.delete(roleId);
 
-        verify(moduleRolesRepo, times(1)).deleteByID(roleId);
+        verify(moduleRolesRepo, times(1)).deleteById(roleId);
     }
 }

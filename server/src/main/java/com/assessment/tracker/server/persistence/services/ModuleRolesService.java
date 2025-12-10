@@ -27,7 +27,7 @@ public class ModuleRolesService {
     }
 
     public void update(UUID id, ModuleRole newModuleRole) {
-        Optional<ModuleRole> existing = Optional.ofNullable((ModuleRole) moduleRolesRepo.findByID(id).orElse(null));
+        Optional<ModuleRole> existing = Optional.ofNullable((ModuleRole) moduleRolesRepo.findById(id).orElse(null));
 
         if (existing.isPresent()) {
             newModuleRole.setID(existing.get().getID());
@@ -42,7 +42,7 @@ public class ModuleRolesService {
     }
 
     public ModuleRoleDTO getDTOById(UUID id) {
-        ModuleRole role = (ModuleRole) moduleRolesRepo.findByID(id)
+        ModuleRole role = (ModuleRole) moduleRolesRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ModuleRole not found with id: " + id));
 
         return moduleRoleMapper.entityToApi(role);
@@ -62,6 +62,6 @@ public class ModuleRolesService {
     // Retrieve all specific module roles
 
     public void delete(UUID id) {
-        moduleRolesRepo.deleteByID(id);
+        moduleRolesRepo.deleteById(id);
     }
 }
