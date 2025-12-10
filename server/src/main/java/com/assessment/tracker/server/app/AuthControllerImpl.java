@@ -5,6 +5,7 @@ import com.assessment.tracker.server.persistence.services.*;
 import com.assessment.tracker.server.api.dto.authenticationDTOs.*;
 import com.assessment.tracker.server.persistence.entities.AuthorisedUser;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,7 @@ public class AuthControllerImpl implements AuthController {
     private final UserService userService;
     public boolean loggedIn = false;
 
+    @Autowired
     public AuthControllerImpl(AuthenticationManager manager,
                           TokenService tokenService,
                           UserService userService) {

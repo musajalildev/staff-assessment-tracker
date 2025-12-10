@@ -1,6 +1,7 @@
 package com.assessment.tracker.server.persistence.services;
 
 import com.assessment.tracker.server.api.dto.authenticationDTOs.TokenDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class TokenService {
     private final JwtEncoder jwtEncoder;
 
+    @Autowired
     public TokenService(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
     }

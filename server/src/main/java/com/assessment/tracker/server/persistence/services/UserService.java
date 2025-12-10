@@ -53,14 +53,13 @@ public class UserService {
         this.moduleRolesRepo = moduleRolesRepo;
     }
 
-    public TokenDTO createUser(CreateAccountDTO userinfo ) {
+    public TokenDTO createUser(CreateAccountDTO userinfo) {
         //call repos to construct data using Strings
 
         UserType base_role = userinfo.userType;
 
         String assessmentData = userinfo.assessment; //data to determine specific academic role
         String moduleData = userinfo.moduleCode;
-
 
         Module coreModule = moduleRepo.findByCode(moduleData);
         Assessment coreAssesment = assessmentRepo.findByTitle(assessmentData);
@@ -78,7 +77,7 @@ public class UserService {
         if (!exists) {
             userRepository.save(user);
 
-            User academic= userRepository.findByUsername(userinfo.username);
+            User academic = userRepository.findByUsername(userinfo.username);
             //logic for academic role assignment
             if(base_role == UserType.ROLE_ACADEMIC){
 

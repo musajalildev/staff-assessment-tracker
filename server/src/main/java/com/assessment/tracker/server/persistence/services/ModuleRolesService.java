@@ -17,34 +17,39 @@ import java.util.UUID;
 @Service
 public class ModuleRolesService {
 
+    private final ModuleRolesRepo moduleRolesRepo;
+    private final ModuleRoleMapper moduleRoleMapper;
+
     @Autowired
-    private ModuleRolesRepo ModuleRolesRepo;
-    private ModuleRoleMapper moduleRoleMapper;
+    public ModuleRolesService(ModuleRolesRepo moduleRolesRepo, ModuleRoleMapper moduleRoleMapper) {
+        this.moduleRolesRepo = moduleRolesRepo;
+        this.moduleRoleMapper = moduleRoleMapper;
+    }
 
     public void update(UUID id, ModuleRole newModuleRole) {
-        Optional<ModuleRole> existing = Optional.ofNullable((ModuleRole) ModuleRolesRepo.findById(id).orElse(null));
+        Optional<ModuleRole> existing = Optional.ofNullable((ModuleRole) moduleRolesRepo.findById(id).orElse(null));
 
         if (existing.isPresent()) {
             newModuleRole.setID(existing.get().getID());
-            ModuleRolesRepo.save(newModuleRole);
+            moduleRolesRepo.save(newModuleRole);
         } else {
             throw new EntityNotFoundException("ModuleRole not found with id: " + id);
         }
     }
 
     public void save(ModuleRole moduleRole) {
-        ModuleRolesRepo.save(moduleRole);
+        moduleRolesRepo.save(moduleRole);
     }
 
     public ModuleRoleDTO getDTOById(UUID id) {
-        ModuleRole role = (ModuleRole) ModuleRolesRepo.findById(id)
+        ModuleRole role = (ModuleRole) moduleRolesRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ModuleRole not found with id: " + id));
 
         return moduleRoleMapper.entityToApi(role);
     }
 
     public List<ModuleRoleDTO> retrieveAll() {
-        List<ModuleRole> list = ModuleRolesRepo.findAll();
+        List<ModuleRole> list = moduleRolesRepo.findAll();
         List<ModuleRoleDTO> dtos = new ArrayList<>();
 
         for (ModuleRole role : list) {
@@ -57,6 +62,6 @@ public class ModuleRolesService {
     //Retrieve all specific module roles
 
     public void delete(UUID id) {
-        ModuleRolesRepo.deleteById(id);
+        moduleRolesRepo.deleteById(id);
     }
 }

@@ -8,6 +8,7 @@ import com.assessment.tracker.server.persistence.repos.*;
 import com.assessment.tracker.server.utils.enums.*;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +26,7 @@ public class AssignedUserService {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    @Autowired
     public AssignedUserService(AssignedUserRepository assignedUserRepository, UserService userService,
             UserRepository userRepository, AssessmentRoleMapper assessmentRoleMapper) {
         this.assignedUserRepository = assignedUserRepository;

@@ -4,6 +4,7 @@ import com.assessment.tracker.server.persistence.entities.AuthorisedUser;
 import com.assessment.tracker.server.persistence.entities.User;
 import com.assessment.tracker.server.persistence.repos.UserRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +17,7 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    @Autowired
     public JpaUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
