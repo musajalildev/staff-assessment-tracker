@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { moduleAPI, userAPI, assignedUserAPI } from '../services/api';
-import { getCurrentUser, canManageModules } from '../utils/permissions';
+import { getCurrentUser } from '../utils/permissions';
 
 function ModuleNew() {
   const navigate = useNavigate();
@@ -33,14 +33,19 @@ function ModuleNew() {
         setUsers(usersRes.data || []);
         setAssignedUsers(assignedRes.data || []);
         
-        // Check permissions
+        // Check if user is Teaching Support Team
         const userId = user?.id || user?.userID || user?.ID;
         const username = user?.username;
-        const currentView = user?.selectedUserType || user?.selectedRole || user?.primaryUserType;
-        const canManage = canManageModules(assignedRes.data || [], userId, username, currentView);
+        const apiUser = (usersRes.data || []).find(u => (u.userID === userId || u.ID === userId) || u.username === username);
+        const apiUserType = apiUser?.userType;
         
-        if (!canManage) {
-          setError('You do not have permission to create modules.');
+        const isTeachingSupport = user?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                                  user?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                                  user?.primaryUserType === 'ROLE_TEACHING_SUPPORT' ||
+                                  apiUserType === 'ROLE_TEACHING_SUPPORT';
+        
+        if (!isTeachingSupport) {
+          setError('You do not have permission to create modules. Only Teaching Support Team can create modules.');
         }
         setCheckingPermissions(false);
       } catch (err) {
@@ -51,12 +56,16 @@ function ModuleNew() {
     loadData();
   }, []);
 
-  const canManage = canManageModules(
-    assignedUsers,
-    currentUser?.id || currentUser?.userID || currentUser?.ID,
-    currentUser?.username,
-    currentUser?.selectedUserType || currentUser?.selectedRole || currentUser?.primaryUserType
-  );
+  // Check if user is Teaching Support Team
+  const userId = currentUser?.id || currentUser?.userID || currentUser?.ID;
+  const username = currentUser?.username;
+  const apiUser = users.find(u => (u.userID === userId || u.ID === userId) || u.username === username);
+  const apiUserType = apiUser?.userType;
+  
+  const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                            currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                            currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT' ||
+                            apiUserType === 'ROLE_TEACHING_SUPPORT';
 
   const handleChange = (e) => {
     setFormData({
@@ -98,12 +107,12 @@ function ModuleNew() {
     );
   }
 
-  if (!canManage) {
+  if (!isTeachingSupport) {
     return (
       <Layout>
         <div className="card" style={{ background: 'rgba(255, 51, 102, 0.1)', borderColor: 'var(--bad)' }}>
           <h2 style={{ color: 'var(--bad)' }}>Access Denied</h2>
-          <p>You do not have permission to create modules. Only Teaching Support staff and Exams Officers (in admin view) can create modules.</p>
+          <p>You do not have permission to create modules. Only Teaching Support Team can create modules.</p>
           <button className="btn mt-12" onClick={() => navigate('/modules')}>Back to Modules</button>
         </div>
       </Layout>
