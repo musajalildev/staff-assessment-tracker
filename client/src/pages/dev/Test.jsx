@@ -166,12 +166,23 @@ function TestDetail() {
                                   currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
         
         // Check if user has AssessmentRole ROLE_EXAM_OFFICER
+        // AssessmentRolesDTO has userID directly, not nested in user object
         const userRoles = assignedUsers
-            .filter(au => au.user?.userID === userId || au.user?.ID === userId || au.user?.username === username)
-            .map(au => au.role);
+            .filter(au => {
+                // Check userID directly from DTO (AssessmentRolesDTO.userID)
+                const auUserId = au.userID || au.user?.userID || au.user?.ID || au.user?.id;
+                const auUsername = au.username || au.user?.username;
+                // Compare as strings to handle UUID format
+                return (auUserId && String(auUserId) === String(userId)) ||
+                       (auUsername && auUsername === username);
+            })
+            .map(au => {
+                // Handle role as enum object or string
+                const role = au.role;
+                return typeof role === 'string' ? role : (role?.name || String(role));
+            });
         
-        const hasExamOfficerRole = userRoles.includes('ROLE_EXAM_OFFICER') || 
-                                   userRoles.includes('EXAM_OFFICER') ||
+        const hasExamOfficerRole = userRoles.some(r => String(r) === 'ROLE_EXAM_OFFICER' || String(r) === 'EXAM_OFFICER') ||
                                    isExamsOfficer(assignedUsers, userId, username);
         
         return isTeachingSupport || hasExamOfficerRole;

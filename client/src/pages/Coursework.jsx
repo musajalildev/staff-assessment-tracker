@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { assessmentAPI, userAPI, assignedUserAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, canReverseStages } from '../utils/permissions';
+import { getCurrentUser, isExamsOfficer } from '../utils/permissions';
 
 function CourseworkDetail() {
     const { moduleId, assessmentId } = useParams();
     const [assessment, setAssessment] = useState(null);
     const [users, setUsers] = useState([]);
     const [assignedUsers, setAssignedUsers] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
     const [progress, setProgress] = useState(0);
     const [progressSequence, setProgressSequence] = useState([]);
     const [type, setType] = useState("");
@@ -31,6 +32,9 @@ function CourseworkDetail() {
             try {
                 setLoading(true);
                 const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
+
+                const user = getCurrentUser();
+                setCurrentUser(user);
 
                 const [assessmentRes, usersRes, assignedRes] = await Promise.all([
                     assessmentAPI.getById(assessmentIdToUse),
@@ -116,8 +120,8 @@ function CourseworkDetail() {
         }
     };
 
-    // Code to Reverse Assessment Progress
-    const reverseAssessment = async () => {
+    // Code to Return to Previous State
+    const returnToPreviousState = async () => {
         if (!assessment) return;
 
         const progressSequence = [
@@ -127,15 +131,11 @@ function CourseworkDetail() {
 
         const currentIndex = progressSequence.indexOf(assessment.progress);
         if (currentIndex <= 0) {
-            alert('Cannot reverse: already at the first stage');
+            alert('Already at the first stage');
             return;
         }
 
         const previousProgress = progressSequence[currentIndex - 1];
-
-        if (!window.confirm(`Are you sure you want to reverse the assessment progress from "${assessment.progress}" to "${previousProgress}"?`)) {
-            return;
-        }
 
         const updatedAssessment = {
             ...assessment,
@@ -146,8 +146,8 @@ function CourseworkDetail() {
             const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
             setAssessment(result.data);
         } catch (err) {
-            console.error('Error reversing assessment:', err);
-            alert('Failed to reverse assessment progress');
+            console.error('Error updating assessment:', err);
+            alert('Failed to return to previous state');
         }
     };
 
@@ -157,12 +157,43 @@ function CourseworkDetail() {
         return user.username || user.email || 'N/A';
     };
 
-    // Check if user can reverse stages
-    const currentUser = getCurrentUser();
-    const userId = currentUser?.id || currentUser?.userID;
-    const username = currentUser?.username;
-    const currentView = currentUser?.selectedUserType || currentUser?.selectedRole;
-    const canReverse = canReverseStages(assignedUsers, userId, username, currentView);
+    // Check if user can see return to previous state button
+    const canReturnToPreviousState = () => {
+        if (!currentUser || !assignedUsers) {
+            console.log('Permission check failed: missing currentUser or assignedUsers', { currentUser, assignedUsers });
+            return false;
+        }
+        
+        const userId = currentUser?.id || currentUser?.userID || currentUser?.ID;
+        const username = currentUser?.username;
+        
+        // Check if user is Teaching Support Team
+        const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                                  currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                                  currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
+        
+        // Check if user has AssessmentRole ROLE_EXAM_OFFICER
+        // AssessmentRolesDTO has userID directly, not nested in user object
+        const userRoles = assignedUsers
+            .filter(au => {
+                // Check userID directly from DTO (AssessmentRolesDTO.userID)
+                const auUserId = au.userID || au.user?.userID || au.user?.ID || au.user?.id;
+                const auUsername = au.username || au.user?.username;
+                // Compare as strings to handle UUID format
+                return (auUserId && String(auUserId) === String(userId)) ||
+                       (auUsername && auUsername === username);
+            })
+            .map(au => {
+                // Handle role as enum object or string
+                const role = au.role;
+                return typeof role === 'string' ? role : (role?.name || String(role));
+            });
+        
+        const hasExamOfficerRole = userRoles.some(r => String(r) === 'ROLE_EXAM_OFFICER' || String(r) === 'EXAM_OFFICER') ||
+                                   isExamsOfficer(assignedUsers, userId, username);
+        
+        return isTeachingSupport || hasExamOfficerRole;
+    };
 
     if (loading) {
         return (
@@ -191,6 +222,15 @@ function CourseworkDetail() {
                 <div className="h-title">{assessment.title || 'Untitled Assessment'} • {type}</div>
                 <div className="actions">
                     <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
+                    {canReturnToPreviousState() && (
+                        <button 
+                            className="btn" 
+                            onClick={returnToPreviousState}
+                            disabled={!assessment || (assessment.progress === "SPEC_CREATED")}
+                        >
+                            Return to Previous State
+                        </button>
+                    )}
                     <button className="btn primary" onClick={progressAssessment}>Progress to Next Stage</button>
                 </div>
             </header>
@@ -286,19 +326,6 @@ function CourseworkDetail() {
                     <div className="h-title" style={{ fontSize: '18px' }}>Actions</div>
                     <div className="mt-12" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <button className="btn" onClick={progressAssessment}>Update Progress</button>
-                        {canReverse && (
-                            <button 
-                                className="btn" 
-                                onClick={reverseAssessment}
-                                style={{ 
-                                    background: 'rgba(255, 51, 102, 0.1)', 
-                                    borderColor: 'var(--bad)', 
-                                    color: 'var(--bad)'
-                                }}
-                            >
-                                Reverse Progress
-                            </button>
-                        )}
                         <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
                     </div>
                 </div>
