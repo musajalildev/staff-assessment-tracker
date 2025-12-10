@@ -8,6 +8,7 @@ import com.assessment.tracker.server.api.dto.userHelperDTOs.usernameUpdDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,18 +49,21 @@ public interface UserController {
                         "User" })
         ResponseEntity<String> updateUserPassword(
                         @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication,
                         @Parameter(description = "New password data") @RequestBody PasswordUpdDTO passwordData);
 
         @Operation(summary = "Update user email", description = "Update the email of a specific user by ID", tags = {
                         "User" })
         ResponseEntity<UserDTO> updateUserEmail(
                         @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication,
                         @Parameter(description = "Updated email data") @RequestBody EmailUpdDTO updatedUserDTO);
 
         @Operation(summary = "Update username", description = "Update the username of a specific user by ID", tags = {
                         "User" })
         ResponseEntity<UserDTO> updateUsername(
                         @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication,
                         @Parameter(description = "Updated username data") @RequestBody usernameUpdDTO updatedUserDTO);
 
         @Operation(summary = "Update user permission", description = "Update the permission type of a specific user by ID", tags = {

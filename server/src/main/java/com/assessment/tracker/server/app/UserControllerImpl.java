@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +28,7 @@ public class UserControllerImpl implements UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+
 
 
     @Autowired
@@ -92,11 +95,18 @@ public class UserControllerImpl implements UserController {
     // -------------------- UPDATE --------------------
     @PutMapping("/{id}/password")
     public ResponseEntity<String> updateUserPassword(@PathVariable UUID id,
+            Authentication authentication,
             @RequestBody PasswordUpdDTO passwordData) {
 
+        String requester = authentication.getName();
         User target = userService.getUser(id);
         if (target == null)
             return ResponseEntity.notFound().build();
+
+        if (!requester.equals(target.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(null); // or custom error
+        }
 
         if (!userService.validatePassword(passwordData.currentPassword, target.getPassword())) {
             return new ResponseEntity<>("Incorrect current password", HttpStatus.BAD_REQUEST);
@@ -123,14 +133,24 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>("No valid incoming data", HttpStatus.BAD_REQUEST);
     }
 
+
     @PutMapping("/{id}/email")
     public ResponseEntity<UserDTO> updateUserEmail(
             @PathVariable UUID id,
+            Authentication authentication,
             @RequestBody EmailUpdDTO updatedUserDTO) {
+
+        String requester = authentication.getName();
         User existing = userService.getUser(id);
-        String incomingEmail = updatedUserDTO.email;
         if (existing == null)
             return ResponseEntity.notFound().build();
+
+        if (!requester.equals(existing.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(null);
+        }
+
+        String incomingEmail = updatedUserDTO.email;
         // check that incoming data isnt blank
         if (incomingEmail.isBlank()) {
             System.out.println("Blank email");
@@ -144,11 +164,21 @@ public class UserControllerImpl implements UserController {
     @PutMapping("/{id}/username")
     public ResponseEntity<UserDTO> updateUsername(
             @PathVariable UUID id,
+            Authentication authentication,
             @RequestBody usernameUpdDTO updatedUserDTO) {
+
+        String requester = authentication.getName();
         User existing = userService.getUser(id);
         String incomingUsername = updatedUserDTO.username;
+
         if (existing == null)
             return ResponseEntity.notFound().build();
+
+        //ensure that requester is allowed to change username
+        if (!requester.equals(existing.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(null); // or custom error
+        }
 
         // check that incoming data isnt blank
         if (incomingUsername.isBlank()) {
@@ -160,6 +190,7 @@ public class UserControllerImpl implements UserController {
         return ResponseEntity.ok(userMapper.entityToApi(updated));
     }
 
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @PutMapping("/{id}/permission")
     public ResponseEntity<UserDTO> updateUserPermission(
             @PathVariable UUID id,
@@ -234,10 +265,17 @@ public class UserControllerImpl implements UserController {
     @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+
+        try {
+            userService.getUser(id);
+        } catch (ResponseStatusException e) {
+            System.out.println("User not found");
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
         boolean deleted = userService.deleteUser(id);
         return deleted
                 ? ResponseEntity.ok("User deleted successfully.")
-                : new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+                : new ResponseEntity<>("Deletion not permitted", HttpStatus.FORBIDDEN);
     }
 
     @DeleteMapping("/wipe")

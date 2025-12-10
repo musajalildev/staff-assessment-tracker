@@ -34,6 +34,7 @@ public class AuthControllerImpl implements AuthController {
 
     @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @Override
+    //user creation
     public ResponseEntity<TokenDTO> signup(@RequestBody CreateAccountDTO userInfoDTO) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

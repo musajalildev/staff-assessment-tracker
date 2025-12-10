@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-//TODO: I HAVE 0 IDEA HOW THIS WORKS
+
 @ConfigurationProperties(prefix = "rsa")
 public class RsaKeyProperties {
     private RSAPublicKey rsaPublicKey;
