@@ -16,6 +16,8 @@ import UserManagement from './pages/UserManagement';
 import UserNew from './pages/UserNew';
 import MyProfile from './pages/MyProfile';
 import FeedbackTest from './pages/FeedbackTest';
+import ModuleNewTest from './pages/ModuleNewTest';
+import ModuleCSVUploadTest from './pages/ModuleCSVUploadTest';
 import './App.css';
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
         <Route path="/modules/:moduleId/coursework/:assessmentId" element={<Coursework />} />
         <Route path="/modules/:moduleId/exam/:assessmentId" element={<Exam />} />
         <Route path="/test/feedback/:assessmentId" element={<FeedbackTest />} />
+        <Route path="/test/module-new" element={<ModuleNewTest />} />
+        <Route path="/test/module-upload" element={<ModuleCSVUploadTest />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/users/new" element={<UserNew />} />
         <Route path="/profile" element={<MyProfile />} />
