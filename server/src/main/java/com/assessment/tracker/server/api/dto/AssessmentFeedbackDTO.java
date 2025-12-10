@@ -3,6 +3,8 @@ package com.assessment.tracker.server.api.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.assessment.tracker.server.utils.enums.FeedbackType;
+
 // DTO to represent assessment Feedback
 public class AssessmentFeedbackDTO {
     private Integer id;
@@ -10,6 +12,7 @@ public class AssessmentFeedbackDTO {
     private String feedback;
     private UserDTO author;
     private LocalDateTime createdDate;
+    private FeedbackType feedbackType;
 
     // Convenience fields for frontend compatibility
     private UUID authorID;
@@ -77,5 +80,13 @@ public class AssessmentFeedbackDTO {
 
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
+    }
+
+    public FeedbackType getFeedbackType() {
+        return feedbackType;
+    }
+
+    public void setFeedbackType(FeedbackType feedbackType) {
+        this.feedbackType = feedbackType;
     }
 }

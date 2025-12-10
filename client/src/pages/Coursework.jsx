@@ -21,10 +21,10 @@ function CourseworkDetail() {
         const loadAssessment = async () => {
 
             if (!assessmentId || isNaN(parseInt(assessmentId))) {
-              setError('Invalid assessment ID');
-              setLoading(false);
-              return;
-           }
+                setError('Invalid assessment ID');
+                setLoading(false);
+                return;
+            }
 
             try {
                 setLoading(true);
@@ -47,7 +47,7 @@ function CourseworkDetail() {
 
         loadAssessment();
     }, [assessmentId]);
-    
+
     // Sets up maps for progress and type
     useEffect(() => {
         if (!assessment) return;
@@ -59,7 +59,7 @@ function CourseworkDetail() {
             "TEST_TEAM_MARKER": "Test (Team Marker)"
         };
         setType(typeMap[assessment.type] || assessment.type || "N/A");
-        
+
         // Coursework-specific progress mapping
         const progressMap = {
             "SPEC_CREATED": 1,
@@ -74,12 +74,12 @@ function CourseworkDetail() {
         };
         setProgress(progressMap[assessment.progress] || 0);
     }, [assessment]);
-    
+
     // Code to Progress Assessments
     const progressAssessment = async () => {
         if (!assessment) return;
-        if (assessment.progress == "SPEC_CHECKED") {
-            navigate("/coursework/feedback/" + assessmentId)
+        if ((assessment.progress == "CHECKED" || assessment.progress == "EXAM_OFFICER_CHECKED" || assessment.progress == "EXTERNAL_EXAMINER_CHECK" || assessment.progress == "SETTER_FORMAL_RESPONSE")) {
+            navigate("/feedback/" + assessmentId)
             return
         }
 
@@ -92,7 +92,7 @@ function CourseworkDetail() {
         let nextProgress = currentIndex < progressSequence.length - 1
             ? progressSequence[currentIndex + 1]
             : progressSequence[progressSequence.length - 1];
-        
+
         if (assessment.progress == "MODIFICATIONS_NEEDED") {
             console.log("modifications_needed");
             nextProgress = "SPEC_CHECKED";

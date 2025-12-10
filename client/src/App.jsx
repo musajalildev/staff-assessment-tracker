@@ -8,7 +8,7 @@ import ModuleNew from './pages/ModuleNew';
 import ModuleEdit from './pages/ModuleEdit';
 import ModuleCSVUpload from './pages/ModuleCSVUpload';
 import AssessmentDetail from './pages/AssessmentDetail';
-import Test from './pages/dev/Test';
+import Test from './pages/Test';
 import Coursework from './pages/Coursework';
 import Exam from './pages/Exam';
 import AssessmentNew from './pages/AssessmentNew';
@@ -18,6 +18,7 @@ import MyProfile from './pages/MyProfile';
 import FeedbackTest from './pages/dev/FeedbackTest';
 import ModuleNewTest from './pages/dev/ModuleNewTest';
 import ModuleCSVUploadTest from './pages/dev/ModuleCSVUploadTest';
+import FeedbackPage from './pages/FeedbackPage';
 
 import './App.css';
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/modules/:moduleId/test/:assessmentId" element={<Test />} />
         <Route path="/modules/:moduleId/coursework/:assessmentId" element={<Coursework />} />
         <Route path="/modules/:moduleId/exam/:assessmentId" element={<Exam />} />
+        <Route path="/feedback/:assessmentId/" element={<FeedbackPage />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/users/new" element={<UserNew />} />
         <Route path="/profile" element={<MyProfile />} />
@@ -48,7 +50,6 @@ function App() {
             <Route path="/test/module-new" element={<ModuleNewTest />} />
             <Route path="/test/module-upload" element={<ModuleCSVUploadTest />} />
             <Route path="/test/feedback" element={<FeedbackTest />} />
-            <Route path="/test" element={<Test />} />
           </>
         )}
       </Routes>

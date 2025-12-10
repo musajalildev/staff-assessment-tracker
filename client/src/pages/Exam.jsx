@@ -21,10 +21,10 @@ function ExamDetail() {
         const loadAssessment = async () => {
             // Validate assessmentId before making requests
             if (!assessmentId || isNaN(parseInt(assessmentId))) {
-               setError('Invalid assessment ID');
-               setLoading(false);
-               return;
-    }
+                setError('Invalid assessment ID');
+                setLoading(false);
+                return;
+            }
 
             try {
                 setLoading(true);
@@ -47,7 +47,7 @@ function ExamDetail() {
 
         loadAssessment();
     }, [assessmentId]);
-    
+
     // Sets up maps for progress and type
     useEffect(() => {
         if (!assessment) return;
@@ -59,7 +59,7 @@ function ExamDetail() {
             "TEST_TEAM_MARKER": "Test (Team Marker)"
         };
         setType(typeMap[assessment.type] || assessment.type || "N/A");
-        
+
         // Exam-specific progress mapping
         const progressMap = {
             "EXAM_CREATED": 1,
@@ -78,19 +78,19 @@ function ExamDetail() {
         };
         setProgress(progressMap[assessment.progress] || 0);
     }, [assessment]);
-    
+
     // Code to Progress Assessments
     const progressAssessment = async () => {
         if (!assessment) return;
-        if (assessment.progress == "CHECKED_BY_CHECKER" || assessment.progress == "EXTERNAL_EXAMINER_CHECK") {
-            navigate("/exam/feedback/" + assessmentId)
+        if ((assessment.progress == "CHECKED" || assessment.progress == "EXAM_OFFICER_CHECKED" || assessment.progress == "EXTERNAL_EXAMINER_CHECK" || assessment.progress == "SETTER_FORMAL_RESPONSE")) {
+            navigate("/feedback/" + assessmentId)
             return
         }
 
         const progressSequence = [
             "EXAM_CREATED", "CHECKED_BY_CHECKER", "SETTER_MODIFICATIONS_1", "EXAMS_OFFICER_CHECK",
-            "SETTER_MODIFICATIONS_2", "EXTERNAL_EXAMINER_CHECK", "SETTER_FORMAL_RESPONSE", 
-            "EXAMS_OFFICER_FINAL_CHECK", "EXAM_TAKES_PLACE", "STANDARDISATION", "MARKING", 
+            "SETTER_MODIFICATIONS_2", "EXTERNAL_EXAMINER_CHECK", "SETTER_FORMAL_RESPONSE",
+            "EXAMS_OFFICER_FINAL_CHECK", "EXAM_TAKES_PLACE", "STANDARDISATION", "MARKING",
             "ADMIN_CHECK_TOTALS", "MODERATION"
         ];
 

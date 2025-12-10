@@ -1,8 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
-import Layout from '../../components/Layout';
+import Layout from '../components/Layout';
 import { useState, useEffect } from 'react';
-import { assessmentAPI, userAPI } from '../../services/api';
-import FeedbackSection from '../../components/FeedbackSection';
+import { assessmentAPI, userAPI } from '../services/api';
+import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
 
 function TestDetail() {
@@ -72,8 +72,8 @@ function TestDetail() {
     // Code to Progress Assessments
     const progressAssessment = async () => {
         if (!assessment) return;
-        if (assessment.progress == "CHECKED") {
-            navigate("/test/feedback/" + assessmentId)
+        if ((assessment.progress == "CHECKED" || assessment.progress == "EXAM_OFFICER_CHECKED" || assessment.progress == "EXTERNAL_EXAMINER_CHECK" || assessment.progress == "SETTER_FORMAL_RESPONSE")) {
+            navigate("/feedback/" + assessmentId)
             return
         }
 

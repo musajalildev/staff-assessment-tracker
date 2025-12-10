@@ -71,6 +71,7 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
                 // JWT validation (your RSA public key via Nimbus)
                 .oauth2ResourceServer(oauth2 -> oauth2

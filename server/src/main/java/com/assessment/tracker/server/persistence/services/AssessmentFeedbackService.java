@@ -5,6 +5,7 @@ import com.assessment.tracker.server.api.dto.*;
 import com.assessment.tracker.server.app.mappers.AssessmentFeedbackMapper;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.repos.*;
+import com.assessment.tracker.server.utils.enums.FeedbackType;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,8 @@ public class AssessmentFeedbackService {
         return feedbackMapper.entityToApi(feedback);
     }
 
-    public AssessmentFeedbackDTO createFeedback(Integer assessmentID, String feedbackText, UUID authorID) {
+    public AssessmentFeedbackDTO createFeedback(Integer assessmentID, String feedbackText, UUID authorID,
+            FeedbackType feedbackType) {
         Assessment assessment = assessmentRepository.findById(assessmentID)
                 .orElseThrow(() -> new RuntimeException("Assessment not found"));
 
@@ -55,6 +57,7 @@ public class AssessmentFeedbackService {
         feedback.setAssessment(assessment);
         feedback.setAuthor(author);
         feedback.setFeedback(feedbackText);
+        feedback.setFeedbackType(feedbackType);
 
         AssessmentFeedback savedFeedback = feedbackRepository.save(feedback);
         return feedbackMapper.entityToApi(savedFeedback);

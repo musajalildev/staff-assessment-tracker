@@ -70,7 +70,8 @@ public class AssessmentFeedbackControllerImpl implements AssessmentFeedbackContr
             AssessmentFeedbackDTO createdFeedback = feedbackService.createFeedback(
                     assessmentId,
                     feedbackDTO.getFeedback(),
-                    author.getUserID());
+                    author.getUserID(),
+                    feedbackDTO.getFeedbackType());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(createdFeedback);
         } catch (RuntimeException e) {
