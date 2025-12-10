@@ -5,7 +5,7 @@ import com.assessment.tracker.server.utils.enums.*;
 // DTO to represent Assessment
 public class AssessmentDTO {
     // Fields
-    private Integer id;
+    private Integer ID;
     private ModuleDTO module;
     private AssessmentType type;
     private String title;
@@ -21,12 +21,12 @@ public class AssessmentDTO {
         return progress;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getID() {
+        return ID;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setID(Integer id) {
+        this.ID = id;
     }
 
     public boolean isTeamMarked() {
@@ -47,14 +47,6 @@ public class AssessmentDTO {
 
     public void setProgress(AssessmentProgress progress) {
         this.progress = progress;
-    }
-
-    public Integer getID() {
-        return id;
-    }
-
-    public void setID(Integer id) {
-        this.id = id;
     }
 
     public ModuleDTO getModule() {

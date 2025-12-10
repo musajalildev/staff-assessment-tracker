@@ -30,7 +30,7 @@ public class AssessmentFeedbackMapper implements Mapper<AssessmentFeedbackDTO, A
         dto.setCreatedDate(entity.getCreatedDate());
 
         if (entity.getAssessment() != null) {
-            dto.setAssessmentID(entity.getAssessment().getId());
+            dto.setAssessmentID(entity.getAssessment().getID());
         }
 
         if (entity.getAuthor() != null) {

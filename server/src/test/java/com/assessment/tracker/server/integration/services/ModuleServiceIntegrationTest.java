@@ -38,7 +38,7 @@ public class ModuleServiceIntegrationTest {
 
     @AfterEach
     public void tearDown() {
-        
+
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ModuleServiceIntegrationTest {
         UUID id = testModule.getID();
         moduleService.update(id, updated);
 
-        Module result = moduleRepo.findById(id);
+        Module result = moduleRepo.findByID(id);
         assertNotNull(result);
         assertEquals("CS102", result.getCode());
         assertEquals("Updated Module Title", result.getTitle());

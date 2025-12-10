@@ -1,4 +1,5 @@
 package com.assessment.tracker.server.unit.services;
+
 import com.assessment.tracker.server.api.dto.ModuleDTO;
 import com.assessment.tracker.server.persistence.entities.Module;
 import com.assessment.tracker.server.app.mappers.ModuleMapper;
@@ -54,12 +55,12 @@ class ModuleServiceTest {
         Module newModule = new Module();
         newModule.setCode("CS102");
 
-        when(moduleRepository.findById(moduleId)).thenReturn(existingModule);
+        when(moduleRepository.findByID(moduleId)).thenReturn(existingModule);
 
         moduleService.update(moduleId, newModule);
 
         assertEquals(moduleId, newModule.getID());
-        verify(moduleRepository).findById(moduleId);
+        verify(moduleRepository).findByID(moduleId);
         verify(moduleRepository).save(newModule);
     }
 

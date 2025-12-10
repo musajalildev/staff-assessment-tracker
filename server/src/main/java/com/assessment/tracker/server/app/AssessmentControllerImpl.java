@@ -78,7 +78,7 @@ public class AssessmentControllerImpl implements AssessmentController {
             Authentication auth) {
         User user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
         Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
-        if (assessmentService.getAssessmentByID(assessment.getId()).getProgress() == AssessmentProgress.CHECKED) {
+        if (assessmentService.getAssessmentByID(assessment.getID()).getProgress() == AssessmentProgress.CHECKED) {
             if (!user.getCheckerFor().contains(assessment)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
             }
@@ -90,7 +90,7 @@ public class AssessmentControllerImpl implements AssessmentController {
         AssessmentLog log = new AssessmentLog();
         log.setActionType(AssessmentActions.PROGRESS);
         log.setTargetAssessment(assessment);
-        log.setPreviousState(assessmentService.getAssessmentByID(assessment.getId()).getProgress());
+        log.setPreviousState(assessmentService.getAssessmentByID(assessment.getID()).getProgress());
         log.setNewState(assessment.getProgress());
         log.setUser(user);
         assessmentLogService.save(log);

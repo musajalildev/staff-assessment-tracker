@@ -94,7 +94,7 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     @Override
     public ResponseEntity<List<AssessmentRole>> getAllUserRoles(@PathVariable String username) {
         User user = assignedUserService.findUserWithString(username);
-        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserId());
+        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserID());
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }

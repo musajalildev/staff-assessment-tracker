@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 @Repository
 public interface ModuleRepo extends JpaRepository<Module, Integer> {
-    Module findById(UUID id);
+    Module findByID(UUID ID);
 
     Module findByCode(String code);
 }

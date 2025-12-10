@@ -24,7 +24,7 @@ public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, Assigned
 
     @Override
     public AssessmentRolesDTO entityToApi(AssignedUser entity) {
-        AssessmentRolesDTO dto = new AssessmentRolesDTO(entity.getAssessment().getId(), entity.getUser().getUserId(),
+        AssessmentRolesDTO dto = new AssessmentRolesDTO(entity.getAssessment().getID(), entity.getUser().getUserID(),
                 entity.getRole());
         return dto;
     }
@@ -33,7 +33,7 @@ public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, Assigned
         AssignedUser entity = new AssignedUser();
         entity.setRole(dto.getRole());
         entity.setUser(userRepository.findByUserID(dto.getUserID()));
-        entity.setAssessment(assessmentRepository.findByID(dto.getAssessmentID()));
+        entity.setAssessment(assessmentRepository.findById(dto.getAssessmentID()).orElse(null));
         return entity;
     }
 }

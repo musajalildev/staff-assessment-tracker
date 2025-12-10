@@ -15,7 +15,7 @@ public class AssessmentMapper implements Mapper<AssessmentDTO, Assessment> {
     @Override
     public AssessmentDTO entityToApi(Assessment entity) {
         AssessmentDTO DTO = new AssessmentDTO();
-        DTO.setID(entity.getId());
+        DTO.setID(entity.getID());
         DTO.setType(entity.getAssessmentType());
         DTO.setTitle(entity.getTitle());
         DTO.setProgress(entity.getProgress());
@@ -30,7 +30,7 @@ public class AssessmentMapper implements Mapper<AssessmentDTO, Assessment> {
     @Override
     public Assessment apiToEntity(AssessmentDTO DTO) {
         Assessment entity = new Assessment();
-        entity.setId(DTO.getID());
+        entity.setID(DTO.getID());
         entity.setAssessmentType(DTO.getType());
         entity.setTitle(DTO.getTitle());
         entity.setProgress(DTO.getProgress());

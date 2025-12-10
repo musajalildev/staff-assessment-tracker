@@ -14,7 +14,7 @@ public class UserMapper implements Mapper<UserDTO, User> {
             return null;
 
         UserDTO dto = new UserDTO();
-        dto.setUserID(user.getUserId());
+        dto.setUserID(user.getUserID());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setUserType(user.getUserType());
@@ -30,7 +30,7 @@ public class UserMapper implements Mapper<UserDTO, User> {
 
         User user = new User();
 
-        user.setUserId(dto.getUserID());
+        user.setUserID(dto.getUserID());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setUserType(dto.getUserType());

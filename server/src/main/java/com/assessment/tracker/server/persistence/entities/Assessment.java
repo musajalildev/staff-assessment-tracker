@@ -25,7 +25,7 @@ public class Assessment {
     // Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer ID;
 
     @ManyToOne
     @JoinColumn(name = "module_id")
@@ -75,8 +75,8 @@ public class Assessment {
         this.module = module;
     }
 
-    public void setId(Integer Id) {
-        this.Id = Id;
+    public void setID(Integer Id) {
+        this.ID = Id;
     }
 
     public void setFeedback(List<AssessmentFeedback> feedback) {
@@ -118,8 +118,8 @@ public class Assessment {
         this.assessmentType = assessmentType;
     }
 
-    public Integer getId() {
-        return Id;
+    public Integer getID() {
+        return ID;
     }
 
     public String getTitle() {

@@ -48,9 +48,8 @@ public class AssessmentFeedbackService {
     public AssessmentFeedbackDTO createFeedback(Integer assessmentID, String feedbackText, UUID authorID) {
         Assessment assessment = assessmentRepository.findById(assessmentID)
                 .orElseThrow(() -> new RuntimeException("Assessment not found"));
-        
-        User author = userRepository.findById(authorID)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        User author = userRepository.findByUserID(authorID);
 
         AssessmentFeedback feedback = new AssessmentFeedback();
         feedback.setAssessment(assessment);
@@ -64,7 +63,7 @@ public class AssessmentFeedbackService {
     public AssessmentFeedbackDTO updateFeedback(Integer feedbackID, String feedbackText) {
         AssessmentFeedback feedback = feedbackRepository.findById(feedbackID)
                 .orElseThrow(() -> new RuntimeException("Feedback not found"));
-        
+
         feedback.setFeedback(feedbackText);
         AssessmentFeedback updatedFeedback = feedbackRepository.save(feedback);
         return feedbackMapper.entityToApi(updatedFeedback);
@@ -77,4 +76,3 @@ public class AssessmentFeedbackService {
         feedbackRepository.deleteById(feedbackID);
     }
 }
-

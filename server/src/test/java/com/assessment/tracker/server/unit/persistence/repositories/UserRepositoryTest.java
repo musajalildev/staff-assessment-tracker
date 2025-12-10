@@ -60,7 +60,7 @@ class UserRepositoryTest {
 
     @AfterEach
     void teardown() {
-        User entity = entityManager.find(User.class, user.getUserId());
+        User entity = entityManager.find(User.class, user.getUserID());
         if (entity == null) {
             return;
         }
@@ -97,7 +97,7 @@ class UserRepositoryTest {
 
     @Test
     public void findByUserId_UserIdExists_ReturnsUser() {
-        User entity = userRepository.findByUserId(user.getUserId());
+        User entity = userRepository.findByUserID(user.getUserID());
         assertNotNull("Null User", entity);
         assertEquals("Failed to get user invalid user", entity.getUsername(), "user");
     }
@@ -129,28 +129,28 @@ class UserRepositoryTest {
 
     @Test
     public void existsByUserId_UserDoesNotExist_ReturnsFalse() {
-        boolean exists = userRepository.existsByUserId(UUID.randomUUID());
+        boolean exists = userRepository.existsByUserID(UUID.randomUUID());
         assertFalse("User Exists", exists);
     }
 
     @Test
     public void existsByUserId_UserExists_ReturnsTrue() {
-        boolean exists = userRepository.existsByUserId(user.getUserId());
+        boolean exists = userRepository.existsByUserID(user.getUserID());
         assertTrue(exists, "User does not exist");
     }
 
     // Deletion Tests
     @Test
     public void deleteByUserId_UserIdDoesNotExist_ReturnsTrue() {
-        userRepository.deleteByUserId(UUID.randomUUID());
-        boolean exists = userRepository.existsByUserId(user.getUserId());
+        userRepository.deleteByUserID(UUID.randomUUID());
+        boolean exists = userRepository.existsByUserID(user.getUserID());
         assertTrue(exists);
     }
 
     @Test
     public void deleteByUserId_UserExists_ReturnsFalse() {
-        userRepository.deleteByUserId(user.getUserId());
-        boolean exists = userRepository.existsByUserId(user.getUserId());
+        userRepository.deleteByUserID(user.getUserID());
+        boolean exists = userRepository.existsByUserID(user.getUserID());
         assertFalse("User not deleted", exists);
     }
     // ????

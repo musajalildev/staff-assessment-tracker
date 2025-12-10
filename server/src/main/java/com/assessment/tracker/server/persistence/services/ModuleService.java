@@ -32,7 +32,7 @@ public class ModuleService {
     }
 
     public void update(UUID id, Module newModule) {
-        Optional<Module> existingModule = Optional.ofNullable(moduleRepository.findById(id));
+        Optional<Module> existingModule = Optional.ofNullable(moduleRepository.findByID(id));
         if (existingModule.isPresent()) {
             newModule.setID(existingModule.get().getID());
 

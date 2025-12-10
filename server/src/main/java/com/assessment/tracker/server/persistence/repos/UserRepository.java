@@ -19,15 +19,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     User findByEmail(String email);
     // altering methods to apply UUID
 
-    User findByUserId(UUID userID);
+    User findByUserID(UUID userID);
 
-    boolean existsByUserId(UUID id);
+    boolean existsByUserID(UUID id);
 
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
 
-    void deleteByUserId(UUID id);
+    void deleteByUserID(UUID id);
 
     // getting by common permission
     List<User> findAllByUserType(UserType permission);

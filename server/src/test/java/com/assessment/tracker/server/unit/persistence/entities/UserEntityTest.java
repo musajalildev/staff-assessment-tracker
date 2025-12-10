@@ -38,7 +38,7 @@ public class UserEntityTest extends EntityTest<User> {
         user.setUsername("newusername");
         entityManager.flush();
 
-        User updatedUser = entityManager.find(User.class, user.getUserId());
+        User updatedUser = entityManager.find(User.class, user.getUserID());
         assertNotNull(updatedUser);
         assertEquals("newusername", updatedUser.getUsername());
     }
@@ -54,6 +54,6 @@ public class UserEntityTest extends EntityTest<User> {
 
     @Override
     protected Object getId(User entity) {
-        return entity.getUserId();
+        return entity.getUserID();
     }
 }

@@ -44,7 +44,7 @@ class ModuleRolesServiceTest {
         roleId = UUID.randomUUID();
 
         moduleRole = new ModuleRole();
-        moduleRole.setId(roleId);
+        moduleRole.setID(roleId);
         moduleRole.setRole(ModuleRoles.ROLE_MODULE_LEAD);
         moduleRole.setUser(
                 new User(
@@ -57,17 +57,17 @@ class ModuleRolesServiceTest {
     @Test
     void update_whenModuleRoleExists_shouldUpdateSuccessfully() {
         ModuleRole existingRole = new ModuleRole();
-        existingRole.setId(roleId);
+        existingRole.setID(roleId);
 
         ModuleRole newRole = new ModuleRole();
         newRole.setRole(ModuleRoles.ROLE_MODULE_STAFF);
 
-        when(moduleRolesRepo.findById(roleId)).thenReturn(Optional.of(existingRole));
+        when(moduleRolesRepo.findByID(roleId)).thenReturn(Optional.of(existingRole));
 
         moduleRolesService.update(roleId, newRole);
 
-        assertEquals(roleId, newRole.getId());
-        verify(moduleRolesRepo).findById(roleId);
+        assertEquals(roleId, newRole.getID());
+        verify(moduleRolesRepo).findByID(roleId);
         verify(moduleRolesRepo).save(newRole);
     }
 
@@ -85,7 +85,7 @@ class ModuleRolesServiceTest {
 
         assertNotNull(result);
         assertEquals(ModuleRoles.ROLE_MODULE_LEAD, result.getRole());
-        verify(moduleRolesRepo).findById(roleId);
+        verify(moduleRolesRepo).findByID(roleId);
         verify(moduleRoleMapper).entityToApi(moduleRole);
     }
 
@@ -120,6 +120,6 @@ class ModuleRolesServiceTest {
     void delete_shouldDeleteModuleRoleSuccessfully() {
         moduleRolesService.delete(roleId);
 
-        verify(moduleRolesRepo, times(1)).deleteById(roleId);
+        verify(moduleRolesRepo, times(1)).deleteByID(roleId);
     }
 }

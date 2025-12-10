@@ -27,7 +27,7 @@ public class User {
     // first section for generating columns
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId; // primary key
+    private UUID userID; // primary key
 
     @OneToMany
     private List<AssignedUser> assignedUsers;
@@ -67,8 +67,8 @@ public class User {
 
     // Getters and Setters
 
-    public void setUserId(UUID userID) {
-        this.userId = userID;
+    public void setUserID(UUID userID) {
+        this.userID = userID;
     }
 
     public List<Log> getActionsTaken() {
@@ -79,8 +79,8 @@ public class User {
         this.actionsTaken = actionsTaken;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public UUID getUserID() {
+        return userID;
     }
 
     public String getEmail() {
@@ -101,6 +101,20 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public List<Assessment> getSetterFor() {
+
+        return assignedUsers.stream().filter(i -> i.getRole() == AssessmentRole.ROLE_SETTER).map(i -> i.getAssessment())
+                .toList();
+
+    }
+
+    public List<Assessment> getCheckerFor() {
+
+        return assignedUsers.stream().filter(i -> i.getRole() == AssessmentRole.ROLE_CHECKER)
+                .map(i -> i.getAssessment()).toList();
+
     }
 
     public void setUsername(String username) {

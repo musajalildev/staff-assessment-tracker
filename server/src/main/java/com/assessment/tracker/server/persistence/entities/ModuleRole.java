@@ -16,7 +16,7 @@ public class ModuleRole {
     private ModuleRoles role;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    UUID Id;
+    UUID ID;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -59,11 +59,11 @@ public class ModuleRole {
         return user;
     }
 
-    public UUID getId() {
-        return Id;
+    public UUID getID() {
+        return ID;
     }
 
-    public void setId(UUID id) {
-        Id = id;
+    public void setID(UUID id) {
+        ID = id;
     }
 }

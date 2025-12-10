@@ -32,6 +32,6 @@ public class AssessmentTest extends EntityTest<Assessment> {
 
     @Override
     protected Object getId(Assessment entity) {
-        return entity.getId();
+        return entity.getID();
     }
 }

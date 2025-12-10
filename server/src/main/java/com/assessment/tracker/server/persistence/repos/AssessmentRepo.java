@@ -11,5 +11,7 @@ import com.assessment.tracker.server.persistence.entities.*;
 @Repository
 public interface AssessmentRepo extends JpaRepository<Assessment, Integer> {
 
+    Assessment findByID(Integer ID);
+
     Assessment findByTitle(String title);
 }
