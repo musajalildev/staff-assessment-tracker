@@ -2,17 +2,17 @@ package com.assessment.tracker.server.persistence.entities;
 
 import com.assessment.tracker.server.utils.enums.ModuleRoles;
 import jakarta.persistence.*;
-import java.util.UUID;
 
+/**
+ * Linker Table to represent module-specific roles for users
+ * It has a many to one relationship with User and Module
+ * It has an enum of type ModuleRole that represents the relationship
+ * between User and Module
+ */
 @Entity
 public class ModuleRole {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     private ModuleRoles role;
-
-    public String username;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -22,22 +22,36 @@ public class ModuleRole {
     @JoinColumn(name = "module_id")
     private Module module;
 
-    public ModuleRole(){}
-    public ModuleRole(User user, ModuleRoles role, Module module){
+    public ModuleRole() {
+    }
+
+    public ModuleRole(User user, ModuleRoles role, Module module) {
         this.module = module;
-        this.username = user.getUsername();
         this.role = role;
         this.user = user;
     }
 
+    public void setModule(Module module) {
+        this.module = module;
+    }
 
-    public void setID(UUID id) {this.id = id;}
-    public void setModule(Module module) {this.module = module;}
-    public void setRole(ModuleRoles role) {this.role = role;}
-    public void setUser(User user) {this.user = user;}
+    public void setRole(ModuleRoles role) {
+        this.role = role;
+    }
 
-    public UUID getID() {return id;}
-    public Module getModule() {return module;}
-    public ModuleRoles getRole() {return role;}
-    public User getUser() {return user;}
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Module getModule() {
+        return module;
+    }
+
+    public ModuleRoles getRole() {
+        return role;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

@@ -1,11 +1,20 @@
 package com.assessment.tracker.server.persistence.entities;
 
 import com.assessment.tracker.server.persistence.entities.logging.ModuleLog;
+import com.assessment.tracker.server.utils.enums.ModuleRoles;
 
 import jakarta.persistence.*;
 import java.util.UUID;
 import java.util.List;
 
+/**
+ * Entity class representing Modules
+ * Primary key of type UUID
+ * 
+ * Has a many to many relationship with User implemented through ModuleRole
+ * Has a one to many relationshup with Assessment
+ * 
+ */
 @Entity
 public class Module {
     @Id
@@ -25,32 +34,80 @@ public class Module {
     @OneToMany(mappedBy = "targetModule")
     private List<ModuleLog> logs;
 
+    public Module() {
+    }
 
-    public Module() {}
     public Module(String code, String title, boolean archived) {
         this.code = code;
         this.title = title;
         this.archived = archived;
     }
 
+    public void setID(UUID id) {
+        this.id = id;
+    }
 
-    public void setID(UUID id) { this.id = id; }
     public void setCode(String newCode) {
         this.code = newCode;
     }
-    public void setTitle(String newTitle) {this.title = newTitle;}
-    public void setArchived(boolean newArchived) {this.archived = newArchived;}
 
+    public void setTitle(String newTitle) {
+        this.title = newTitle;
+    }
 
-    public UUID getID() {return id;}
-    public List<ModuleRole> getUserRoles() {return userRoles;}
-    public String getCode() {return code;}
-    public String getTitle() {return title;}
-    public boolean getArchiveStatus() {return archived;}
-    public List<Assessment> getAssessments() {return assessments;}
+    public void setArchived(boolean newArchived) {
+        this.archived = newArchived;
+    }
 
-    public void addAssessment(Assessment  assessment) {
+    public UUID getID() {
+        return id;
+    }
+
+    public List<ModuleRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public boolean getArchiveStatus() {
+        return archived;
+    }
+
+    public List<Assessment> getAssessments() {
+        return assessments;
+    }
+
+    public User getLead() {
+        List<User> users = userRoles.stream().filter(i -> i.getRole() == ModuleRoles.ROLE_MODULE_LEAD)
+                .map(i -> i.getUser())
+                .toList();
+        if (users.size() == 0) {
+            return null;
+        }
+        return users.get(0);
+    }
+
+    public User getModerator() {
+        List<User> users = userRoles.stream().filter(i -> i.getRole() == ModuleRoles.ROLE_MODULE_MODERATOR)
+                .map(i -> i.getUser())
+                .toList();
+        if (users.size() == 0) {
+            return null;
+        }
+        return users.get(0);
+    }
+
+    public void addAssessment(Assessment assessment) {
         this.assessments.add(assessment);
     }
-    public void changeArchiveStatus() {this.archived = !this.archived;}
+
+    public void changeArchiveStatus() {
+        this.archived = !this.archived;
+    }
 }

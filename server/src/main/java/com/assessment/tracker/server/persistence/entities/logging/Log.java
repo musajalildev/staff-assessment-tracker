@@ -1,12 +1,15 @@
 package com.assessment.tracker.server.persistence.entities.logging;
 
 import jakarta.persistence.*;
-import java.util.*;
 
 import com.assessment.tracker.server.persistence.entities.User;
 
 import java.time.LocalDateTime;
 
+/**
+ * Base entity class for each log.
+ * Contains fields that are common to all logs.
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Log {

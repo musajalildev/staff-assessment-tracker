@@ -1,11 +1,13 @@
 package com.assessment.tracker.server.persistence.entities.logging;
 
 import jakarta.persistence.*;
-import java.util.*;
 
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.utils.enums.*;;
 
+/**
+ * Entity class for logging actions related to users
+ */
 @Entity
 public class UserLog extends Log {
 

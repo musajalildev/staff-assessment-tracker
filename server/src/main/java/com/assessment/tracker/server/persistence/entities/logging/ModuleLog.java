@@ -3,8 +3,10 @@ package com.assessment.tracker.server.persistence.entities.logging;
 import com.assessment.tracker.server.utils.enums.*;
 import com.assessment.tracker.server.persistence.entities.Module;
 import jakarta.persistence.*;
-import java.util.*;
 
+/**
+ * Class for logging actions related to modules
+ */
 @Entity
 public class ModuleLog extends Log {
 

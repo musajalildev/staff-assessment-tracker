@@ -1,11 +1,13 @@
 package com.assessment.tracker.server.persistence.entities.logging;
 
 import jakarta.persistence.*;
-import java.util.*;
 
 import com.assessment.tracker.server.utils.enums.*;
 import com.assessment.tracker.server.persistence.entities.*;
 
+/**
+ * Entity class for logging actions related to assessment
+ */
 @Entity
 public class AssessmentLog extends Log {
     @ManyToOne

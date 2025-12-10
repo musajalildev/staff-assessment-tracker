@@ -1,7 +1,6 @@
 package com.assessment.tracker.server.persistence.entities;
 
 import com.assessment.tracker.server.persistence.repos.AssignedUserRepository;
-import com.assessment.tracker.server.persistence.repos.UserRepository;
 import com.assessment.tracker.server.utils.enums.UserType;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Implementation of UserDetails with addtional roles
+ */
 public class AuthorisedUser implements UserDetails {
 
     private final User user;

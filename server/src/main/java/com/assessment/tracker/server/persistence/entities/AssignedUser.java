@@ -4,25 +4,24 @@ import com.assessment.tracker.server.utils.enums.*;
 
 import jakarta.persistence.*;
 
-//entity that grants every possible assesment-specific role an ID
+/**
+ * Linker table for assigning Users assessment-specific roles
+ * Composite primary key of every field
+ * It has a many to one relationship with User and Assessment
+ * It has an enum of type AssessmentRole that represents the relationship
+ * between User and Assessment
+ */
 @Entity
 @Table(name = "roles")
 public class AssignedUser {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public int assignmentID; // CHANGE TO ASSESSMENT
-
-    public String username;
-
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-
     @ManyToOne
+    @JoinColumn(name = "assessment_id")
     private Assessment assessment;
-    //TODO: Assesment constructor and to be set as not optional
-    // since role is attached to assessment
 
     @Enumerated(EnumType.STRING)
     private AssessmentRole role;
@@ -32,10 +31,10 @@ public class AssignedUser {
 
     public AssignedUser(User user, AssessmentRole role, Assessment assessment) {
         this.user = user;
-        this.username=user.getUsername();
         this.role = role;
         this.assessment = assessment;
     }
+
     public void setRole(AssessmentRole role) {
         this.role = role;
     }
@@ -52,11 +51,11 @@ public class AssignedUser {
         this.user = user;
     }
 
-    public int getAssignmentID() {
-        return assignmentID;
+    public Assessment getAssessment() {
+        return assessment;
     }
 
-    public void setAssignmentID(int assignmentID) {
-        this.assignmentID = assignmentID;
+    public void setAssessmentID(Assessment assessment) {
+        this.assessment = assessment;
     }
 }
