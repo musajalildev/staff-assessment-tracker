@@ -50,7 +50,13 @@ function Modules() {
         const visibleModules = showArchived 
           ? filtered 
           : filtered.filter(m => !m.archived);
-        setFilteredModules(visibleModules);
+        const sortedModules = [...visibleModules].sort((a, b) => {
+          const codeA = a.code || a.moduleCode || '';
+          const codeB = b.code || b.moduleCode || '';
+          return codeA.localeCompare(codeB);
+      });
+      setFilteredModules(sortedModules);
+
       } catch (err) {
         setError('Failed to load modules');
         console.error('Error loading modules:', err);
