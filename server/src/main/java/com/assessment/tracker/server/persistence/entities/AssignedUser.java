@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 /**
  * Linker table for assigning Users assessment-specific roles
  * Composite primary key of every field
- * It has a many to one relationship with User and Assessment
+ * It has a many-to-one relationship with User and Assessment
  * It has an enum of type AssessmentRole that represents the relationship
  * between User and Assessment
  */
