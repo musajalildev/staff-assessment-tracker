@@ -79,17 +79,23 @@ function MyProfile() {
 
     setError('');
     try {
-      const updates = [];
-      
-      if (formData.username !== profile.username) {
-        await userAPI.updateUsername(profile.userID, { username: formData.username });
-        updates.push('username');
-      }
-      
-      if (formData.email !== profile.email) {
-        await userAPI.updateEmail(profile.userID, { email: formData.email });
-        updates.push('email');
-      }
+    // Pre-check for duplicate username/email
+    const allUsers = await userAPI.getAll().catch(() => ({ data: [] }));
+    const otherUsers = (allUsers.data || []).filter(u => u.userID !== profile.userID);
+
+    const usernameTaken = otherUsers.some(u => u.username === formData.username);
+    const emailTaken = otherUsers.some(u => u.email === formData.email);
+
+    if (usernameTaken) {
+      setError('This username is already in use.');
+      return;
+    }
+
+    if (emailTaken) {
+      setError('This email is already in use.');
+      return;
+    }
+
 
       // Reload profile
       const userRes = await userAPI.getById(profile.userID);
