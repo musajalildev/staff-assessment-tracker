@@ -103,16 +103,25 @@ export const canManageModules = (assignedUsers, userId, username, currentView) =
  * Teaching Support and Exams Officers (in admin view) can manage users
  */
 export const canManageUsers = (assignedUsers, userId, username, currentView) => {
-  if (!assignedUsers || (!userId && !username)) return false;
+  if (!userId && !username) return false;
   
-  // Check if user has TEACHING_SUPPORT role
-  const hasTeachingSupport = isTeachingSupport(assignedUsers, userId, username);
-  if (hasTeachingSupport) return true;
+  const user = getCurrentUser();
+  
+  // Check if user's base userType is ROLE_TEACHING_SUPPORT
+  const isBaseTeachingSupport = user?.userType === 'ROLE_TEACHING_SUPPORT' ||
+                                user?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                                user?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
+  if (isBaseTeachingSupport) return true;
+  
+  // Check if user has TEACHING_SUPPORT role in assignedUsers
+  if (assignedUsers) {
+    const hasTeachingSupport = isTeachingSupport(assignedUsers, userId, username);
+    if (hasTeachingSupport) return true;
+  }
   
   // Check if user is Exams Officer and in admin view
-  const isEO = isExamsOfficer(assignedUsers, userId, username);
+  const isEO = assignedUsers ? isExamsOfficer(assignedUsers, userId, username) : false;
   if (isEO) {
-    const user = getCurrentUser();
     // Exams officers can manage users if they're in exams officer view
     // Check various possible view indicators
     const inAdminView = currentView === 'EXAM_OFFICER' || 

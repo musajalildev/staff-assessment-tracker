@@ -51,6 +51,11 @@ function Sidebar() {
     return location.pathname === path ? 'active' : '';
   };
 
+  // Check if user is Teaching Support Team
+  const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                            currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                            currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -64,7 +69,8 @@ function Sidebar() {
         <Link to="/modules" className={isActive('/modules')}>
           Modules
         </Link>
-        {canManage && (
+        {/* Show Users link if user can manage users OR if they are Teaching Support Team */}
+        {(canManage || isTeachingSupport) && (
           <Link to="/users" className={isActive('/users')}>
             Users
           </Link>
