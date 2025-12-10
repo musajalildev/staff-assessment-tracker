@@ -44,12 +44,8 @@ public class AssessmentService {
     }
 
     public List<AssessmentDTO> getInvolvedAssessments(User user) {
-        List<Assessment> entities = user.getCheckerFor();
-        entities.addAll(user.getSetterFor());
-        List<AssessmentDTO> dtos = new ArrayList<>();
-        for (Assessment entity : entities) {
-            dtos.add(assessmentMapper.entityToApi(entity));
-        }
+        List<AssessmentDTO> dtos = user.getAssignedUsers().stream()
+                .map(i -> assessmentMapper.entityToApi(i.getAssessment())).toList();
         return dtos;
     }
 }

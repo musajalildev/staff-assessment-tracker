@@ -1,8 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
-import Layout from '../components/Layout';
+import Layout from '../../components/Layout';
 import { useState, useEffect } from 'react';
-import { assessmentAPI, userAPI } from '../services/api';
-import FeedbackSection from '../components/FeedbackSection';
+import { assessmentAPI, userAPI } from '../../services/api';
+import FeedbackSection from '../../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
 
 function TestDetail() {

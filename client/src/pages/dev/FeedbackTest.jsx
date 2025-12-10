@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import FeedbackSection from '../components/FeedbackSection';
-import { assessmentAPI, userAPI } from '../services/api';
+import Layout from '../../components/Layout';
+import FeedbackSection from '../../components/FeedbackSection';
+import { assessmentAPI, userAPI } from '../../services/api';
 
 /**
  * Standalone test page for FeedbackSection component

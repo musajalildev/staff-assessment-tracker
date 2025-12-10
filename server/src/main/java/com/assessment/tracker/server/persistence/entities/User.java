@@ -30,10 +30,10 @@ public class User {
     private UUID userId; // primary key
 
     @OneToMany
-    private Set<AssignedUser> assignedUsers;
+    private List<AssignedUser> assignedUsers;
 
     @OneToMany
-    private Set<ModuleRole> moduleUsers;
+    private List<ModuleRole> moduleUsers;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -69,22 +69,6 @@ public class User {
 
     public void setUserId(UUID userID) {
         this.userId = userID;
-    }
-
-    public List<Assessment> getSetterFor() {
-        return setterFor;
-    }
-
-    public void setSetterFor(List<Assessment> setterFor) {
-        this.setterFor = setterFor;
-    }
-
-    public List<Assessment> getCheckerFor() {
-        return checkerFor;
-    }
-
-    public void setCheckerFor(List<Assessment> checkerFor) {
-        this.checkerFor = checkerFor;
     }
 
     public List<Log> getActionsTaken() {
@@ -129,6 +113,30 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public List<AssignedUser> getAssignedUsers() {
+        return assignedUsers;
+    }
+
+    public void setAssignedUsers(List<AssignedUser> assignedUsers) {
+        this.assignedUsers = assignedUsers;
+    }
+
+    public List<ModuleRole> getModuleUsers() {
+        return moduleUsers;
+    }
+
+    public void setModuleUsers(List<ModuleRole> moduleUsers) {
+        this.moduleUsers = moduleUsers;
+    }
+
+    public List<UserLog> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<UserLog> logs) {
+        this.logs = logs;
     }
 
 }

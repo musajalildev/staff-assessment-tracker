@@ -8,7 +8,7 @@ import ModuleNew from './pages/ModuleNew';
 import ModuleEdit from './pages/ModuleEdit';
 import ModuleCSVUpload from './pages/ModuleCSVUpload';
 import AssessmentDetail from './pages/AssessmentDetail';
-import Test from './pages/Test';
+import Test from './pages/dev/Test';
 import Coursework from './pages/Coursework';
 import Exam from './pages/Exam';
 import AssessmentNew from './pages/AssessmentNew';
@@ -44,14 +44,14 @@ function App() {
 
         {/* Dev-only routes */}
         {process.env.NODE_ENV === 'development' && (
-      <>
-       <Route path="/test/module-new" element={<ModuleNewTest />} />
-       <Route path="/test/module-upload" element={<ModuleCSVUploadTest />} />
-       <Route path="/test/feedback" element={<FeedbackTest />} />
-       <Route path="/test" element={<Test />} />
-    </>
-  )}
-</Routes>
+          <>
+            <Route path="/test/module-new" element={<ModuleNewTest />} />
+            <Route path="/test/module-upload" element={<ModuleCSVUploadTest />} />
+            <Route path="/test/feedback" element={<FeedbackTest />} />
+            <Route path="/test" element={<Test />} />
+          </>
+        )}
+      </Routes>
     </BrowserRouter>
   );
 }

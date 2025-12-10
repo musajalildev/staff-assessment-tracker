@@ -35,15 +35,15 @@ public class UserServiceIntegrationTest {
 
     @AfterEach
     public void tearDown() {
-        if (testUser.getUserID() != null && userRepo.existsByUserID(testUser.getUserID())) {
-            userRepo.deleteByUserID(testUser.getUserID());
+        if (testUser.getUserId() != null && userRepo.existsByUserId(testUser.getUserId())) {
+            userRepo.deleteByUserId(testUser.getUserId());
         }
     }
 
     @Test
     @Order(1)
     public void testGetUserById() {
-        User result = userService.getUser(testUser.getUserID());
+        User result = userService.getUser(testUser.getUserId());
         assertNotNull(result);
         assertEquals("testuser", result.getUsername());
     }
@@ -51,25 +51,25 @@ public class UserServiceIntegrationTest {
     @Test
     @Order(2)
     public void testUpdateUsername() {
-        userService.updateUsername("updatedUser", testUser.getUserID());
-        User updated = userRepo.findByUserID(testUser.getUserID());
+        userService.updateUsername("updatedUser", testUser.getUserId());
+        User updated = userRepo.findByUserId(testUser.getUserId());
         assertEquals("updatedUser", updated.getUsername());
     }
 
     @Test
     @Order(3)
     public void testUpdateUserEmail() {
-        userService.updateUserEmail("updated@example.com", testUser.getUserID());
-        User updated = userRepo.findByUserID(testUser.getUserID());
+        userService.updateUserEmail("updated@example.com", testUser.getUserId());
+        User updated = userRepo.findByUserId(testUser.getUserId());
         assertEquals("updated@example.com", updated.getEmail());
     }
 
     @Test
     @Order(4)
     public void testDeleteUser() {
-        boolean deleted = userService.deleteUser(testUser.getUserID());
+        boolean deleted = userService.deleteUser(testUser.getUserId());
         assertTrue(deleted);
-        assertFalse(userRepo.existsByUserID(testUser.getUserID()));
+        assertFalse(userRepo.existsByUserId(testUser.getUserId()));
     }
 
     @Test

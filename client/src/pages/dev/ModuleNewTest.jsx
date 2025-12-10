@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import ModuleNew from './ModuleNew';
-import { userAPI } from '../services/api';
+import Layout from '../../components/Layout';
+import ModuleNew from '../ModuleNew';
+import { userAPI } from '../../services/api';
 
 /**
  * Developer test page for ModuleNew component
