@@ -14,6 +14,8 @@ import com.assessment.tracker.server.utils.enums.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +26,7 @@ public class UserControllerImpl implements UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+
 
     @Autowired
     public UserControllerImpl(UserService userService, UserMapper userMapper) {
@@ -171,14 +174,64 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>(userMapper.entityToApi(updated), HttpStatus.OK);
     }
 
-    //-----EXAM OFFICER OPERATIONS----- TODO: Pre-authorization
+    //-----EXAM OFFICER OPERATIONS-----
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_EXAMS_OFFICER)")
     @PutMapping("/promote/{username}")
     public ResponseEntity<UserDTO> promoteUser(@PathVariable String username) {
         User toPromote= userService.getUserByUsername(username);
-        return null;
+        UserType currentRole = toPromote.getUserType();
+
+        switch(currentRole) {
+            case ROLE_EXAMS_OFFICER -> {
+                System.out.println("User is already an exams officer");
+                return ResponseEntity.badRequest().build();
+            }
+            case ROLE_ACADEMIC -> {
+                userService.updateUserPermission(UserType.ROLE_EXAMS_OFFICER, toPromote.getUserID());
+                System.out.println("Promoted user to exams officer");
+                return ResponseEntity.ok(userMapper.entityToApi(toPromote));
+            }
+            default -> {
+                System.out.println("User is not an academic");
+                return ResponseEntity.badRequest().build();
+            }
+        }
+    }
+
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_EXAMS_OFFICER)")
+    @PutMapping("/demote/{username}")
+    public ResponseEntity<String> demoteUser (@PathVariable String username, Authentication authentication) {
+
+        String demoter = authentication.getName();
+
+        if (!demoter.equals(username)) {
+            User toDemote = userService.getUserByUsername(username);
+            UserType currentRole = toDemote.getUserType();
+
+            switch (currentRole){
+                case ROLE_ACADEMIC -> {
+                    System.out.println("Unable to demote to academic");
+                    return new ResponseEntity<>("User is already an academic, demotion unapplicable"
+                            , HttpStatus.BAD_REQUEST);
+                }
+                case ROLE_EXAMS_OFFICER -> {
+                    System.out.println("Demoting user to academic");
+                    userService.updateUserPermission(UserType.ROLE_ACADEMIC, toDemote.getUserID());
+                    return new ResponseEntity<>("Demoted user to academic", HttpStatus.OK);
+                }
+                default -> {
+                    System.out.println("User is not an exams officer");
+                    return new ResponseEntity<>("User is not an exams officer", HttpStatus.BAD_REQUEST);
+                }
+            }
+        }
+
+        return new ResponseEntity<>("Unable to demote yourself", HttpStatus.BAD_REQUEST);
+
     }
 
     // -------------------- DELETE --------------------
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
         boolean deleted = userService.deleteUser(id);

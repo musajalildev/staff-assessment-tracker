@@ -8,6 +8,7 @@ import com.assessment.tracker.server.persistence.entities.AuthorisedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,7 @@ public class AuthControllerImpl implements AuthController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @Override
     public ResponseEntity<TokenDTO> signup(@RequestBody CreateAccountDTO userInfoDTO) {
         return ResponseEntity
