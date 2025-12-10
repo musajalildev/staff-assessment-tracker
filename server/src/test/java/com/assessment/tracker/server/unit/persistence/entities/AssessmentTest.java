@@ -27,11 +27,11 @@ public class AssessmentTest extends EntityTest<Assessment> {
 
     @Override
     protected Assessment createEntity() {
-        return new Assessment(AssessmentType.COURSEWORK, AssessmentProgress.CREATED,"Epic Assessment");
+        return new Assessment(AssessmentType.COURSEWORK, AssessmentProgress.CREATED, "Epic Assessment");
     }
 
     @Override
     protected Object getId(Assessment entity) {
-        return entity.getID();
+        return entity.getId();
     }
 }

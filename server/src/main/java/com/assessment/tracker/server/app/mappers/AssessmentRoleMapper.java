@@ -8,6 +8,9 @@ import com.assessment.tracker.server.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper to convert between AssessmentRolesDTO and AssessmentRoles
+ */
 @Component
 public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, AssignedUser> {
     private final UserRepository userRepository;
@@ -21,7 +24,7 @@ public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, Assigned
 
     @Override
     public AssessmentRolesDTO entityToApi(AssignedUser entity) {
-        AssessmentRolesDTO dto = new AssessmentRolesDTO(entity.getAssessment().getId(), entity.getUser().getUserID(),
+        AssessmentRolesDTO dto = new AssessmentRolesDTO(entity.getAssessment().getId(), entity.getUser().getUserId(),
                 entity.getRole());
         return dto;
     }

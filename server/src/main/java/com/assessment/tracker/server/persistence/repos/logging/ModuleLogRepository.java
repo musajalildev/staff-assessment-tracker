@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.assessment.tracker.server.persistence.entities.logging.*;
 
+/**
+ * Repository for ModuleLog
+ */
 @Repository
 public interface ModuleLogRepository extends JpaRepository<ModuleLog, Integer> {
 }

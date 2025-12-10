@@ -44,7 +44,7 @@ class ModuleRolesServiceTest {
         roleId = UUID.randomUUID();
 
         moduleRole = new ModuleRole();
-        moduleRole.setID(roleId);
+        moduleRole.setId(roleId);
         moduleRole.setRole(ModuleRoles.ROLE_MODULE_LEAD);
         moduleRole.setUser(
                 new User(
@@ -57,7 +57,7 @@ class ModuleRolesServiceTest {
     @Test
     void update_whenModuleRoleExists_shouldUpdateSuccessfully() {
         ModuleRole existingRole = new ModuleRole();
-        existingRole.setID(roleId);
+        existingRole.setId(roleId);
 
         ModuleRole newRole = new ModuleRole();
         newRole.setRole(ModuleRoles.ROLE_MODULE_STAFF);
@@ -66,7 +66,7 @@ class ModuleRolesServiceTest {
 
         moduleRolesService.update(roleId, newRole);
 
-        assertEquals(roleId, newRole.getID());
+        assertEquals(roleId, newRole.getId());
         verify(moduleRolesRepo).findById(roleId);
         verify(moduleRolesRepo).save(newRole);
     }

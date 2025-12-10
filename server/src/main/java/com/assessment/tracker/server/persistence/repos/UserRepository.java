@@ -9,6 +9,9 @@ import com.assessment.tracker.server.persistence.entities.*;
 
 import com.assessment.tracker.server.utils.enums.*;
 
+/**
+ * Repository for User
+ */
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
@@ -16,13 +19,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     User findByEmail(String email);
     // altering methods to apply UUID
 
-    User findByUserID(UUID userID);
+    User findByUserId(UUID userID);
 
-    boolean existsByUserID(UUID id);
+    boolean existsByUserId(UUID id);
+
     boolean existsByEmail(String email);
+
     boolean existsByUsername(String username);
 
-    void deleteByUserID(UUID id);
+    void deleteByUserId(UUID id);
 
     // getting by common permission
     List<User> findAllByUserType(UserType permission);

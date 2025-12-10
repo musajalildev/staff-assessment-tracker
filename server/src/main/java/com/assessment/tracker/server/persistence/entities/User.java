@@ -27,7 +27,7 @@ public class User {
     // first section for generating columns
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userID; // primary key
+    private UUID userId; // primary key
 
     @OneToMany
     private Set<AssignedUser> assignedUsers;
@@ -44,12 +44,6 @@ public class User {
     @JsonIgnore
     @Column(nullable = false, unique = true)
     private String password; // required encryption
-
-    @OneToMany(mappedBy = "setter")
-    private List<Assessment> setterFor;
-
-    @OneToMany(mappedBy = "checker")
-    private List<Assessment> checkerFor;
 
     @OneToMany(mappedBy = "user")
     private List<Log> actionsTaken;
@@ -73,8 +67,8 @@ public class User {
 
     // Getters and Setters
 
-    public void setUserID(UUID userID) {
-        this.userID = userID;
+    public void setUserId(UUID userID) {
+        this.userId = userID;
     }
 
     public List<Assessment> getSetterFor() {
@@ -101,8 +95,8 @@ public class User {
         this.actionsTaken = actionsTaken;
     }
 
-    public UUID getUserID() {
-        return userID;
+    public UUID getUserId() {
+        return userId;
     }
 
     public String getEmail() {

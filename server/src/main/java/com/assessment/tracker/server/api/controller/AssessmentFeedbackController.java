@@ -11,53 +11,38 @@ import com.assessment.tracker.server.api.dto.AssessmentFeedbackDTO;
 import java.util.List;
 
 public interface AssessmentFeedbackController {
-    @GetMapping(
-            produces = "application/json",
-            path = "/assessments/{assessmentId}/feedback")
-    @Operation(
-            summary = "Gets list of feedback based on the assessment id",
-            description = "Returns a list of feedback given related to a respective assessment id")
-    @Tag( name ="Feedback", description = "Feedback-Related-Operations")
-    ResponseEntity<List<AssessmentFeedbackDTO>> getFeedbackByAssessment(@PathVariable Integer assessmentId);
+        // -------------------- CREATE --------------------
+        @PostMapping(consumes = "application/json", produces = "application/json", path = "/assessments/{assessmentId}/feedback")
+        @Operation(summary = "Create feedback for an assessment", description = "Create feedback based on the assessment it"
+                        +
+                        " relates to and the schema of the new feedback")
+        @Tag(name = "Feedback", description = "Feedback-Related-Operations")
+        ResponseEntity<AssessmentFeedbackDTO> createFeedback(
+                        @PathVariable Integer assessmentId,
+                        @RequestBody AssessmentFeedbackDTO feedbackDTO);
 
-    @GetMapping(
-            produces = "application/json",
-            path = "/assessments/feedback/{feedbackId}")
-    @Operation(
-            summary = "Get feedback object based on id",
-            description = "Get feedback object based on id")
-    @Tag( name ="Feedback", description = "Feedback-Related-Operations")
-    ResponseEntity<AssessmentFeedbackDTO> getFeedbackById(@PathVariable Integer feedbackId);
+        // -------------------- READ --------------------
+        @GetMapping(produces = "application/json", path = "/assessments/{assessmentId}/feedback")
+        @Operation(summary = "Gets list of feedback based on the assessment id", description = "Returns a list of feedback given related to a respective assessment id")
+        @Tag(name = "Feedback", description = "Feedback-Related-Operations")
+        ResponseEntity<List<AssessmentFeedbackDTO>> getFeedbackByAssessment(@PathVariable Integer assessmentId);
 
-    @PostMapping(
-            consumes = "application/json",
-            produces = "application/json",
-            path = "/assessments/{assessmentId}/feedback")
-    @Operation(
-            summary = "Create feedback for an assessment",
-            description = "Create feedback based on the assessment it" +
-                    " relates to and the schema of the new feedback")
-    @Tag( name ="Feedback", description = "Feedback-Related-Operations")
-    ResponseEntity<AssessmentFeedbackDTO> createFeedback(
-            @PathVariable Integer assessmentId,
-            @RequestBody AssessmentFeedbackDTO feedbackDTO);
+        @GetMapping(produces = "application/json", path = "/assessments/feedback/{feedbackId}")
+        @Operation(summary = "Get feedback object based on id", description = "Get feedback object based on id")
+        @Tag(name = "Feedback", description = "Feedback-Related-Operations")
+        ResponseEntity<AssessmentFeedbackDTO> getFeedbackById(@PathVariable Integer feedbackId);
 
-    @PutMapping(
-            consumes = "application/json",
-            produces = "application/json",
-            path = "/assessments/feedback/{feedbackId}")
-    @Operation(
-            summary = "update feedback based on feedbackId and new schema",
-            description = "Update feedback based on an updated schema")
-    @Tag( name ="Feedback", description = "Feedback-Related-Operations")
-    ResponseEntity<AssessmentFeedbackDTO> updateFeedback(
-            @PathVariable Integer feedbackId,
-            @RequestBody AssessmentFeedbackDTO feedbackDTO);
+        // -------------------- UPDATE --------------------
+        @PutMapping(consumes = "application/json", produces = "application/json", path = "/assessments/feedback/{feedbackId}")
+        @Operation(summary = "update feedback based on feedbackId and new schema", description = "Update feedback based on an updated schema")
+        @Tag(name = "Feedback", description = "Feedback-Related-Operations")
+        ResponseEntity<AssessmentFeedbackDTO> updateFeedback(
+                        @PathVariable Integer feedbackId,
+                        @RequestBody AssessmentFeedbackDTO feedbackDTO);
 
-    @DeleteMapping(path = "/assessments/feedback/{feedbackId}")
-    @Operation(
-            summary = "Delete feedback based on Id",
-            description = "Delete assessment feedback based on assessment id")
-    @Tag( name ="Feedback", description = "Feedback-Related-Operations")
-    ResponseEntity<Void> deleteFeedback(@PathVariable Integer feedbackId);
+        // -------------------- DELETE--------------------
+        @DeleteMapping(path = "/assessments/feedback/{feedbackId}")
+        @Operation(summary = "Delete feedback based on Id", description = "Delete assessment feedback based on assessment id")
+        @Tag(name = "Feedback", description = "Feedback-Related-Operations")
+        ResponseEntity<Void> deleteFeedback(@PathVariable Integer feedbackId);
 }

@@ -70,8 +70,7 @@ public class AssessmentFeedbackControllerImpl implements AssessmentFeedbackContr
             AssessmentFeedbackDTO createdFeedback = feedbackService.createFeedback(
                     assessmentId,
                     feedbackDTO.getFeedback(),
-                    author.getUserID()
-            );
+                    author.getUserId());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(createdFeedback);
         } catch (RuntimeException e) {
@@ -90,7 +89,8 @@ public class AssessmentFeedbackControllerImpl implements AssessmentFeedbackContr
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            // Verify the user owns this feedback (optional - can be enhanced with proper authorization)
+            // Verify the user owns this feedback (optional - can be enhanced with proper
+            // authorization)
             AssessmentFeedbackDTO existingFeedback = feedbackService.getFeedbackByID(feedbackId);
             if (existingFeedback == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -99,8 +99,7 @@ public class AssessmentFeedbackControllerImpl implements AssessmentFeedbackContr
             // Update feedback
             AssessmentFeedbackDTO updatedFeedback = feedbackService.updateFeedback(
                     feedbackId,
-                    feedbackDTO.getFeedback()
-            );
+                    feedbackDTO.getFeedback());
 
             return ResponseEntity.ok(updatedFeedback);
         } catch (RuntimeException e) {
@@ -117,7 +116,8 @@ public class AssessmentFeedbackControllerImpl implements AssessmentFeedbackContr
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            // Verify the user owns this feedback (optional - can be enhanced with proper authorization)
+            // Verify the user owns this feedback (optional - can be enhanced with proper
+            // authorization)
             AssessmentFeedbackDTO existingFeedback = feedbackService.getFeedbackByID(feedbackId);
             if (existingFeedback == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

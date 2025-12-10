@@ -2,13 +2,11 @@ package com.assessment.tracker.server.app.mappers;
 
 import com.assessment.tracker.server.persistence.entities.Assessment;
 import com.assessment.tracker.server.persistence.entities.Module;
-import com.assessment.tracker.server.persistence.services.UserService;
 import com.assessment.tracker.server.utils.Mapper;
 import com.assessment.tracker.server.persistence.services.AssessmentService;
 import com.assessment.tracker.server.utils.enums.AssessmentProgress;
 import com.assessment.tracker.server.utils.enums.AssessmentType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,15 +17,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.io.BufferedReader;
 
+/**
+ * Mapper to convert between CSV and a list of Modules
+ */
 @Component
 public class CsvMapper implements Mapper<MultipartFile, List<Module>> {
 
-    private final UserService userService;
     private final AssessmentService assessmentService;
 
-    @Autowired
-    public CsvMapper(UserService userService, AssessmentService assessmentService) {
-        this.userService = userService;
+    public CsvMapper(AssessmentService assessmentService) {
         this.assessmentService = assessmentService;
     }
 
@@ -44,21 +42,32 @@ public class CsvMapper implements Mapper<MultipartFile, List<Module>> {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty()) {continue;}
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
                 List<String> fields = new ArrayList<>(Arrays.asList(line.split(",")));
 
                 int totalFields = fields.size();
-                if (totalFields < 4) {continue;}
-
+                if (totalFields < 4) {
+                    continue;
+                }
 
                 String code = fields.get(0).trim();
-                if (code.isEmpty()) {continue;}
+                if (code.isEmpty()) {
+                    continue;
+                }
                 String title = fields.get(1).trim();
-                if (title.isEmpty()) {continue;}
-                String moduleLead =  fields.get(2).trim();
-                if (moduleLead.isEmpty()) {continue;}
+                if (title.isEmpty()) {
+                    continue;
+                }
+                String moduleLead = fields.get(2).trim();
+                if (moduleLead.isEmpty()) {
+                    continue;
+                }
                 String supportingStaff = fields.get(3).trim();
-                if (supportingStaff.isEmpty()) {continue;}
+                if (supportingStaff.isEmpty()) {
+                    continue;
+                }
 
                 Module module = new Module();
                 module.setCode(code);
@@ -73,14 +82,18 @@ public class CsvMapper implements Mapper<MultipartFile, List<Module>> {
                 modules.add(module);
             }
             return modules;
-        } catch (IOException e) {throw new RuntimeException(e);}
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void saveAssessments(List<String> fields, Module module) {
         for (int i = 0; i < fields.size(); i += 2) {
             String assessmentTypeStr = fields.get(i).trim();
             String assessmentTitle = fields.get(i + 1).trim();
-            if (assessmentTypeStr.isEmpty() || assessmentTitle.isEmpty()) {continue;}
+            if (assessmentTypeStr.isEmpty() || assessmentTitle.isEmpty()) {
+                continue;
+            }
 
             AssessmentType assessmentType = AssessmentType.fromString(assessmentTypeStr);
 
@@ -89,4 +102,3 @@ public class CsvMapper implements Mapper<MultipartFile, List<Module>> {
         }
     }
 }
-

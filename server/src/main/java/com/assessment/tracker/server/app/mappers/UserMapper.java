@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
 public class UserMapper implements Mapper<UserDTO, User> {
 
     @Override
-    public UserDTO entityToApi(User user) { //change entity to dto
-        if (user == null) return null;
+    public UserDTO entityToApi(User user) { // change entity to dto
+        if (user == null)
+            return null;
 
         UserDTO dto = new UserDTO();
-        dto.setUserID(user.getUserID());
+        dto.setUserID(user.getUserId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setUserType(user.getUserType());
@@ -23,12 +24,13 @@ public class UserMapper implements Mapper<UserDTO, User> {
     }
 
     @Override
-    public User apiToEntity(UserDTO dto) { //change dto to entity
-        if (dto == null) return null;
+    public User apiToEntity(UserDTO dto) { // change dto to entity
+        if (dto == null)
+            return null;
 
         User user = new User();
 
-        user.setUserID(dto.getUserID());
+        user.setUserId(dto.getUserID());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setUserType(dto.getUserType());

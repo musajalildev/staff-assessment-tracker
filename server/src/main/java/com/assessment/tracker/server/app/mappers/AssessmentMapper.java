@@ -7,6 +7,9 @@ import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.utils.Mapper;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper to convert between AssessmentDTO and Assessment
+ */
 @Component
 public class AssessmentMapper implements Mapper<AssessmentDTO, Assessment> {
     @Override

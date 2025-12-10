@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Repository for Module
+ */
 @Repository
 public interface ModuleRepo extends JpaRepository<Module, Integer> {
     Module findById(UUID id);

@@ -32,7 +32,8 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     // -------------------- CREATE --------------------
     // implement get assigned users w/o query params
     @Override
-    public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody AssessmentRole role, Assessment assessment) {
+    public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody AssessmentRole role,
+            Assessment assessment) {
         AssignedUser createdUser = assignedUserService.createAssignment(userID, role, assessment);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
@@ -93,7 +94,7 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     @Override
     public ResponseEntity<List<AssessmentRole>> getAllUserRoles(@PathVariable String username) {
         User user = assignedUserService.findUserWithString(username);
-        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserID());
+        List<AssessmentRole> userRoles = assignedUserService.getUserAssignment(user.getUserId());
         return (userRoles != null) ? ResponseEntity.ok(userRoles)
                 : ResponseEntity.notFound().build();
     }

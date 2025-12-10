@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.assessment.tracker.server.persistence.entities.*;
 
+/**
+ * Repository for AssessmentFeedback
+ */
 @Repository
 public interface AssessmentFeedbackRepo extends JpaRepository<AssessmentFeedback, Integer> {
-    java.util.List<AssessmentFeedback> findByAssessment_ID(Integer assessmentID);
+    java.util.List<AssessmentFeedback> findByAssessment_Id(Integer assessmentID);
 }

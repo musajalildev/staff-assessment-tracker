@@ -118,7 +118,7 @@ public class ServerApplication {
                 AssessmentLog l1 = new AssessmentLog();
                 l1.setUser(userRepository.findByUsername("kofi"));
                 l1.setComment("Assessment Test");
-                l1.setTargetAssessment(assessmentRepository.findByID(1));
+                l1.setTargetAssessment(assessmentRepository.findById(1).orElse(null));
                 l1.setActionType(AssessmentActions.PROGRESS);
                 l1.setPreviousState(AssessmentProgress.CHECKED);
                 l1.setNewState(AssessmentProgress.COMPLETE);

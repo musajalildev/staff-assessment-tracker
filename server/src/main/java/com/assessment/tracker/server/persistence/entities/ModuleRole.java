@@ -14,6 +14,8 @@ import java.util.*;
 public class ModuleRole {
 
     private ModuleRoles role;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     UUID Id;
 
     @ManyToOne(cascade = CascadeType.ALL)

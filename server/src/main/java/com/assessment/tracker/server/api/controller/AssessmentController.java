@@ -14,34 +14,26 @@ import com.assessment.tracker.server.persistence.entities.*;
 import java.util.List;
 
 public interface AssessmentController {
-        @GetMapping(
-                produces = "application/json",
-                path = "/api/assessment/all")
-        @Operation(
-                summary = "Get an assessment By Id",
-                description = "Returns an assessment that matches the id given.")
+        // -------------------- CREATE --------------------
+        @PostMapping(consumes = "application/json", produces = "application/json", path = "/api/v1/assessment")
+        @Operation(summary = "Creates assessment with given dto", description = "Returns the created Assessment DTO")
+        @Tag(name = "Assessment", description = "Assessment-Related-Operations")
+        ResponseEntity<AssessmentDTO> createAssessment(
+                        @RequestBody AssessmentDTO assessmentDTO,
+                        @AuthenticationPrincipal AuthorisedUser user);
+
+        // -------------------- READ --------------------
+        @GetMapping(produces = "application/json", path = "/api/assessment/all")
+        @Operation(summary = "Get an assessment By Id", description = "Returns an assessment that matches the id given.")
         @Tag(name = "Assessment", description = "Assessment-Related-Operations")
         ResponseEntity<List<AssessmentDTO>> getAllAssessments();
 
         @GetMapping(produces = "application/json", path = "/api/assessment/{id}")
         ResponseEntity<AssessmentDTO> getAssessment(@PathVariable int id);
 
-        @PostMapping(consumes = "application/json", produces = "application/json", path = "/api/v1/assessment")
-        @Operation(
-                summary = "Creates assessment with given dto",
-                description = "Returns the created Assessment DTO")
-        @Tag(name = "Assessment", description = "Assessment-Related-Operations")
-        ResponseEntity<AssessmentDTO> createAssessment(
-                        @RequestBody AssessmentDTO assessmentDTO,
-                        @AuthenticationPrincipal AuthorisedUser user);
-
-        @PutMapping(
-                consumes = "application/json",
-                produces = "application/json",
-                path = "/api/assessment/{id}")
-        @Operation(
-                summary = "Update assessment with updated assessment schema",
-                description = "")
+        // -------------------- UPDATE --------------------
+        @PutMapping(consumes = "application/json", produces = "application/json", path = "/api/assessment/{id}")
+        @Operation(summary = "Update assessment with updated assessment schema", description = "")
         @Tag(name = "Assessment", description = "Assessment-Related-Operations")
         ResponseEntity<AssessmentDTO> updateAssessment(
                         @PathVariable int id,

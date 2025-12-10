@@ -17,80 +17,69 @@ import java.util.UUID;
 @RequestMapping("/assign")
 public interface AssignedUserController {
 
-    // -------------------- CREATE --------------------
-    @Operation(summary = "Create a user assignment", description = "Assign a role to a user by their UUID")
-    @PostMapping({"", "/"})
-    ResponseEntity<AssignedUser> createAssignment(
-            @Parameter(description = "ID of the user") @RequestBody UUID userID,
-            @Parameter(description = "Role to assign") @RequestBody AssessmentRole role,
-            Assessment assessment
-    );
+        // -------------------- CREATE --------------------
+        @Operation(summary = "Create a user assignment", description = "Assign a role to a user by their UUID")
+        @PostMapping({ "", "/" })
+        ResponseEntity<AssignedUser> createAssignment(
+                        @Parameter(description = "ID of the user") @RequestBody UUID userID,
+                        @Parameter(description = "Role to assign") @RequestBody AssessmentRole role,
+                        Assessment assessment);
 
-    // -------------------- READ --------------------
-    @Operation(summary = "Get all assigned users", description = "Retrieve all user-role assignments")
-    @GetMapping
-    ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers();
+        // -------------------- READ --------------------
+        @Operation(summary = "Get all assigned users", description = "Retrieve all user-role assignments")
+        @GetMapping
+        ResponseEntity<List<AssessmentRolesDTO>> getAllAssignedUsers();
 
-    @Operation(summary = "Get all users with a specific role", description = "Retrieve assignments filtered by role")
-    @GetMapping("/{role}")
-    ResponseEntity<List<AssignedUser>> getAllCommonRole(
-            @Parameter(description = "Role to filter") @PathVariable AssessmentRole role
-    );
+        @Operation(summary = "Get all users with a specific role", description = "Retrieve assignments filtered by role")
+        @GetMapping("/{role}")
+        ResponseEntity<List<AssignedUser>> getAllCommonRole(
+                        @Parameter(description = "Role to filter") @PathVariable AssessmentRole role);
 
-    @Operation(summary = "Get assignment by ID", description = "Retrieve assignment data by assignment ID")
-    @GetMapping("/id/{id}")
-    ResponseEntity<AssignedUser> getAssignedUser(
-            @Parameter(description = "Assignment ID") @PathVariable int id
-    );
+        @Operation(summary = "Get assignment by ID", description = "Retrieve assignment data by assignment ID")
+        @GetMapping("/id/{id}")
+        ResponseEntity<AssignedUser> getAssignedUser(
+                        @Parameter(description = "Assignment ID") @PathVariable int id);
 
-    @Operation(summary = "Get assignments by username", description = "Retrieve all assignments for a user by username or email")
-    @GetMapping("/un/{username}")
-    ResponseEntity<List<AssignedUser>> getAssignedUserByUsername(
-            @Parameter(description = "Username or email") @PathVariable String username
-    );
+        @Operation(summary = "Get assignments by username", description = "Retrieve all assignments for a user by username or email")
+        @GetMapping("/un/{username}")
+        ResponseEntity<List<AssignedUser>> getAssignedUserByUsername(
+                        @Parameter(description = "Username or email") @PathVariable String username);
 
-    @Operation(summary = "Get all roles for a user by ID", description = "Retrieve all roles assigned to a user by UUID")
-    @GetMapping("/role/userid/{id}")
-    ResponseEntity<List<AssessmentRole>> getAllUserRolesById(
-            @Parameter(description = "User ID") @PathVariable UUID id
-    );
+        @Operation(summary = "Get all roles for a user by ID", description = "Retrieve all roles assigned to a user by UUID")
+        @GetMapping("/role/userid/{id}")
+        ResponseEntity<List<AssessmentRole>> getAllUserRolesById(
+                        @Parameter(description = "User ID") @PathVariable UUID id);
 
-    @Operation(summary = "Get role by assignment ID", description = "Retrieve a role assigned for a specific assignment")
-    @GetMapping("/role/assignmentID/{id}")
-    ResponseEntity<AssessmentRole> getRoleByAssignmentId(
-            @Parameter(description = "Assignment ID") @PathVariable int id
-    );
+        @Operation(summary = "Get role by assignment ID", description = "Retrieve a role assigned for a specific assignment")
+        @GetMapping("/role/assignmentID/{id}")
+        ResponseEntity<AssessmentRole> getRoleByAssignmentId(
+                        @Parameter(description = "Assignment ID") @PathVariable int id);
 
-    @Operation(summary = "Get all roles for a user by username", description = "Retrieve all roles for a user identified by username or email")
-    @GetMapping("/role/{username}")
-    ResponseEntity<List<AssessmentRole>> getAllUserRoles(
-            @Parameter(description = "Username or email") @PathVariable String username
-    );
+        @Operation(summary = "Get all roles for a user by username", description = "Retrieve all roles for a user identified by username or email")
+        @GetMapping("/role/{username}")
+        ResponseEntity<List<AssessmentRole>> getAllUserRoles(
+                        @Parameter(description = "Username or email") @PathVariable String username);
 
-    // -------------------- UPDATE --------------------
-    @Operation(summary = "Update a user's role", description = "Update role of an assignment by ID")
-    @PutMapping("/role/id/{id}")
-    ResponseEntity<AssignedUser> updateUserRole(
-            @Parameter(description = "Assignment ID") @PathVariable int id,
-            @Parameter(description = "New role") @RequestBody AssessmentRole role
-    );
+        // -------------------- UPDATE --------------------
+        @Operation(summary = "Update a user's role", description = "Update role of an assignment by ID")
+        @PutMapping("/role/id/{id}")
+        ResponseEntity<AssignedUser> updateUserRole(
+                        @Parameter(description = "Assignment ID") @PathVariable int id,
+                        @Parameter(description = "New role") @RequestBody AssessmentRole role);
 
-    // -------------------- DELETE --------------------
-    @Operation(summary = "Delete an assignment by ID", description = "Delete a specific assignment")
-    @DeleteMapping("/{id}")
-    ResponseEntity<String> deleteAssignedUser(
-            @Parameter(description = "Assignment ID") @PathVariable int id
-    );
+        // -------------------- DELETE --------------------
+        @Operation(summary = "Delete an assignment by ID", description = "Delete a specific assignment")
+        @DeleteMapping("/{id}")
+        ResponseEntity<String> deleteAssignedUser(
+                        @Parameter(description = "Assignment ID") @PathVariable int id);
 
-    @Operation(summary = "Delete all assignments for a user", description = "Delete all role assignments for a specific user by UUID")
-    @DeleteMapping("/user/{userid}")
-    ResponseEntity<String> deleteUserAssignments(
-            @Parameter(description = "User ID") @PathVariable UUID userid
-    );
+        @Operation(summary = "Delete all assignments for a user", description = "Delete all role assignments for a specific user by UUID")
+        @DeleteMapping("/user/{userid}")
+        ResponseEntity<String> deleteUserAssignments(
+                        @Parameter(description = "User ID") @PathVariable UUID userid);
 
-    @Operation(summary = "Delete all assignments", description = "Delete all assignments. Confirmation required")
-    @DeleteMapping("/wipe")
-    ResponseEntity<String> deleteAllAssignments(
-            @Parameter(description = "Confirmation string (must be 'DELETE_EVERYTHING')") @RequestParam String confirm
-    );
+        @Operation(summary = "Delete all assignments", description = "Delete all assignments. Confirmation required")
+        @DeleteMapping("/wipe")
+        ResponseEntity<String> deleteAllAssignments(
+                        @Parameter(description = "Confirmation string (must be 'DELETE_EVERYTHING')") @RequestParam String confirm);
 }

@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +34,8 @@ import com.assessment.tracker.server.persistence.services.JpaUserDetailsService;
 @EnableMethodSecurity
 public class SecurityConfiguration {
     /*
-     * This is to be rewritten default implementation is to permit any request we will have
+     * This is to be rewritten default implementation is to permit any request we
+     * will have
      * Roles etc. therefore we need to use spring security roles
      */
 
@@ -51,8 +51,7 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // allow H2 console (optional)
-                .headers(headers -> headers.frameOptions
-                        (frame -> frame.sameOrigin()))
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
                 // disable CSRF because you are using JWT (stateless)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -64,23 +63,20 @@ public class SecurityConfiguration {
                         // sgnup is only like this for testing should be only permitted for TST
                         // -> TODO: account creation only done by TST
                         .requestMatchers(
-                                "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**").permitAll()
+                                "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**")
+                        .permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        .anyRequest().authenticated()
-                    )
+                        .anyRequest().authenticated())
                 // JWT validation (your RSA public key via Nimbus)
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
-                )
+                        .jwt(Customizer.withDefaults()))
 
                 // do not use session (JWT = stateless)
-                .sessionManagement(session -> session.sessionCreationPolicy
-                        (SessionCreationPolicy.STATELESS));
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults());
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

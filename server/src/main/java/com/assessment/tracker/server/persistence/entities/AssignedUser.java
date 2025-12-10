@@ -12,8 +12,11 @@ import jakarta.persistence.*;
  * between User and Assessment
  */
 @Entity
-@Table(name = "roles")
+@Table(name = "assessment_user_roles")
 public class AssignedUser {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer ID;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

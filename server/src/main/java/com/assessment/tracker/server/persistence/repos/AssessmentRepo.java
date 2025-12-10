@@ -5,8 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import com.assessment.tracker.server.persistence.entities.*;
 
+/**
+ * Repository for Assessment
+ */
 @Repository
 public interface AssessmentRepo extends JpaRepository<Assessment, Integer> {
-    Assessment findByID(Integer ID);
+
     Assessment findByTitle(String title);
 }

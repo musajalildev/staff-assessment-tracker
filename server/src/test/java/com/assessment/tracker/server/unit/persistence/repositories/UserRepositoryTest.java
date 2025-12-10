@@ -60,7 +60,7 @@ class UserRepositoryTest {
 
     @AfterEach
     void teardown() {
-        User entity = entityManager.find(User.class, user.getUserID());
+        User entity = entityManager.find(User.class, user.getUserId());
         if (entity == null) {
             return;
         }
@@ -97,20 +97,20 @@ class UserRepositoryTest {
 
     @Test
     public void findByUserId_UserIdExists_ReturnsUser() {
-        User entity = userRepository.findByUserID(user.getUserID());
+        User entity = userRepository.findByUserId(user.getUserId());
         assertNotNull("Null User", entity);
         assertEquals("Failed to get user invalid user", entity.getUsername(), "user");
     }
 
     // Exists Tests
     @Test
-    public void existsByEmail_UserExists_ReturnsTrue(){
+    public void existsByEmail_UserExists_ReturnsTrue() {
         boolean exists = userRepository.existsByEmail(user.getEmail());
         assertTrue(exists);
     }
 
     @Test
-    public void existsByEmail_UserDoesNotExist_ReturnsFalse(){
+    public void existsByEmail_UserDoesNotExist_ReturnsFalse() {
         boolean exists = userRepository.existsByEmail("InvalidEmail");
         assertFalse("User exists", exists);
     }
@@ -129,30 +129,31 @@ class UserRepositoryTest {
 
     @Test
     public void existsByUserId_UserDoesNotExist_ReturnsFalse() {
-        boolean exists = userRepository.existsByUserID(UUID.randomUUID());
+        boolean exists = userRepository.existsByUserId(UUID.randomUUID());
         assertFalse("User Exists", exists);
     }
 
     @Test
     public void existsByUserId_UserExists_ReturnsTrue() {
-        boolean exists = userRepository.existsByUserID(user.getUserID());
+        boolean exists = userRepository.existsByUserId(user.getUserId());
         assertTrue(exists, "User does not exist");
     }
+
     // Deletion Tests
     @Test
     public void deleteByUserId_UserIdDoesNotExist_ReturnsTrue() {
-        userRepository.deleteByUserID(UUID.randomUUID());
-        boolean exists = userRepository.existsByUserID(user.getUserID());
+        userRepository.deleteByUserId(UUID.randomUUID());
+        boolean exists = userRepository.existsByUserId(user.getUserId());
         assertTrue(exists);
     }
 
     @Test
     public void deleteByUserId_UserExists_ReturnsFalse() {
-        userRepository.deleteByUserID(user.getUserID());
-        boolean exists = userRepository.existsByUserID(user.getUserID());
+        userRepository.deleteByUserId(user.getUserId());
+        boolean exists = userRepository.existsByUserId(user.getUserId());
         assertFalse("User not deleted", exists);
     }
-    //????
+    // ????
 
     @Test
     public void findAllByUserType() {

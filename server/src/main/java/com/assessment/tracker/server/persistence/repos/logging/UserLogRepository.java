@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.assessment.tracker.server.persistence.entities.logging.*;
 
+/**
+ * Repository for UserLog
+ */
 @Repository
 public interface UserLogRepository extends JpaRepository<UserLog, Integer> {
 }
