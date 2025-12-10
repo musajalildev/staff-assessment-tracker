@@ -1,14 +1,16 @@
 import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useState, useEffect } from 'react';
-import { assessmentAPI, userAPI } from '../services/api';
+import { assessmentAPI, userAPI, assignedUserAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser, canReverseStages } from '../utils/permissions';
 
 function CourseworkDetail() {
     const { moduleId, assessmentId } = useParams();
     const [assessment, setAssessment] = useState(null);
     const [users, setUsers] = useState([]);
+    const [assignedUsers, setAssignedUsers] = useState([]);
     const [progress, setProgress] = useState(0);
     const [progressSequence, setProgressSequence] = useState([]);
     const [type, setType] = useState("");
@@ -30,13 +32,15 @@ function CourseworkDetail() {
                 setLoading(true);
                 const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided
 
-                const [assessmentRes, usersRes] = await Promise.all([
+                const [assessmentRes, usersRes, assignedRes] = await Promise.all([
                     assessmentAPI.getById(assessmentIdToUse),
-                    userAPI.getAll().catch(() => ({ data: [] }))
+                    userAPI.getAll().catch(() => ({ data: [] })),
+                    assignedUserAPI.getAll().catch(() => ({ data: [] }))
                 ]);
 
                 setAssessment(assessmentRes.data);
                 setUsers(usersRes.data || []);
+                setAssignedUsers(assignedRes.data || []);
             } catch (err) {
                 setError('Failed to load assessment');
                 console.error('Error loading assessment:', err);
@@ -112,11 +116,53 @@ function CourseworkDetail() {
         }
     };
 
+    // Code to Reverse Assessment Progress
+    const reverseAssessment = async () => {
+        if (!assessment) return;
+
+        const progressSequence = [
+            "SPEC_CREATED", "SPEC_CHECKED", "MODIFICATIONS_NEEDED", "SPEC_RELEASED",
+            "DEADLINE_PASSED", "STANDARDISATION", "MARKING", "MODERATION", "FEEDBACK_RETURNED"
+        ];
+
+        const currentIndex = progressSequence.indexOf(assessment.progress);
+        if (currentIndex <= 0) {
+            alert('Cannot reverse: already at the first stage');
+            return;
+        }
+
+        const previousProgress = progressSequence[currentIndex - 1];
+
+        if (!window.confirm(`Are you sure you want to reverse the assessment progress from "${assessment.progress}" to "${previousProgress}"?`)) {
+            return;
+        }
+
+        const updatedAssessment = {
+            ...assessment,
+            progress: previousProgress
+        };
+
+        try {
+            const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
+            setAssessment(result.data);
+        } catch (err) {
+            console.error('Error reversing assessment:', err);
+            alert('Failed to reverse assessment progress');
+        }
+    };
+
     const getUserName = (user) => {
         if (!user) return 'N/A';
         if (typeof user === 'string') return user;
         return user.username || user.email || 'N/A';
     };
+
+    // Check if user can reverse stages
+    const currentUser = getCurrentUser();
+    const userId = currentUser?.id || currentUser?.userID;
+    const username = currentUser?.username;
+    const currentView = currentUser?.selectedUserType || currentUser?.selectedRole;
+    const canReverse = canReverseStages(assignedUsers, userId, username, currentView);
 
     if (loading) {
         return (
@@ -240,6 +286,19 @@ function CourseworkDetail() {
                     <div className="h-title" style={{ fontSize: '18px' }}>Actions</div>
                     <div className="mt-12" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <button className="btn" onClick={progressAssessment}>Update Progress</button>
+                        {canReverse && (
+                            <button 
+                                className="btn" 
+                                onClick={reverseAssessment}
+                                style={{ 
+                                    background: 'rgba(255, 51, 102, 0.1)', 
+                                    borderColor: 'var(--bad)', 
+                                    color: 'var(--bad)'
+                                }}
+                            >
+                                Reverse Progress
+                            </button>
+                        )}
                         <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
                     </div>
                 </div>
