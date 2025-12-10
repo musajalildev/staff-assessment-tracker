@@ -146,6 +146,14 @@ function UserManagement() {
       .replace(/\b\w/g, l => l.toUpperCase());
   };
 
+  // Check if user is Teaching Support Team
+  const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                            currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                            currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
+
+  // Show Add User button if user can manage users OR is Teaching Support Team
+  const canAddUser = canManage || isTeachingSupport;
+
   if (loading) {
     return (
       <Layout>
@@ -161,7 +169,7 @@ function UserManagement() {
       <header className="header">
         <div className="h-title">User Management</div>
         <div className="actions">
-          {canManage && (
+          {canAddUser && (
             <button className="btn primary" onClick={() => navigate('/users/new')}>
               Add User
             </button>
