@@ -9,6 +9,8 @@ import ModuleEdit from './pages/ModuleEdit';
 import ModuleCSVUpload from './pages/ModuleCSVUpload';
 import AssessmentDetail from './pages/AssessmentDetail';
 import Test from './pages/Test';
+import Coursework from './pages/Coursework';
+import Exam from './pages/Exam';
 import AssessmentNew from './pages/AssessmentNew';
 import UserManagement from './pages/UserManagement';
 import UserNew from './pages/UserNew';
@@ -31,6 +33,8 @@ function App() {
         <Route path="/modules/:moduleId/assessments/new" element={<AssessmentNew />} />
         <Route path="/modules/:moduleId/assessments/:assessmentId" element={<AssessmentDetail />} />
         <Route path="/modules/:moduleId/test/:assessmentId" element={<Test />} />
+        <Route path="/modules/:moduleId/coursework/:assessmentId" element={<Coursework />} />
+        <Route path="/modules/:moduleId/exam/:assessmentId" element={<Exam />} />
         <Route path="/test/feedback/:assessmentId" element={<FeedbackTest />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/users/new" element={<UserNew />} />

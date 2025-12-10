@@ -40,6 +40,7 @@ function CourseworkDetail() {
 
         loadAssessment();
     }, [assessmentId]);
+    
     // Sets up maps for progress and type
     useEffect(() => {
         if (!assessment) return;
@@ -51,47 +52,44 @@ function CourseworkDetail() {
             "TEST_TEAM_MARKER": "Test (Team Marker)"
         };
         setType(typeMap[assessment.type] || assessment.type || "N/A");
-        /*switch (assessment.type) {
-          case "EXAM"
-        }/**/
+        
+        // Coursework-specific progress mapping
         const progressMap = {
-            "CREATED": 1,
-            "CHECKED": 2,
-            "NEEDS_CHANGES": 3,
-            "TEST_TAKING_PLACE": 4,
-            "MARKING_STANDARDISED": 5,
-            "MARKED": 6,
-            "RESULTS_RETURNED": 7,
-            "COMPLETE": 8
+            "SPEC_CREATED": 1,
+            "SPEC_CHECKED": 2,
+            "MODIFICATIONS_NEEDED": 3,
+            "SPEC_RELEASED": 4,
+            "DEADLINE_PASSED": 5,
+            "STANDARDISATION": 6,
+            "MARKING": 7,
+            "MODERATION": 8,
+            "FEEDBACK_RETURNED": 9
         };
         setProgress(progressMap[assessment.progress] || 0);
-
-
-
     }, [assessment]);
+    
     // Code to Progress Assessments
     const progressAssessment = async () => {
         if (!assessment) return;
-        if (assessment.progress == "CHECKED") {
-            navigate("/test/feedback/" + assessmentId)
+        if (assessment.progress == "SPEC_CHECKED") {
+            navigate("/coursework/feedback/" + assessmentId)
             return
         }
 
         const progressSequence = [
-            "CREATED", "CHECKED", "NEEDS_CHANGES", "TEST_TAKING_PLACE",
-            "MARKING_STANDARDISED", "MARKED", "RESULTS_RETURNED", "COMPLETE"
+            "SPEC_CREATED", "SPEC_CHECKED", "MODIFICATIONS_NEEDED", "SPEC_RELEASED",
+            "DEADLINE_PASSED", "STANDARDISATION", "MARKING", "MODERATION", "FEEDBACK_RETURNED"
         ];
-
 
         const currentIndex = progressSequence.indexOf(assessment.progress);
         let nextProgress = currentIndex < progressSequence.length - 1
             ? progressSequence[currentIndex + 1]
-            : progressSequence[1]; // Loop back to CHECKED if at end Test feature
-        if (assessment.progress == "NEEDS_CHANGES") {
-            console.log("needs_changes");
-            nextProgress = "CHECKED";
+            : progressSequence[progressSequence.length - 1];
+        
+        if (assessment.progress == "MODIFICATIONS_NEEDED") {
+            console.log("modifications_needed");
+            nextProgress = "SPEC_CHECKED";
         }
-
 
         const updatedAssessment = {
             ...assessment,
@@ -134,7 +132,6 @@ function CourseworkDetail() {
         );
     }
 
-
     return (
         <Layout>
             <header className="header">
@@ -159,7 +156,6 @@ function CourseworkDetail() {
                         <span className="pill">Type: {type}</span>
                         <span className="pill">Progress: {assessment.progress || 'N/A'}</span>
                         {assessment.teamMarked && <span className="pill">Team Marked</span>}
-                        {assessment.autoGraded && <span className="pill">Auto Graded</span>}
                     </div>
                 </div>
                 <div className="card">
@@ -168,55 +164,64 @@ function CourseworkDetail() {
                         <div className={(() => { if (progress > 1) return "step done"; if (progress == 1) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
-                                <div className="title">Test created</div>
+                                <div className="title">Spec Created</div>
                                 <div className="meta">By Setter</div>
                             </div>
                         </div>
                         <div className={(() => { if (progress > 2) return "step done"; if (progress == 2) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
-                                <div className="title">Checked</div>
-                                <div className="meta">Checker approves or requests changes</div>
+                                <div className="title">Spec Checked</div>
+                                <div className="meta">By Checker</div>
                             </div>
                         </div>
                         <div className={(() => { if (progress > 3) return "step done"; if (progress == 3) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
-                                <div className="title">Needs Changes</div>
-                                <div className="meta">Visible in VLE</div>
+                                <div className="title">Modifications Made/Approved</div>
+                                <div className="meta">Setter & Checker loop</div>
                             </div>
                         </div>
                         <div className={(() => { if (progress > 4) return "step done"; if (progress == 4) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
-                                <div className="title">Test Taking Place</div>
-                                <div className="meta">Window closes</div>
+                                <div className="title">Spec Released to Students</div>
+                                <div className="meta">Available in VLE</div>
                             </div>
                         </div>
                         <div className={(() => { if (progress > 5) return "step done"; if (progress == 5) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
-                                <div className="title">Standardisation (if team)</div>
+                                <div className="title">Deadline Passed</div>
+                                <div className="meta">Manual progression</div>
                             </div>
                         </div>
-                        <div className={(() => { if (progress > 6) return "step done"; if (progress == 6) return "step active"; return "step" })()}>
+                        {assessment.teamMarked ? <div className={(() => { if (progress > 6) return "step done"; if (progress == 6) return "step active"; return "step" })()}>
+                            <div className="dot"></div>
+                            <div>
+                                <div className="title">Standardisation (if team)</div>
+                            </div>
+                        </div> : ""
+                        }
+                        <div className={(() => { if (progress > 7) return "step done"; if (progress == 7) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
                                 <div className="title">Marking</div>
+                                <div className="meta">By module staff</div>
                             </div>
                         </div>
-                        <div className={progress > 7 ? "step done" : progress === 7 ? "step active" : "step"}>
+                        <div className={(() => { if (progress > 8) return "step done"; if (progress == 8) return "step active"; return "step" })()}>
                             <div className="dot"></div>
                             <div>
-                                <div className="title">Results Returned</div>
+                                <div className="title">Moderation</div>
+                                <div className="meta">By moderator</div>
+                            </div>
+                        </div>
+                        <div className={progress > 9 ? "step done" : progress === 9 ? "step active" : "step"}>
+                            <div className="dot"></div>
+                            <div>
+                                <div className="title">Feedback Returned</div>
                                 <div className="meta">Complete</div>
-                            </div>
-                        </div>
-                        <div className={progress > 8 ? "step done" : progress === 8 ? "step active" : "step"}>
-                            <div className="dot"></div>
-                            <div>
-                                <div className="title">Complete</div>
-                                <div className="meta">Assessment finished</div>
                             </div>
                         </div>
                     </div>
@@ -247,4 +252,3 @@ function CourseworkDetail() {
 }
 
 export default CourseworkDetail;
-
