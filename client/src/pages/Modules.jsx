@@ -50,13 +50,7 @@ function Modules() {
         const visibleModules = showArchived 
           ? filtered 
           : filtered.filter(m => !m.archived);
-        const sortedModules = [...visibleModules].sort((a, b) => {
-          const codeA = a.code || a.moduleCode || '';
-          const codeB = b.code || b.moduleCode || '';
-          return codeA.localeCompare(codeB);
-      });
-      setFilteredModules(sortedModules);
-
+        setFilteredModules(visibleModules);
       } catch (err) {
         setError('Failed to load modules');
         console.error('Error loading modules:', err);
@@ -74,6 +68,18 @@ function Modules() {
     currentUser?.username,
     currentUser?.selectedUserType || currentUser?.selectedRole
   );
+
+  // Check if user is Teaching Support Team
+  // Check all possible fields where userType might be stored
+  const userId = currentUser?.id || currentUser?.userID;
+  const username = currentUser?.username;
+  const apiUser = users.find(u => (u.userID === userId || u.ID === userId) || u.username === username);
+  const apiUserType = apiUser?.userType;
+  
+  const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
+                            currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
+                            currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT' ||
+                            apiUserType === 'ROLE_TEACHING_SUPPORT';
 
   const getUserName = (userId) => {
     if (!userId) return 'N/A';
@@ -112,7 +118,7 @@ function Modules() {
       <header className="header">
         <div className="h-title">Modules</div>
         <div className="actions" style={{ display: 'flex', gap: '12px' }}>
-          {canManage && (
+          {isTeachingSupport && (
             <Link className="btn primary" to="/modules/new">Add Module</Link>
           )}
           {canManage && (
@@ -195,7 +201,7 @@ function Modules() {
               <tr>
                 <td colSpan="6" style={{ textAlign: 'center', padding: '24px' }}>
                   <p className="sub">No modules found.</p>
-                  {canManage && (
+                  {isTeachingSupport && (
                     <Link className="btn primary mt-12" to="/modules/new" style={{ display: 'inline-block' }}>
                       Create your first module
                     </Link>
