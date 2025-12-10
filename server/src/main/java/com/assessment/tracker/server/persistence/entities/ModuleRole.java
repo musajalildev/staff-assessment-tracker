@@ -2,6 +2,7 @@ package com.assessment.tracker.server.persistence.entities;
 
 import com.assessment.tracker.server.utils.enums.ModuleRoles;
 import jakarta.persistence.*;
+import java.util.*;
 
 /**
  * Linker Table to represent module-specific roles for users
@@ -13,6 +14,7 @@ import jakarta.persistence.*;
 public class ModuleRole {
 
     private ModuleRoles role;
+    UUID Id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -53,5 +55,13 @@ public class ModuleRole {
 
     public User getUser() {
         return user;
+    }
+
+    public UUID getId() {
+        return Id;
+    }
+
+    public void setId(UUID id) {
+        Id = id;
     }
 }

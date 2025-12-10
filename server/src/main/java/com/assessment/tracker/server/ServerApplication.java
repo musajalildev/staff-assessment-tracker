@@ -69,12 +69,12 @@ public class ServerApplication {
                 AssignedUser a3 = new AssignedUser(mary, AssessmentRole.ROLE_CHECKER, null);
 
                 AssignedUser a4 = new AssignedUser(kofi, AssessmentRole.ROLE_SETTER, null);
-                AssignedUser a5 = new AssignedUser(kofi, AssessmentRole.ROLE_EXAM_OFFICER, null);
+                AssignedUser a5 = new AssignedUser(kofi, AssessmentRole.ROLE_INVOLVED, null);
 
                 AssignedUser a6 = new AssignedUser(sakura, AssessmentRole.ROLE_CHECKER, null);
 
                 AssignedUser a7 = new AssignedUser(musa, AssessmentRole.ROLE_SETTER, null);
-                AssignedUser a8 = new AssignedUser(musa, AssessmentRole.ROLE_SETTER,null);
+                AssignedUser a8 = new AssignedUser(musa, AssessmentRole.ROLE_SETTER, null);
 
                 assignedUserRepository.saveAll(
                         List.of(a1, a2, a3, a4, a5, a6, a7, a8));
@@ -126,13 +126,11 @@ public class ServerApplication {
 
                 System.out.println("Assessment Log seeded.");
             }
-            //testing module in user creation
-            Module m1 = new Module("1","test",false);
-            Module m2 = new Module("2","test2",false);
-            Module m3 = new Module("3","test3",false);
-            moduleRepo.saveAll(List.of(m1,m2,m3));
-
-
+            // testing module in user creation
+            Module m1 = new Module("1", "test", false);
+            Module m2 = new Module("2", "test2", false);
+            Module m3 = new Module("3", "test3", false);
+            moduleRepo.saveAll(List.of(m1, m2, m3));
 
         };
     }

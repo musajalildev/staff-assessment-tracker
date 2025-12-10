@@ -11,15 +11,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, AssignedUser> {
     private final UserRepository userRepository;
+    private final AssessmentRepo assessmentRepository;
 
     @Autowired
-    public AssessmentRoleMapper(UserRepository userRepository) {
+    public AssessmentRoleMapper(UserRepository userRepository, AssessmentRepo assessmentRepository) {
         this.userRepository = userRepository;
+        this.assessmentRepository = assessmentRepository;
     }
 
     @Override
     public AssessmentRolesDTO entityToApi(AssignedUser entity) {
-        AssessmentRolesDTO dto = new AssessmentRolesDTO(entity.getAssessmentID(), entity.getUser().getUserID(),
+        AssessmentRolesDTO dto = new AssessmentRolesDTO(entity.getAssessment().getId(), entity.getUser().getUserID(),
                 entity.getRole());
         return dto;
     }
@@ -28,7 +30,7 @@ public class AssessmentRoleMapper implements Mapper<AssessmentRolesDTO, Assigned
         AssignedUser entity = new AssignedUser();
         entity.setRole(dto.getRole());
         entity.setUser(userRepository.findByUserID(dto.getUserID()));
-        entity.setAssessmentID(dto.getAssessmentID());
+        entity.setAssessment(assessmentRepository.findByID(dto.getAssessmentID()));
         return entity;
     }
 }

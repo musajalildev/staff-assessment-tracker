@@ -55,7 +55,7 @@ public class AssignedUser {
         return assessment;
     }
 
-    public void setAssessmentID(Assessment assessment) {
+    public void setAssessment(Assessment assessment) {
         this.assessment = assessment;
     }
 }

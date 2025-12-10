@@ -30,7 +30,7 @@ public class ModuleRolesService {
         Optional<ModuleRole> existing = Optional.ofNullable((ModuleRole) moduleRolesRepo.findById(id).orElse(null));
 
         if (existing.isPresent()) {
-            newModuleRole.setID(existing.get().getID());
+            newModuleRole.setId(existing.get().getId());
             moduleRolesRepo.save(newModuleRole);
         } else {
             throw new EntityNotFoundException("ModuleRole not found with id: " + id);
@@ -59,7 +59,7 @@ public class ModuleRolesService {
         return dtos;
     }
 
-    //Retrieve all specific module roles
+    // Retrieve all specific module roles
 
     public void delete(UUID id) {
         moduleRolesRepo.deleteById(id);
