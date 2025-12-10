@@ -24,7 +24,7 @@ function UserNew() {
     
     const loadData = async () => {
       try {
-        const assignedRes = await assignedUserAPI.getAll().catch(() => ({ data: [] }));
+        const assignedRes = await assignedUserAPI.getAll();
         setAssignedUsers(assignedRes.data || []);
       } catch (err) {
         console.error('Error loading data:', err);

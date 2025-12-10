@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { assignedUserAPI } from '../services/api';
 import { getCurrentUser, canManageUsers } from '../utils/permissions';
@@ -8,7 +8,7 @@ function Sidebar() {
   const [currentUser, setCurrentUser] = useState(null);
   const [assignedUsers, setAssignedUsers] = useState([]);
   const [canManage, setCanManage] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const user = getCurrentUser();
     setCurrentUser(user);
@@ -80,7 +80,8 @@ function Sidebar() {
         </Link>
       </nav>
       <div className="nav-footer">
-        <Link to="/login" className="logout-link">Logout</Link>
+        <button onClick={()=>{localStorage.removeItem("authToken"); navigate("/login")}}
+                className="logout-link">Logout</button>
       </div>
     </aside>
   );

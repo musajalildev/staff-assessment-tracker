@@ -60,10 +60,19 @@ function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    if (!usernameOrEmail.trim() || !password.trim()) {
+      setError('Username/email and password cannot be empty');
+      setLoading(false);
+      return;
+    }
+
 
     try {
       // Validate username/email and password with backend
-      const response = await userAPI.login(usernameOrEmail, password);
+      const trimmedIdentifier = usernameOrEmail.trim();
+      const trimmedPassword = password.trim();
+      console.log(`[LOGIN] Attempting login as: ${trimmedIdentifier.includes('@') ? 'email' : 'username'} (${trimmedIdentifier})`);
+      const response = await userAPI.login(trimmedIdentifier, trimmedPassword);
       const user = response.data;
       
       // Store user data temporarily

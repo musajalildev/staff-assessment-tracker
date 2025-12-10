@@ -19,6 +19,13 @@ function CourseworkDetail() {
     // Loads the relevant Assessment
     useEffect(() => {
         const loadAssessment = async () => {
+
+            if (!assessmentId || isNaN(parseInt(assessmentId))) {
+              setError('Invalid assessment ID');
+              setLoading(false);
+              return;
+           }
+
             try {
                 setLoading(true);
                 const assessmentIdToUse = assessmentId || 1; // Fallback to 1 if not provided

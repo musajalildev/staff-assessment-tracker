@@ -15,7 +15,10 @@ import AssessmentNew from './pages/AssessmentNew';
 import UserManagement from './pages/UserManagement';
 import UserNew from './pages/UserNew';
 import MyProfile from './pages/MyProfile';
-import FeedbackTest from './pages/FeedbackTest';
+import FeedbackTest from './pages/dev/FeedbackTest';
+import ModuleNewTest from './pages/dev/ModuleNewTest';
+import ModuleCSVUploadTest from './pages/dev/ModuleCSVUploadTest';
+
 import './App.css';
 
 function App() {
@@ -35,11 +38,20 @@ function App() {
         <Route path="/modules/:moduleId/test/:assessmentId" element={<Test />} />
         <Route path="/modules/:moduleId/coursework/:assessmentId" element={<Coursework />} />
         <Route path="/modules/:moduleId/exam/:assessmentId" element={<Exam />} />
-        <Route path="/test/feedback/:assessmentId" element={<FeedbackTest />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/users/new" element={<UserNew />} />
         <Route path="/profile" element={<MyProfile />} />
-      </Routes>
+
+        {/* Dev-only routes */}
+        {process.env.NODE_ENV === 'development' && (
+      <>
+       <Route path="/test/module-new" element={<ModuleNewTest />} />
+       <Route path="/test/module-upload" element={<ModuleCSVUploadTest />} />
+       <Route path="/test/feedback" element={<FeedbackTest />} />
+       <Route path="/test" element={<Test />} />
+    </>
+  )}
+</Routes>
     </BrowserRouter>
   );
 }
