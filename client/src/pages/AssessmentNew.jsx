@@ -23,28 +23,31 @@ function AssessmentNew() {
   });
 
   useEffect(() => {
-    const loadData = async () => {
+  const loadData = async () => {
+    try {
+      const usersRes = await userAPI.getAll();
+      setUsers(usersRes.data || []);
+      
+      // Try to load module by code
       try {
-        const usersRes = await userAPI.getAll();
-        setUsers(usersRes.data || []);
-        
-        // Try to load module info
-        try {
-          const moduleRes = await moduleAPI.getByCode(moduleId);
-          setModule(moduleRes.data);
-        } catch (e) {
-          const allModulesRes = await moduleAPI.getAll();
-          const foundModule = (allModulesRes.data || []).find(
-            m => (m.id || m.ID)?.toString() === moduleId
-          );
-          if (foundModule) setModule(foundModule);
-        }
-      } catch (err) {
-        console.error('Error loading data:', err);
+        const moduleRes = await moduleAPI.getByCode(moduleId);
+        console.log("Module loaded by code:", moduleRes.data);
+        setModule(moduleRes.data);
+      } catch (e) {
+        // Fallback: try to load all and find by ID
+        const allModulesRes = await moduleAPI.getAll();
+        const foundModule = (allModulesRes.data || []).find(
+          m => (m.id || m.ID)?.toString() === moduleId
+        );
+        console.log("Fallback module:", foundModule);
+        if (foundModule) setModule(foundModule);
       }
-    };
-    loadData();
-  }, [moduleId]);
+    } catch (err) {
+      console.error('Error loading data:', err);
+    }
+  };
+  loadData();
+}, [moduleId]);
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -55,6 +58,11 @@ function AssessmentNew() {
   };
 
   const handleSubmit = async (e) => {
+    if (!module || !module.id) {
+  setError("Failed to load module. Cannot create assessment.");
+  return;
+}
+
     e.preventDefault();
     setError('');
     setLoading(true);
