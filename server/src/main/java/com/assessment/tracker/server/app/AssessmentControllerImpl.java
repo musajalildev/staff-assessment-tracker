@@ -82,13 +82,49 @@ public class AssessmentControllerImpl implements AssessmentController {
             if (!user.getCheckerFor().contains(assessment)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
             }
+        } else if (assessmentService.getAssessmentByID(assessment.getID())
+                .getProgress() == AssessmentProgress.SETTER_FORMAL_RESPONSE
+                && !user.getSetterFor().contains(assessment)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
+        } else if (assessmentService.getAssessmentByID(assessment.getID())
+                .getProgress() == AssessmentProgress.EXAMS_OFFICER_CHECK
+                && !(user.getUserType() == UserType.ROLE_EXAMS_OFFICER)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
+        } else if (assessmentService.getAssessmentByID(assessment.getID())
+                .getProgress() == AssessmentProgress.EXTERNAL_EXAMINER_CHECK
+                && !(user.getUserType() == UserType.ROLE_EXTERNAL_EXAMINER)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
+        }
+
+        AssessmentLog log = new AssessmentLog();
+        log.setActionType(AssessmentActions.PROGRESS);
+        log.setTargetAssessment(assessment);
+        log.setPreviousState(assessmentService.getAssessmentByID(assessment.getID()).getProgress());
+        log.setNewState(assessment.getProgress());
+        log.setUser(user);
+        assessmentLogService.save(log);
+        assessmentService.save(assessment);
+        return ResponseEntity.ok(assessmentDTO);
+    }
+
+    @Override
+    public ResponseEntity<AssessmentDTO> revertAssessment(int id, AssessmentDTO assessmentDTO,
+            Authentication auth) {
+        User user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
+        if (assessmentService.getAssessmentByID(assessment.getID()).getProgress() == AssessmentProgress.CHECKED) {
+            if (!user.getCheckerFor().contains(assessment)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
+            }
         } else {
             if (!user.getSetterFor().contains(assessment)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
             }
         }
         AssessmentLog log = new AssessmentLog();
-        log.setActionType(AssessmentActions.PROGRESS);
+        log.setActionType(AssessmentActions.REVERT);
         log.setTargetAssessment(assessment);
         log.setPreviousState(assessmentService.getAssessmentByID(assessment.getID()).getProgress());
         log.setNewState(assessment.getProgress());

@@ -39,4 +39,12 @@ public interface AssessmentController {
                         @PathVariable int id,
                         @RequestBody AssessmentDTO assessmentDTO,
                         Authentication auth);
+
+        @PutMapping(consumes = "application/json", produces = "application/json", path = "/api/assessment/revert/{id}")
+        @Operation(summary = "Reverts assessment to previous state", description = "")
+        @Tag(name = "Assessment", description = "Assessment-Related-Operations")
+        ResponseEntity<AssessmentDTO> revertAssessment(
+                        @PathVariable int id,
+                        @RequestBody AssessmentDTO assessmentDTO,
+                        Authentication auth);
 }
