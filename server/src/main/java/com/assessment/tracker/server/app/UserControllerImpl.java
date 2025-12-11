@@ -287,4 +287,23 @@ public class UserControllerImpl implements UserController {
         userService.deleteAllUsers();
         return new ResponseEntity<>("All Users Erased", HttpStatus.OK);
     }
+
+    //Todo: delete
+    @GetMapping("/test")
+    public ResponseEntity<String> test(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.ok("No user authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+        String res;
+
+        // Safe check to avoid ClassCastException if principal is "anonymousUser" string
+        if (principal instanceof User user) {
+            res = user.getUsername();
+        } else {
+            res = authentication.getName();
+        }
+        return new ResponseEntity<>("Current login :" + res, HttpStatus.OK);
+    }
 }
