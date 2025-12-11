@@ -74,5 +74,3 @@ All operations are handled by the logging services
 You can view all the exposed endpoints at the route: /swagger-ui.html
 
 You can use actuator to check the health of the system at: /actuator
-
-### Client
