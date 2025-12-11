@@ -41,16 +41,18 @@ public class AssessmentControllerImpl implements AssessmentController {
 
     @Override
     public ResponseEntity<List<AssessmentDTO>> getAllAssessments(Authentication auth) {
-        // Object username =
-        // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = new User();
+        // Attempts to get user object by querying rebo by username
         try {
             user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
         } catch (Exception e) {
+            // Returns unauthorised if user not found
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+        // Checks the type of user
         if (!(user.getUserType() == UserType.ROLE_EXAMS_OFFICER
                 || user.getUserType() == UserType.ROLE_TEACHING_SUPPORT)) {
+            // Returns unauthorised if not correct type
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         List<AssessmentDTO> dtos = assessmentService.getAllAssessments();
