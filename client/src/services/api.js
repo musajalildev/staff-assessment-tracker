@@ -196,6 +196,23 @@ export const feedbackAPI = {
   delete: (feedbackId) => apiRequest(`/assessments/feedback/${feedbackId}`, {
     method: 'DELETE'
   }),
+
+  // Promote a user to Exams Officer
+  promoteToExamsOfficer: (username) => 
+    apiRequest(`/users/promote/${username}`, { method: 'PUT' }),
+};
+
+// Auth API
+export const authAPI = {
+  signup: (userInfoDTO) => apiRequest('/auth/signup', {
+    method: 'POST',
+    body: userInfoDTO
+  }),
+
+  login: (loginDTO) => apiRequest('/auth/login', {
+    method: 'POST',
+    body: loginDTO
+  })
 };
 
 export default { apiRequest };
