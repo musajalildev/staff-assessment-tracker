@@ -76,5 +76,6 @@ public interface UserController {
         // -------------------- DELETE--------------------
         @Operation(summary = "Delete user", description = "Delete a specific user by their ID", tags = { "User" })
         ResponseEntity<String> deleteUser(
-                        @Parameter(description = "ID of the user") @PathVariable UUID id);
+                        @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication);
 }

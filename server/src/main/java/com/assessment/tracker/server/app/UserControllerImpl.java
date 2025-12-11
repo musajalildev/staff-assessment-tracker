@@ -272,7 +272,10 @@ public class UserControllerImpl implements UserController {
     // -------------------- DELETE --------------------
     @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id,
+                                             Authentication authentication) {
+
+        String requester = authentication.getName();
 
         try {
             userService.getUser(id);
