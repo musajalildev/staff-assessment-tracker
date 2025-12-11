@@ -3,8 +3,6 @@ package com.assessment.tracker.server.app;
 import com.assessment.tracker.server.api.controller.UserController;
 import com.assessment.tracker.server.api.dto.*;
 import com.assessment.tracker.server.api.dto.userHelperDTOs.*;
-
-import com.assessment.tracker.server.api.dto.userHelperDTOs.PasswordUpdDTO;
 import com.assessment.tracker.server.app.mappers.UserMapper;
 import com.assessment.tracker.server.persistence.entities.*;
 import com.assessment.tracker.server.persistence.services.*;
@@ -18,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import com.assessment.tracker.server.persistence.repos.UserRepository;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -28,13 +28,16 @@ public class UserControllerImpl implements UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final UserRepository userRepository;
+
 
 
 
     @Autowired
-    public UserControllerImpl(UserService userService, UserMapper userMapper) {
+    public UserControllerImpl(UserService userService, UserMapper userMapper, UserRepository userRepository) {
         this.userService = userService;
         this.userMapper = userMapper;
+        this.userRepository = userRepository;
     }
 
     private String getUsernameByEmailOrUsername(String identifier) {
@@ -288,22 +291,20 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>("All Users Erased", HttpStatus.OK);
     }
 
-    //Todo: delete
-    @GetMapping("/test")
-    public ResponseEntity<String> test(Authentication authentication) {
-        if (authentication == null) {
-            return ResponseEntity.ok("No user authenticated");
-        }
+// -------------------- CREATE --------------------
+@PostMapping(path = "/", consumes = "application/json", produces = "application/json")
+public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    // Convert DTO to entity
+    User user = new User(
+        userDTO.getUsername(),
+        userDTO.getEmail(),
+        userDTO.getPassword(),
+        userDTO.getUserType()
+    );
 
-        Object principal = authentication.getPrincipal();
-        String res;
+    // Save to DB
+    userRepository.save(user);
 
-        // Safe check to avoid ClassCastException if principal is "anonymousUser" string
-        if (principal instanceof User user) {
-            res = user.getUsername();
-        } else {
-            res = authentication.getName();
-        }
-        return new ResponseEntity<>("Current login :" + res, HttpStatus.OK);
-    }
+    return ResponseEntity.ok(userDTO);
+}
 }

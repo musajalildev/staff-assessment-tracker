@@ -137,7 +137,7 @@ public class ServerApplication {
 
     private static List<User> getUsers() {
         User u1 = new User("john", "john@example.com", "john123", UserType.ROLE_ACADEMIC);
-        User u2 = new User("mary", "mary@example.com", "mary123", UserType.ROLE_TEACHING_SUPPORT);
+        User u2 = new User("mary", "mary@example.com", "mary123", UserType.ROLE_EXAMS_OFFICER);
         User u3 = new User("kofi", "kofi@example.com", "kofi123", UserType.ROLE_EXTERNAL_EXAMINER);
         User u4 = new User("sakura", "sakura@example.com", "sakura123", UserType.ROLE_ACADEMIC);
         User u5 = new User("musa", "musa@example.com", "musa123", UserType.ROLE_TEACHING_SUPPORT);

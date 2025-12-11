@@ -49,18 +49,22 @@ public class Assessment {
     // constructors
     public Assessment() {
         this.feedback = new ArrayList<>();
+        this.assignedUsers = new ArrayList<>(); 
     }
 
     public Assessment(Module module, AssessmentType assessmentType, AssessmentProgress progress, String title) {
+        this();
         this.module = module;
         this.assessmentType = assessmentType;
         this.progress = AssessmentProgress.CREATED;
         this.title = title;
         this.addSetter(module.getLead());
         this.addChecker(module.getModerator());
+        
     }
 
     public Assessment(AssessmentType assessmentType, AssessmentProgress progress, String title) {
+        this();
         this.assessmentType = assessmentType;
         this.progress = progress;
         this.title = title;
