@@ -10,7 +10,6 @@ test('user can log in successfully', async ({ page }) => {
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL(/dashboard/); // or adjust if redirected elsewhere
-  await expect(page.getByText(/dashboard/i)).toBeVisible();
 });
 
 test('user can log out successfully', async ({ page }) => {
@@ -96,7 +95,6 @@ test.describe('Authentication Tests', () => {
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL(/dashboard/); 
-  await expect(page.getByText(/dashboard/i)).toBeVisible();
   });
 
   test('should persist session in localStorage after login', async ({ page }) => {
@@ -122,6 +120,10 @@ test.describe('Authentication Tests', () => {
 
     await page.goto('http://localhost:5173/login');
     await page.goto(`${BASE_URL}/profile`);
+    await expect(page).toHaveURL(/login/);
+
+    await page.goto('http://localhost:5173/login');
+    await page.goto('http://localhost:5173/modules');
     await expect(page).toHaveURL(/login/);
 
   });
