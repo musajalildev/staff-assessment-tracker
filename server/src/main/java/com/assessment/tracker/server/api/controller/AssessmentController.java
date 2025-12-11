@@ -20,16 +20,16 @@ public interface AssessmentController {
         @Tag(name = "Assessment", description = "Assessment-Related-Operations")
         ResponseEntity<AssessmentDTO> createAssessment(
                         @RequestBody AssessmentDTO assessmentDTO,
-                        @AuthenticationPrincipal AuthorisedUser user);
+                        Authentication auth);
 
         // -------------------- READ --------------------
         @GetMapping(produces = "application/json", path = "/api/assessment/all")
         @Operation(summary = "Get an assessment By Id", description = "Returns an assessment that matches the id given.")
         @Tag(name = "Assessment", description = "Assessment-Related-Operations")
-        ResponseEntity<List<AssessmentDTO>> getAllAssessments();
+        ResponseEntity<List<AssessmentDTO>> getAllAssessments(Authentication auth);
 
         @GetMapping(produces = "application/json", path = "/api/assessment/{id}")
-        ResponseEntity<AssessmentDTO> getAssessment(@PathVariable int id);
+        ResponseEntity<AssessmentDTO> getAssessment(@PathVariable int id, Authentication auth);
 
         // -------------------- UPDATE --------------------
         @PutMapping(consumes = "application/json", produces = "application/json", path = "/api/assessment/{id}")
