@@ -7,7 +7,7 @@ public class AssessmentRolesDTO {
     Integer assessmentID;
     UUID userID;
     AssessmentRole role;
-
+    public AssessmentRolesDTO() {}
     public AssessmentRolesDTO(Integer assessmentID, UUID userID, AssessmentRole role) {
 
         this.assessmentID = assessmentID;
