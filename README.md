@@ -8,7 +8,7 @@
   - [Run](#run)
     - [Windows](#windows)
     - [Linux](#linux)
-  - [Sever](#server)
+  - [Server](#server)
   - [Client](#client)
 ## Required
 - jdk version: 17
