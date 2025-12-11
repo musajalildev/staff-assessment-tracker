@@ -115,7 +115,8 @@ public class AssessmentControllerImpl implements AssessmentController {
         User user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
         Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
         if (assessmentService.getAssessmentByID(assessment.getID()).getProgress() == AssessmentProgress.CHECKED) {
-            if (!user.getCheckerFor().contains(assessment)) {
+            if (!(user.getUserType() == UserType.ROLE_TEACHING_SUPPORT
+                    || user.getUserType() == UserType.ROLE_EXAMS_OFFICER)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
             }
         } else {

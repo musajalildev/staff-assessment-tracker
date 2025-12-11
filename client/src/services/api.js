@@ -150,6 +150,7 @@ export const assessmentAPI = {
   getById: (id) => apiRequest(`/api/assessment/${id}`),
   create: (assessment) => apiRequest('/api/v1/assessment', { method: 'POST', body: assessment }),
   update: (id, assessment) => apiRequest(`/api/assessment/${id}`, { method: 'PUT', body: assessment }),
+  revert: (id, assessment) => apiRequest(`/api/assessment/revert/${id}`, { method: 'PUT', body: assessment }),
   getAll: () => apiRequest(`/api/assessment/all`),
 };
 //api/assessment/${id}
