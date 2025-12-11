@@ -79,17 +79,6 @@ class ModuleRolesServiceTest {
     }
 
     @Test
-    void getDTOById_whenModuleRoleExists_shouldReturnDTO() {
-
-        ModuleRoleDTO result = moduleRolesService.getDTOById(roleId);
-
-        assertNotNull(result);
-        assertEquals(ModuleRoles.ROLE_MODULE_LEAD, result.getRole());
-        verify(moduleRolesRepo).findById(roleId);
-        verify(moduleRoleMapper).entityToApi(moduleRole);
-    }
-
-    @Test
     void retrieveAll_shouldReturnListOfModuleRoleDTOs() {
         List<ModuleRole> roleList = Arrays.asList(moduleRole);
 

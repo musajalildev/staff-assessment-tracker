@@ -8,8 +8,9 @@
   - [Run](#run)
     - [Windows](#windows)
     - [Linux](#linux)
-  - [Sever](#server)
-  - [Client](#client)
+  - [System](#system)
+    - [Credentials](#credentials)
+  
 ## Required
 - jdk version: 17
 
@@ -44,15 +45,32 @@ Parameters:
 ./run.sh --client --server
 ```
 
-### Server
+### System
 For the server we are using an in memory database so sample data will be created via command line runner.
 
+We are using an in memory database where the users are created via the command line runner.
+
 Credentials to use the system:
-- Username: 
-- Password: 
+
+#### Credentials
+
+Academic User:
+- Username: john
+- Password: john123
+- Email: john@example.com
+
+Teaching Support User:
+- Username: mary
+- Email: mary@example.com
+- Password: mary123
+
+External Examiner User:
+- Username: kofi
+- Email: kofi@example.com
+- Password: kofi123
+
+All operations are handled by the logging services
 
 You can view all the exposed endpoints at the route: /swagger-ui.html
 
 You can use actuator to check the health of the system at: /actuator
-
-### Client
