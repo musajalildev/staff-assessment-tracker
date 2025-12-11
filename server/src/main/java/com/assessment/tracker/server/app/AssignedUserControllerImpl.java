@@ -9,6 +9,7 @@ import com.assessment.tracker.server.utils.enums.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     // implement CRUD operations
     // -------------------- CREATE --------------------
     // implement get assigned users w/o query params
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @Override
     public ResponseEntity<AssignedUser> createAssignment(@RequestBody UUID userID, @RequestBody AssessmentRole role,
             Assessment assessment) {
@@ -103,6 +105,7 @@ public class AssignedUserControllerImpl implements AssignedUserController {
     // implement update user information
 
     // implement update user assignment using assignmentID
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @PutMapping("/role/id/{id}")
     public ResponseEntity<AssignedUser> updateUserRole(@PathVariable int id, @RequestBody AssessmentRole role) {
         AssignedUser currentUserAssignment = assignedUserService.getAssignedUser(id);
@@ -119,6 +122,7 @@ public class AssignedUserControllerImpl implements AssignedUserController {
 
     // ----------------------DELETE----------------
     // implement deletion of user assignment
+    @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAssignedUser(@PathVariable int id) {
         String name = assignedUserService.getAssignedUser(id).getUser().getUsername();
@@ -143,18 +147,6 @@ public class AssignedUserControllerImpl implements AssignedUserController {
                         "\n Role Assignments Erased",
                 HttpStatus.OK)
                 : new ResponseEntity<>("All User Role Assignments Not Found", HttpStatus.NOT_FOUND);
-    }
-
-    // delete all. use carefully :)
-    @DeleteMapping("/wipe")
-    public ResponseEntity<String> deleteAllAssignments(@RequestParam String confirm) {
-        boolean deleted = assignedUserService.deleteAllAssignments();
-        if (!"DELETE_EVERYTHING".equals(confirm)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid confirmation value. Action not performed.");
-        }
-        assignedUserService.deleteAllAssignments();
-        return ResponseEntity.ok("All data deleted.");
     }
 
 }
