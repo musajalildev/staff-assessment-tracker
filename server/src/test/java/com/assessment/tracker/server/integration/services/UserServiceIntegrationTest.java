@@ -35,9 +35,7 @@ public class UserServiceIntegrationTest {
 
     @AfterEach
     public void tearDown() {
-        if (testUser.getUserID() != null && userRepo.existsByUserID(testUser.getUserID())) {
-            userRepo.deleteByUserID(testUser.getUserID());
-        }
+        userRepo.deleteAll();
     }
 
     @Test

@@ -38,7 +38,7 @@ public class ModuleServiceIntegrationTest {
 
     @AfterEach
     public void tearDown() {
-
+        moduleRepo.deleteAll();
     }
 
     @Test

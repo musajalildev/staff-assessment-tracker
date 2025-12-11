@@ -70,10 +70,12 @@ public interface UserController {
                         "User" })
         ResponseEntity<UserDTO> updateUserPermission(
                         @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication,
                         @Parameter(description = "Updated permission data") @RequestBody UserTypeUpdDTO updatedUserDTO);
 
         // -------------------- DELETE--------------------
         @Operation(summary = "Delete user", description = "Delete a specific user by their ID", tags = { "User" })
         ResponseEntity<String> deleteUser(
-                        @Parameter(description = "ID of the user") @PathVariable UUID id);
+                        @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication);
 }
