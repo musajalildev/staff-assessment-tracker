@@ -40,18 +40,34 @@ public class AssessmentControllerImpl implements AssessmentController {
     }
 
     @Override
-    public ResponseEntity<List<AssessmentDTO>> getAllAssessments() {
+    public ResponseEntity<List<AssessmentDTO>> getAllAssessments(Authentication auth) {
         // Object username =
         // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = new User();
+        try {
+            user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        if (!(user.getUserType() == UserType.ROLE_EXAMS_OFFICER
+                || user.getUserType() == UserType.ROLE_TEACHING_SUPPORT)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         List<AssessmentDTO> dtos = assessmentService.getAllAssessments();
         System.out.println(dtos);
         return ResponseEntity.ok(dtos);
     }
 
     @Override
-    public ResponseEntity<AssessmentDTO> getAssessment(int id) {
+    public ResponseEntity<AssessmentDTO> getAssessment(int id, Authentication auth) {
         // Object username =
         // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = new User();
+        try {
+            user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         AssessmentDTO dto = assessmentService.getAssessmentByID(id);
         System.out.println("DTO: " + dto);
         System.out.println("ID: " + id);
@@ -60,14 +76,24 @@ public class AssessmentControllerImpl implements AssessmentController {
 
     @Override
     public ResponseEntity<AssessmentDTO> createAssessment(AssessmentDTO assessmentDTO,
-            AuthorisedUser user) {
+            Authentication auth) {
+        User user = new User();
+        try {
+            user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        if (!(user.getUserType() == UserType.ROLE_EXAMS_OFFICER
+                || user.getUserType() == UserType.ROLE_TEACHING_SUPPORT)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(assessmentDTO);
+        }
         Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
         AssessmentLog log = new AssessmentLog();
         log.setActionType(AssessmentActions.CREATE);
         log.setTargetAssessment(assessment);
         log.setPreviousState(null);
         log.setNewState(null);
-        log.setUser(user.getUser());
+        log.setUser(user);
         assessmentLogService.save(log);
         assessmentService.save(assessment);
         return ResponseEntity.ok(assessmentDTO);
@@ -76,7 +102,12 @@ public class AssessmentControllerImpl implements AssessmentController {
     @Override
     public ResponseEntity<AssessmentDTO> updateAssessment(int id, AssessmentDTO assessmentDTO,
             Authentication auth) {
-        User user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        User user = new User();
+        try {
+            user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
         if (assessmentService.getAssessmentByID(assessment.getID()).getProgress() == AssessmentProgress.CHECKED) {
             if (!user.getCheckerFor().contains(assessment)) {
@@ -112,7 +143,12 @@ public class AssessmentControllerImpl implements AssessmentController {
     @Override
     public ResponseEntity<AssessmentDTO> revertAssessment(int id, AssessmentDTO assessmentDTO,
             Authentication auth) {
-        User user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        User user = new User();
+        try {
+            user = userRepository.findByUsername(((Jwt) auth.getPrincipal()).getClaimAsString("sub"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         Assessment assessment = assessmentMapper.apiToEntity(assessmentDTO);
         if (assessmentService.getAssessmentByID(assessment.getID()).getProgress() == AssessmentProgress.CHECKED) {
             if (!(user.getUserType() == UserType.ROLE_TEACHING_SUPPORT
