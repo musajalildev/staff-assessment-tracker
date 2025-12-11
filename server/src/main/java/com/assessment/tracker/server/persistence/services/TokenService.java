@@ -26,7 +26,7 @@ public class TokenService {
         Instant now = Instant.now();
         String scope = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining("_"));
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now) // current time can be used in logging

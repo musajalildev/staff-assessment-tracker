@@ -5,6 +5,7 @@ import com.assessment.tracker.server.persistence.services.*;
 import com.assessment.tracker.server.api.dto.authenticationDTOs.*;
 import com.assessment.tracker.server.persistence.entities.AuthorisedUser;
 
+import com.assessment.tracker.server.utils.enums.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,6 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
-    @Override
     //user creation
     public ResponseEntity<TokenDTO> signup(@RequestBody CreateAccountDTO userInfoDTO) {
         return ResponseEntity
@@ -41,7 +41,6 @@ public class AuthControllerImpl implements AuthController {
                 .body(userService.createUser(userInfoDTO));
     }
 
-    @Override
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginInfo){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
