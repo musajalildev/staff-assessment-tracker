@@ -47,11 +47,9 @@ class AssessmentServiceTest {
     }
 
     @Nested
-    @DisplayName("Save Assessment Tests")
     class SaveAssessmentTests {
 
         @Test
-        @DisplayName("Should save assessment successfully")
         void save_Success() {
             when(assessmentRepository.save(testAssessment)).thenReturn(testAssessment);
 
@@ -62,11 +60,9 @@ class AssessmentServiceTest {
     }
 
     @Nested
-    @DisplayName("Get Assessment By ID Tests")
     class GetAssessmentByIdTests {
 
         @Test
-        @DisplayName("Should return assessment DTO when found by ID")
         void getAssessmentByID_Success() {
             Integer assessmentId = 1;
             when(assessmentRepository.findById(assessmentId)).thenReturn(Optional.of(testAssessment));
@@ -82,11 +78,9 @@ class AssessmentServiceTest {
     }
 
     @Nested
-    @DisplayName("Get All Assessments Tests")
     class GetAllAssessmentsTests {
 
         @Test
-        @DisplayName("Should return all assessments as DTOs")
         void getAllAssessments_Success() {
             Assessment assessment1 = new Assessment();
             Assessment assessment2 = new Assessment();
@@ -108,7 +102,6 @@ class AssessmentServiceTest {
         }
 
         @Test
-        @DisplayName("Should return empty list when no assessments exist")
         void getAllAssessments_EmptyList_Success() {
             when(assessmentRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -121,11 +114,9 @@ class AssessmentServiceTest {
     }
 
     @Nested
-    @DisplayName("Get Involved Assessments Tests")
     class GetInvolvedAssessmentsTests {
 
         @Test
-        @DisplayName("Should return assessments user is involved in")
         void getInvolvedAssessments_Success() {
             User user = mock(User.class);
             Assessment assessment1 = new Assessment();
@@ -152,7 +143,6 @@ class AssessmentServiceTest {
         }
 
         @Test
-        @DisplayName("Should return empty list when user has no assignments")
         void getInvolvedAssessments_NoAssignments_Success() {
             User user = mock(User.class);
             when(user.getAssignedUsers()).thenReturn(Collections.emptyList());

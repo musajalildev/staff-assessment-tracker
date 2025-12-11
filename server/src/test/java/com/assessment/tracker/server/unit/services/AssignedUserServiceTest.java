@@ -57,7 +57,7 @@ class AssignedUserServiceTest {
         testUserId = UUID.randomUUID();
         testUser = new User();
         testAssessment = new Assessment();
-        testRole = AssessmentRole.ROLE_CHECKER; // Adjust based on your enum values
+        testRole = AssessmentRole.ROLE_CHECKER;
         testAssignedUser = new AssignedUser(testUser, testRole, testAssessment);
     }
 
@@ -235,11 +235,9 @@ class AssignedUserServiceTest {
     }
 
     @Nested
-    @DisplayName("Update Assignment Tests")
     class UpdateAssignmentTests {
 
         @Test
-        @DisplayName("Should update user assignment by ID")
         void updateUserAssignment_ById_Success() {
             int assignmentId = 1;
             AssessmentRole newRole = AssessmentRole.ROLE_INVOLVED;
@@ -257,7 +255,6 @@ class AssignedUserServiceTest {
         }
 
         @Test
-        @DisplayName("Should update user assignment by username")
         void updateUserAssignment_ByUsername_Success() {
             String username = "testuser";
             AssessmentRole newRole = AssessmentRole.ROLE_INVOLVED;
@@ -278,11 +275,9 @@ class AssignedUserServiceTest {
     }
 
     @Nested
-    @DisplayName("Helper Method Tests")
     class HelperMethodTests {
 
         @Test
-        @DisplayName("Should find user by email")
         void findUserWithString_ByEmail_Success() {
             String email = "test@example.com";
             when(userService.getUserByEmail(email)).thenReturn(testUser);
@@ -295,7 +290,6 @@ class AssignedUserServiceTest {
         }
 
         @Test
-        @DisplayName("Should find user by username when email not found")
         void findUserWithString_ByUsername_Success() {
             String username = "testuser";
             when(userService.getUserByEmail(username)).thenReturn(null);
