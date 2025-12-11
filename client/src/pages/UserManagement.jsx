@@ -58,28 +58,26 @@ function UserManagement() {
   }, [currentUser, assignedUsers, canManage]);
 
   const handlePromoteExamsOfficer = async (userId, username) => {
-    if (!window.confirm(`Promote ${username} to Exams Officer?`)) return;
-    
-    try {
-      // Check if user already has EXAM_OFFICER role
-      const userAssignments = assignedUsers.filter(au => au.user?.userID === userId);
-      const hasEO = userAssignments.some(au => au.role === 'EXAM_OFFICER');
-      
-      if (hasEO) {
-        alert('User is already an Exams Officer');
-        return;
-      }
+  if (!window.confirm(`Promote ${username} to Exams Officer?`)) return;
 
-      await assignedUserAPI.create(userId, 'EXAM_OFFICER');
-      // Reload
-      const assignedRes = await assignedUserAPI.getAll();
-      setAssignedUsers(assignedRes.data || []);
-      alert('User promoted to Exams Officer');
-    } catch (err) {
-      alert('Failed to promote user');
-      console.error('Error promoting user:', err);
-    }
-  };
+  try {
+    await userAPI.promoteToExamsOfficer(username);
+
+    // Refresh user + assigned data
+    const [usersRes, assignedRes] = await Promise.all([
+      userAPI.getAll(),
+      assignedUserAPI.getAll()
+    ]);
+    setUsers(usersRes.data || []);
+    setAssignedUsers(assignedRes.data || []);
+
+    alert('User promoted to Exams Officer');
+  } catch (err) {
+    alert('Failed to promote user');
+    console.error('Error promoting user:', err);
+  }
+};
+
 
   const handleDemoteExamsOfficer = async (assignmentId, userId, username) => {
     // Check if trying to demote self

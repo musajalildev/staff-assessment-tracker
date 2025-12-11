@@ -78,8 +78,4 @@ public interface AssignedUserController {
         ResponseEntity<String> deleteUserAssignments(
                         @Parameter(description = "User ID") @PathVariable UUID userid);
 
-        @Operation(summary = "Delete all assignments", description = "Delete all assignments. Confirmation required")
-        @DeleteMapping("/wipe")
-        ResponseEntity<String> deleteAllAssignments(
-                        @Parameter(description = "Confirmation string (must be 'DELETE_EVERYTHING')") @RequestParam String confirm);
 }
