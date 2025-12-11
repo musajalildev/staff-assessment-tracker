@@ -197,9 +197,14 @@ public class UserControllerImpl implements UserController {
     @PutMapping("/{id}/permission")
     public ResponseEntity<UserDTO> updateUserPermission(
             @PathVariable UUID id,
+            Authentication authentication,
             @RequestBody UserTypeUpdDTO updatedUserDTO) {
         User existing = userService.getUser(id);
-        // incomingUT (incoming user type :D )
+
+        String requester = authentication.getName();
+        System.out.println("Admin performing action: " + requester);
+
+        // incomingUT (incoming user type :D)
         UserType incomingUT = updatedUserDTO.userType;
         if (existing == null)
             return ResponseEntity.notFound().build();

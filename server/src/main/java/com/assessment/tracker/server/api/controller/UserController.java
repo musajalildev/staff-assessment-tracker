@@ -70,6 +70,7 @@ public interface UserController {
                         "User" })
         ResponseEntity<UserDTO> updateUserPermission(
                         @Parameter(description = "ID of the user") @PathVariable UUID id,
+                        @Parameter Authentication authentication,
                         @Parameter(description = "Updated permission data") @RequestBody UserTypeUpdDTO updatedUserDTO);
 
         // -------------------- DELETE--------------------
