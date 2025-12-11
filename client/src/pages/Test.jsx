@@ -138,7 +138,7 @@ function TestDetail() {
         };
 
         try {
-            const result = await assessmentAPI.update(assessment.id || assessment.ID, updatedAssessment);
+            const result = await assessmentAPI.revert(assessment.id || assessment.ID, updatedAssessment);
             setAssessment(result.data);
         } catch (err) {
             console.error('Error updating assessment:', err);
@@ -156,11 +156,11 @@ function TestDetail() {
     // User must be Teaching Support Team OR Exams Officer in admin view (Exam Officer View)
     const canReturnToPreviousState = () => {
         if (!currentUser) return false;
-        
+
         const userId = currentUser?.id || currentUser?.userID || currentUser?.ID;
         const username = currentUser?.username;
         const currentView = currentUser?.selectedUserType || currentUser?.selectedRole;
-        
+
         // Use the permission utility function which handles:
         // - Teaching Support: always can reverse
         // - Exams Officers: can reverse ONLY when in Exam Officer View (admin view)
@@ -196,8 +196,8 @@ function TestDetail() {
                 <div className="actions">
                     <Link className="btn" to={`/modules/${moduleId}`}>Back to Module</Link>
                     {canReturnToPreviousState() && (
-                        <button 
-                            className="btn" 
+                        <button
+                            className="btn"
                             onClick={returnToPreviousState}
                             disabled={!assessment || (assessment.progress === "CREATED")}
                         >

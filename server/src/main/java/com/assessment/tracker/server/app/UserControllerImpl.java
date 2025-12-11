@@ -197,9 +197,14 @@ public class UserControllerImpl implements UserController {
     @PutMapping("/{id}/permission")
     public ResponseEntity<UserDTO> updateUserPermission(
             @PathVariable UUID id,
+            Authentication authentication,
             @RequestBody UserTypeUpdDTO updatedUserDTO) {
         User existing = userService.getUser(id);
-        // incomingUT (incoming user type :D )
+
+        String requester = authentication.getName();
+        System.out.println("Admin performing action: " + requester);
+
+        // incomingUT (incoming user type :D)
         UserType incomingUT = updatedUserDTO.userType;
         if (existing == null)
             return ResponseEntity.notFound().build();
@@ -267,7 +272,10 @@ public class UserControllerImpl implements UserController {
     // -------------------- DELETE --------------------
     @PreAuthorize("hasAuthority(T(com.assessment.tracker.server.utils.enums.UserType).ROLE_TEACHING_SUPPORT)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id,
+                                             Authentication authentication) {
+
+        String requester = authentication.getName();
 
         try {
             userService.getUser(id);

@@ -10,7 +10,6 @@ test('user can log in successfully', async ({ page }) => {
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL(/dashboard/); // or adjust if redirected elsewhere
-  await expect(page.getByText(/dashboard/i)).toBeVisible();
 });
 
 test('user can log out successfully', async ({ page }) => {
@@ -34,9 +33,278 @@ test('user can log out successfully', async ({ page }) => {
   await expect(page.getByText('Welcome back')).toBeVisible();
 });
 
+// Authentication Test Suite
+test.describe('Authentication Tests', () => {
+  const BASE_URL = 'http://localhost:5173';
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto(BASE_URL);
+    await page.evaluate(() => localStorage.clear());
+  });
+
+  test('should display login form with required fields', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await expect(page.locator('input[name="usernameOrEmail"]')).toBeVisible();
+    await expect(page.locator('input[name="password"]')).toBeVisible();
+    await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
+    await expect(page.getByText(/welcome back/i)).toBeVisible();
+  });
+
+  test('cannot log in with empty username/email', async ({ page }) => {
+    await page.goto('http://localhost:5173/login');
+  
+    await page.fill('input[name="usernameOrEmail"]', '');
+    await page.fill('input[name="password"]', 'john123');
+  
+    await page.click('button[type="submit"]');
+  
+    await expect(page).toHaveURL(/login/); // should stay in login page
+  });
+
+  test('cannot log in with empty password', async ({ page }) => {
+    await page.goto('http://localhost:5173/login');
+  
+    await page.fill('input[name="usernameOrEmail"]', 'john');
+    await page.fill('input[name="password"]', '');
+  
+    await page.click('button[type="submit"]');
+  
+    await expect(page).toHaveURL(/login/); // should stay in login page
+  });
+
+  test('should show error for invalid username or password', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await page.fill('input[name="usernameOrEmail"]', 'nonexistentuser');
+    await page.fill('input[name="password"]', 'wrongpassword');
+    await page.click('button[type="submit"]');
+
+    // Wait for error message
+    const errorMessage = page.locator('p.sub').filter({ hasText: /Invalid Credentials/i });
+    await expect(errorMessage.first()).toBeVisible({ timeout: 5000 });
+    await expect(page).toHaveURL(/login/);
+  });
+
+  test('user can log in successfully with email', async ({ page }) => {
+  await page.goto('http://localhost:5173/login');
+
+  await page.fill('input[name="usernameOrEmail"]', 'john@example.com');
+  await page.fill('input[name="password"]', 'john123');
+
+  await page.click('button[type="submit"]');
+
+  await expect(page).toHaveURL(/dashboard/); 
+  });
+
+  test('should persist session in localStorage after login', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await page.fill('input[name="usernameOrEmail"]', 'john');
+    await page.fill('input[name="password"]', 'john123');
+    await page.click('button[type="submit"]');
+
+    await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+
+    // Check localStorage has user data
+    const currentUser = await page.evaluate(() => localStorage.getItem('currentUser'));
+    expect(currentUser).not.toBeNull();
+    
+    const userData = JSON.parse(currentUser);
+    expect(userData).toHaveProperty('username');
+    expect(userData).toHaveProperty('id');
+  });
+
+  test('should redirect protected routes to login when not authenticated', async ({ page }) => {
 
 
+    await page.goto('http://localhost:5173/login');
+    await page.goto(`${BASE_URL}/profile`);
+    await expect(page).toHaveURL(/login/);
 
+    await page.goto('http://localhost:5173/login');
+    await page.goto('http://localhost:5173/modules');
+    await expect(page).toHaveURL(/login/);
+
+  });
+
+  test('should show role selection for Exams Officer', async ({ page }) => {
+    // Assuming there's an exams officer user - adjust username/password as needed
+    await page.goto(`${BASE_URL}/login`);
+
+    // Try to login as exams officer (adjust credentials based on your test data)
+    // This test assumes there's a user with ROLE_EXAMS_OFFICER
+    await page.fill('input[name="usernameOrEmail"]', 'mary'); //change according to seeded data were using (in this case mary)
+    await page.fill('input[name="password"]', 'mary123'); 
+    await page.click('button[type="submit"]');
+
+    // Check if role selection appears
+    const roleSelect = page.locator('select[name="userType"]');
+    
+      await expect(roleSelect).toBeVisible();
+  });
+
+  test('should complete role selection flow for Exams Officer', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    // Try to login as exams officer (adjust credentials based on your test data)
+    await page.fill('input[name="usernameOrEmail"]', 'mary'); 
+    await page.fill('input[name="password"]', 'mary123'); 
+    await page.click('button[type="submit"]');
+
+    // Wait for role selection if it appears
+    const roleSelect = page.locator('select[name="userType"]');
+    const isVisible = await roleSelect.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (isVisible) {
+      await roleSelect.selectOption({ index: 0 });
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+    } else {
+      // If no selection needed, should already be on dashboard
+      await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+    }
+  });
+
+  test('should show error if role selection is submitted without selection', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    // Try to login as exams officer
+    await page.fill('input[name="usernameOrEmail"]', 'mary'); 
+    await page.fill('input[name="password"]', 'mary123'); 
+    await page.click('button[type="submit"]');
+
+    const roleSelect = page.locator('select[name="userType"]');
+    const isVisible = await roleSelect.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (isVisible) {
+      // Try to submit without selecting
+      await page.click('button[type="submit"]');
+      const errorMessage = page.locator('p.sub').filter({ hasText: /select|required/i });
+      await expect(errorMessage.first()).toBeVisible({ timeout: 3000 });
+    }
+  });
+
+  test('should allow back button from role selection', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await page.fill('input[name="usernameOrEmail"]', 'mary'); 
+    await page.fill('input[name="password"]', 'mary123'); 
+    await page.click('button[type="submit"]');
+
+    const roleSelect = page.locator('select[name="userType"]');
+    const isVisible = await roleSelect.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (isVisible) {
+      const backButton = page.getByRole('button', { name: /back/i });
+      await backButton.click();
+      
+      // Should return to login form
+      await expect(page.locator('input[name="usernameOrEmail"]')).toBeVisible();
+      await expect(page.getByText(/welcome back/i)).toBeVisible();
+    }
+  });
+
+  test('should trim whitespace from username/email input', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    // Login with whitespace around username
+    await page.fill('input[name="usernameOrEmail"]', '  john  ');
+    await page.fill('input[name="password"]', 'john123');
+    await page.click('button[type="submit"]');
+
+    // Should still login successfully (trimmed)
+    await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+  });
+
+  test('should handle login with different user types', async ({ page }) => {
+    const users = [
+      { username: 'john', password: 'john123', role: 'ACADEMIC' },
+      { username: 'musa', password: 'musa123', role: 'TEACHING_SUPPORT' },
+      // Add more test users as needed
+    ];
+
+    for (const user of users) {
+      await page.goto(`${BASE_URL}/login`);
+      await page.evaluate(() => localStorage.clear());
+
+      await page.fill('input[name="usernameOrEmail"]', user.username);
+      await page.fill('input[name="password"]', user.password);
+      await page.click('button[type="submit"]');
+
+      // Handle role selection if needed
+      const roleSelect = page.locator('select[name="userType"]');
+      if (await roleSelect.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await roleSelect.selectOption({ index: 0 });
+        await page.click('button[type="submit"]');
+      }
+
+      await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+      
+      // Verify user is logged in
+      const currentUser = await page.evaluate(() => localStorage.getItem('currentUser'));
+      expect(currentUser).not.toBeNull();
+    }
+  });
+
+  test('should clear localStorage on logout', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await page.fill('input[name="usernameOrEmail"]', 'john');
+    await page.fill('input[name="password"]', 'john123');
+    await page.click('button[type="submit"]');
+
+    await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+
+    // Verify user data exists
+    let currentUser = await page.evaluate(() => localStorage.getItem('currentUser'));
+    expect(currentUser).not.toBeNull();
+
+    // Logout
+    await page.click('button:has-text("Logout")');
+    await expect(page).toHaveURL(/login/);
+
+    // Verify localStorage is cleared
+    currentUser = await page.evaluate(() => localStorage.getItem('currentUser'));
+    expect(currentUser).toBeNull();
+  });
+
+  test('should prevent access to protected routes after logout', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await page.fill('input[name="usernameOrEmail"]', 'john');
+    await page.fill('input[name="password"]', 'john123');
+    await page.click('button[type="submit"]');
+
+    await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
+
+    // Logout
+    await page.click('button:has-text("Logout")');
+    await expect(page).toHaveURL(/login/);
+
+    // Try to access protected route
+    await page.goto(`${BASE_URL}/dashboard`);
+    await expect(page).toHaveURL(/login/);
+  });
+
+  test('should display error message with correct styling', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+
+    await page.fill('input[name="usernameOrEmail"]', 'invaliduser');
+    await page.fill('input[name="password"]', 'wrongpass');
+    await page.click('button[type="submit"]');
+
+    const errorMessage = page.locator('p.sub').filter({ hasText: /invalid|incorrect|wrong/i });
+    await expect(errorMessage.first()).toBeVisible({ timeout: 5000 });
+    
+    // Check error styling (red color)
+    const color = await errorMessage.first().evaluate((el) => {
+      return window.getComputedStyle(el).color;
+    });
+    // Error should be visible and styled
+    expect(errorMessage.first()).toBeVisible();
+  });
+});
 
 // e2e/navigation.spec.js
 

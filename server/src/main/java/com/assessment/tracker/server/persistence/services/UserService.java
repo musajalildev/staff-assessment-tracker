@@ -118,7 +118,6 @@ public class UserService {
     }
 
     public boolean deleteUser(UUID id) {
-        //TODO:check if user is an exam officer (deletion not allowed)
         User user = getUser(id);
         boolean exempt =
                 ( user.getUserType()== UserType.ROLE_EXAMS_OFFICER);
