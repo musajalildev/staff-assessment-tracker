@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { userAPI, assignedUserAPI } from '../services/api';
 import { getCurrentUser, canManageUsers } from '../utils/permissions';
+import { authAPI } from '../services/api';
+
 
 function UserNew() {
   const navigate = useNavigate();
@@ -64,7 +66,7 @@ function UserNew() {
         userType: formData.userType
       };
 
-      await userAPI.create(userData);
+      await userAPI.signup(userData);
       navigate('/users');
     } catch (err) {
       setError('Failed to create user. Please try again.');
