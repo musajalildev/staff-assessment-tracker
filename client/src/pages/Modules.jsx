@@ -81,6 +81,10 @@ function Modules() {
                             currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT' ||
                             apiUserType === 'ROLE_TEACHING_SUPPORT';
 
+  const isExamsOfficer = currentUser?.userType === 'ROLE_EXAMS_OFFICER' || 
+                            currentUser?.selectedUserType === 'ROLE_EXAMS_OFFICER' ||
+                            currentUser?.primaryUserType === 'ROLE_EXAMS_OFFICER' ||
+                            apiUserType === 'ROLE_EXAMS_OFFICER';
   const getUserName = (userId) => {
     if (!userId) return 'N/A';
     const user = users.find(u => u.userID === userId || u.ID === userId);
@@ -118,7 +122,7 @@ function Modules() {
       <header className="header">
         <div className="h-title">Modules</div>
         <div className="actions" style={{ display: 'flex', gap: '12px' }}>
-          {isTeachingSupport && (
+          {isTeachingSupport || isExamsOfficer && (
             <Link className="btn primary" to="/modules/new">Add Module</Link>
           )}
           {canManage && (

@@ -26,16 +26,24 @@ function Dashboard() {
         const user = JSON.parse(storedUser);
         setCurrentUser(user);
 
-        // Validate selected role if it exists
-        if (user.selectedRole) {
+        // Skip role validation for exams officers - they switch between views (not assessment roles)
+        // selectedRole/selectedUserType for exams officers is a VIEW (Academic vs Exam Officer View), not an assessment role
+        const isExamsOfficer = user?.primaryUserType === 'ROLE_EXAMS_OFFICER' || 
+                               user?.userType === 'ROLE_EXAMS_OFFICER';
+        
+        // Only validate selectedRole for non-exams-officers, and only if it's set
+        // Note: getUserRoles returns AssessmentRole enum values (SETTER, CHECKER, etc.), not user types
+        if (user.selectedRole && !isExamsOfficer) {
           try {
             const rolesResponse = await assignedUserAPI.getUserRoles(user.username);
             const validRoles = rolesResponse.data || [];
 
-            // Check if the selected role is valid
+            // Check if the selected role is valid (assessment roles only)
+            // For exams officers, selectedRole is 'ACADEMIC' or 'EXAM_OFFICER' (view indicators), not assessment roles
             if (!validRoles.includes(user.selectedRole)) {
+              // Only error if it's actually an invalid assessment role
+              // For exams officers, selectedRole represents a view, not an assessment role
               setRoleError('Invalid role selected. Your selected role is not assigned to your account.');
-              // Remove invalid role and redirect to login after a delay
               setTimeout(() => {
                 localStorage.removeItem('currentUser');
                 navigate('/login');
@@ -84,7 +92,7 @@ function Dashboard() {
     };
 
     loadData();
-  }, [navigate]);
+  }, [navigate]); // Note: When view switches, Layout.jsx does window.location.reload() so this will re-run
 
   const getCurrentUserRoles = () => {
     if (!currentUser) return [];

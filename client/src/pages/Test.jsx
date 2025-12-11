@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { assessmentAPI, userAPI, assignedUserAPI } from '../services/api';
 import FeedbackSection from '../components/FeedbackSection';
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, isExamsOfficer } from '../utils/permissions';
+import { getCurrentUser, canReverseStages } from '../utils/permissions';
 
 function TestDetail() {
     const { moduleId, assessmentId } = useParams();
@@ -153,39 +153,18 @@ function TestDetail() {
     };
 
     // Check if user can see return to previous state button
-    // User must be Teaching Support Team (ROLE_TEACHING_SUPPORT) OR have AssessmentRole ROLE_EXAM_OFFICER
+    // User must be Teaching Support Team OR Exams Officer in admin view (Exam Officer View)
     const canReturnToPreviousState = () => {
-        if (!currentUser || !assignedUsers) return false;
+        if (!currentUser) return false;
         
         const userId = currentUser?.id || currentUser?.userID || currentUser?.ID;
         const username = currentUser?.username;
+        const currentView = currentUser?.selectedUserType || currentUser?.selectedRole;
         
-        // Check if user is Teaching Support Team (UserType)
-        const isTeachingSupport = currentUser?.userType === 'ROLE_TEACHING_SUPPORT' || 
-                                  currentUser?.selectedUserType === 'ROLE_TEACHING_SUPPORT' ||
-                                  currentUser?.primaryUserType === 'ROLE_TEACHING_SUPPORT';
-        
-        // Check if user has AssessmentRole ROLE_EXAM_OFFICER
-        // AssessmentRolesDTO has userID directly, not nested in user object
-        const userRoles = assignedUsers
-            .filter(au => {
-                // Check userID directly from DTO (AssessmentRolesDTO.userID)
-                const auUserId = au.userID || au.user?.userID || au.user?.ID || au.user?.id;
-                const auUsername = au.username || au.user?.username;
-                // Compare as strings to handle UUID format
-                return (auUserId && String(auUserId) === String(userId)) ||
-                       (auUsername && auUsername === username);
-            })
-            .map(au => {
-                // Handle role as enum object or string
-                const role = au.role;
-                return typeof role === 'string' ? role : (role?.name || String(role));
-            });
-        
-        const hasExamOfficerRole = userRoles.some(r => String(r) === 'ROLE_EXAM_OFFICER' || String(r) === 'EXAM_OFFICER') ||
-                                   isExamsOfficer(assignedUsers, userId, username);
-        
-        return isTeachingSupport || hasExamOfficerRole;
+        // Use the permission utility function which handles:
+        // - Teaching Support: always can reverse
+        // - Exams Officers: can reverse ONLY when in Exam Officer View (admin view)
+        return canReverseStages(assignedUsers || [], userId, username, currentView);
     };
 
     if (loading) {

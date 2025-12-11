@@ -14,8 +14,7 @@ function UserNew() {
     username: '',
     email: '',
     password: '',
-    userType: 'ACADEMIC',
-    roles: []
+    userType: 'ROLE_ACADEMIC'
   });
 
   useEffect(() => {
@@ -41,15 +40,8 @@ function UserNew() {
   );
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === 'checkbox') {
-      const roles = formData.roles.includes(value)
-        ? formData.roles.filter(r => r !== value)
-        : [...formData.roles, value];
-      setFormData({ ...formData, roles });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -72,20 +64,7 @@ function UserNew() {
         userType: formData.userType
       };
 
-      const userRes = await userAPI.create(userData);
-      const newUser = userRes.data;
-
-      // Assign roles
-      if (formData.roles.length > 0) {
-        for (const role of formData.roles) {
-          try {
-            await assignedUserAPI.create(newUser.userID, role);
-          } catch (err) {
-            console.error(`Error assigning role ${role}:`, err);
-          }
-        }
-      }
-
+      await userAPI.create(userData);
       navigate('/users');
     } catch (err) {
       setError('Failed to create user. Please try again.');
@@ -172,27 +151,11 @@ function UserNew() {
               onChange={handleChange}
               required
             >
-              <option value="ACADEMIC">Academic</option>
-              <option value="TEACHING_SUPPORT">Teaching Support</option>
-              <option value="EXTERNAL_EXAMINER">External Examiner</option>
+              <option value="ROLE_ACADEMIC">Academic</option>
+              <option value="ROLE_TEACHING_SUPPORT">Teaching Support</option>
+              <option value="ROLE_EXTERNAL_EXAMINER">External Examiner</option>
+              <option value="ROLE_EXAMS_OFFICER">Exams Officer</option>
             </select>
-          </div>
-          <div className="field">
-            <label className="label">Additional Roles (Optional)</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  value="EXAM_OFFICER"
-                  checked={formData.roles.includes('EXAM_OFFICER')}
-                  onChange={handleChange}
-                />
-                <span>Exams Officer</span>
-              </label>
-              <p className="sub" style={{ fontSize: '12px', marginLeft: '24px' }}>
-                Exams Officer role can be assigned to academics. They can toggle between academic and admin views.
-              </p>
-            </div>
           </div>
           {error && (
             <div style={{ color: 'var(--bad)', marginTop: '12px' }}>{error}</div>
