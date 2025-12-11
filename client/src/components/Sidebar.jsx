@@ -80,7 +80,11 @@ function Sidebar() {
         </Link>
       </nav>
       <div className="nav-footer">
-        <button onClick={()=>{localStorage.removeItem("authToken"); navigate("/login")}}
+        <button onClick={()=>{
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("currentUser");
+          navigate("/login");
+        }}
                 className="logout-link">Logout</button>
       </div>
     </aside>

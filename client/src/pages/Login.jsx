@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userAPI } from '../services/api';
 
@@ -12,6 +12,20 @@ function Login() {
   const [selectedUserType, setSelectedUserType] = useState('');
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+
+  // Clear all user data when login page loads to prevent access after logout
+  useEffect(() => {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+    // Reset component state
+    setUsernameOrEmail('');
+    setPassword('');
+    setError('');
+    setShowUserTypeSelection(false);
+    setAvailableUserTypes([]);
+    setSelectedUserType('');
+    setUserData(null);
+  }, []);
 
   // Determine available user types based on primary userType
   const getAvailableUserTypes = (primaryUserType) => {
