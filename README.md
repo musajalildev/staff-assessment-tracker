@@ -1,76 +1,222 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/F0ieClPf)
-
 # Staff Assessment Tracker
 
-## Table of Contents
-- [Required](#required)
-- [Usage Instructions](#usage-instructions)
-  - [Run](#run)
-    - [Windows](#windows)
-    - [Linux](#linux)
-  - [System](#system)
-    - [Credentials](#credentials)
-  
-## Required
-- jdk version: 17
+A full-stack staff assessment tracking application built with **Spring Boot** and **React**.
 
-- Project Structure
-  - Spring Boot server: server/
-  - React Client: client/
+The project uses a Spring Boot backend to expose REST API endpoints and a React frontend for the user interface. It was developed collaboratively as part of a team software engineering project at the **University of Sheffield**.
 
-## Usage Instructions
-### Run
-Either run it from their respective directory: 
+---
 
-```bash 
-./server/mvnw:spring-boot:run
+## Overview
+
+The Staff Assessment Tracker provides a web-based system supporting different types of users involved in the assessment process.
+
+The system includes three user roles:
+
+* **Academic User**
+* **Teaching Support User**
+* **External Examiner**
+
+The application is split into two primary components:
+
+```text
+React Frontend
+      │
+      │ HTTP / REST
+      ▼
+Spring Boot Backend
+      │
+      ▼
+In-Memory Database
 ```
 
+The separation between the client and server allows the frontend and backend to be developed and run independently.
+
+---
+
+## Key Features
+
+* Full-stack client-server architecture
+* REST API built with Spring Boot
+* React-based frontend
+* Multiple user roles
+* Development sample data
+* Application logging
+* Interactive API documentation with Swagger
+* Application health monitoring with Spring Boot Actuator
+* Cross-platform development scripts
+* Separate frontend and backend development environments
+
+---
+
+## Technologies
+
+### Backend
+
+* Java 17
+* Spring Boot
+* Maven
+* REST APIs
+* Spring Boot Actuator
+
+### Frontend
+
+* React
+* JavaScript
+* Node.js
+* npm
+
+### Development & Tooling
+
+* Git
+* GitHub
+* Swagger / OpenAPI
+* Maven
+* Cross-platform shell and batch scripts
+
+---
+
+## Project Structure
+
+```text
+staff-assessment-tracker/
+│
+├── client/                 # React frontend
+│
+├── server/                 # Spring Boot backend
+│
+├── run.bat                 # Windows startup script
+├── run.sh                  # Linux startup script
+│
+├── .gitignore
+├── .gitattributes
+└── README.md
+```
+
+The `client` and `server` components can be run independently during development.
+
+---
+
+## Backend
+
+The backend is implemented using **Spring Boot** and exposes the application's functionality through REST endpoints.
+
+API documentation is available through Swagger when the server is running:
+
+```text
+/swagger-ui.html
+```
+
+Spring Boot Actuator is also available for checking application health:
+
+```text
+/actuator
+```
+
+The development environment uses an **in-memory database**, with sample users and application data created when the application starts.
+
+---
+
+## Frontend
+
+The client is implemented using **React** and communicates with the Spring Boot backend through its exposed API endpoints.
+
+The frontend and backend are kept as separate components within the repository:
+
+```text
+client/
+server/
+```
+
+This separation allows each part of the application to be developed and run independently.
+
+---
+
+## Running Locally
+
+### Prerequisites
+
+Before running the application, install:
+
+* **JDK 17**
+* **Node.js**
+* **npm**
+
+---
+
+### Start the Backend
+
+From the project root:
+
 ```bash
-cd ./client/
+./server/mvnw spring-boot:run
+```
+
+---
+
+### Start the Frontend
+
+Move into the client directory:
+
+```bash
+cd client
+```
+
+Then start the development server:
+
+```bash
 npm run dev
 ```
 
-Or use the run file Provided:
+---
 
-Parameters: 
---client, --server to run just the client or the server or both
-#### Windows
-```bash 
+## Cross-Platform Run Scripts
+
+The repository also includes scripts for starting the application components.
+
+### Windows
+
+```powershell
 .\run.bat --client --server
 ```
 
-#### Linux
+### Linux
+
 ```bash
 ./run.sh --client --server
 ```
 
-### System
-For the server we are using an in memory database so sample data will be created via command line runner.
+The `--client` and `--server` parameters can be used to start the individual components when required.
 
-We are using an in memory database where the users are created via the command line runner.
+---
 
-Credentials to use the system:
+## API Documentation
 
-#### Credentials
+When the backend is running, the exposed endpoints can be explored through Swagger:
 
-Academic User:
-- Username: john
-- Password: john123
-- Email: john@example.com
+```text
+/swagger-ui.html
+```
 
-Teaching Support User:
-- Username: mary
-- Email: mary@example.com
-- Password: mary123
+Swagger provides an interactive interface for viewing and testing the application's API endpoints.
 
-External Examiner User:
-- Username: kofi
-- Email: kofi@example.com
-- Password: kofi123
+---
 
-All operations are handled by the logging services
+## Application Monitoring
 
-You can view all the exposed endpoints at the route: /swagger-ui.html
+Spring Boot Actuator is used to expose application health information.
 
-You can use actuator to check the health of the system at: /actuator
+The health endpoint is available at:
+
+```text
+/actuator
+```
+
+This provides a simple way to verify that the backend application is running correctly.
+
+---
+
+## Development Data
+
+The development version of the application uses an **in-memory database**.
+
+Sample users and data are generated automatically for development and demonstration purposes, allowing the application t
